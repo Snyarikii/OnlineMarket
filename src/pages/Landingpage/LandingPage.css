@@ -1,0 +1,199 @@
+.body{
+    margin:0;
+    justify-content: center;
+    align-items: center;
+}
+header{
+    background-color: rgb(80, 80, 191);
+    position: fixed;
+    width:100%;
+    justify-content: space-between;
+    left: 0;
+    top: 0;
+    display: flex;
+    z-index: 1000;
+}
+header h1{
+    margin-left: 30px;
+    color: white;
+    
+}
+nav{
+    padding-top: 30px;
+    justify-content: space-around;
+    margin-right: 30px;
+}
+.sign-in-link{
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.sign-in-link:hover{
+    background-color: rgb(159, 159, 255);
+    color: black;
+}
+.section1{
+    display: flex;
+    height: 400px;
+}
+.motto{
+    /* position: absolute; */
+    margin-top: 100px;
+    text-align: center;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    font-size: 1.5rem;
+    padding: 2px;
+    border-radius: 5px;
+}
+.motto h2{
+    margin-left: 150px;
+    margin-top: 100px;
+    color: black;
+    font-size: 40px;
+}
+.motto p{
+    margin-left: 150px;
+    color: black;
+    font-size: 20px;
+}
+
+/*Section 2*/
+.section2{
+    background-color: white;
+}
+.section2 h3{
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+}
+.card-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+    gap: 10px;
+}
+.card{
+    background-color: white;
+    border-radius: 20px;
+    border-color: rgb(184, 182, 182);
+    box-shadow: 0 0 10px 5px rgba(73, 43, 133, 0.15);
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    margin-left: 40px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+.card:hover{
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba( 0,0,0,0.2);
+    background-color: #f0f0f0;
+    cursor: default;
+}
+@media (max-width: 768px) {
+    .card-container {
+        align-items: center;
+    }
+    .card{
+        width:100px;
+    }
+}
+.card img{
+    width: 100%;
+    border-radius:  8px 8px 0 0;
+    margin-top: 2px;
+}
+.card p{
+    color: black;
+}
+
+/*Engagement section*/
+.engagement-section{
+    margin-top: 40px;
+    text-align: center;
+}
+.engagement-section{
+    font-size: 28px;
+    margin-bottom: 40px;
+}
+.services{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; 
+}
+.service{
+    background-color: #989998;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+.service h3{
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.service p {
+    font-size: 16px;
+}
+ .service:hover {
+    cursor: default;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+ @media (max-width: 768px) {
+    .services {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .service {
+      width: 100%;
+    }
+}
+/* Get Started */
+.get-started{
+    text-align: center;
+    height: 200px;
+    background-color: #f7f8f6c7;
+  }
+.get-started h3{
+    padding: 30px;
+}
+.buttons{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    
+}
+.buy-btn, .sell-btn{
+    width: 200px;
+    height: 7vh;
+    border-radius: 14px;
+    background-color: rgb(80, 80, 191);
+    color: white;
+    font-weight: 400;
+    margin-bottom: 30px;
+    border: none;
+}
+.buy-btn:hover, .sell-btn:hover{
+    background-color: rgb(93, 93, 154);
+    color: black;
+}
+
+/* Footer */
+footer{
+    text-align: center;
+    background-color: rgb(103, 103, 103);
+    color: white;
+    height: 50px;
+    padding: 2px;
+}
