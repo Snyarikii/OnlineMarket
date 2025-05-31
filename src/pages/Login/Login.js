@@ -55,10 +55,11 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                        /><br /><br />
+                        /><br />
                     </div>
+                    <Link to='/ResetPassword' className="reset-forgot-pass">Forgot Password?</Link>
                     <button type="submit" className="login-btn">Login</button>                    
-                    <p className="dont-have-account">Dont' have an account? <Link to="/" >Sign Up here!</Link></p>
+                    <p className="dont-have-account">Dont' have an account? <Link to="/" className="dont-have-account-link" >Sign Up here!</Link></p>
                 </form>
                 <p className="loginMessage"> {message}</p>
             </div>
