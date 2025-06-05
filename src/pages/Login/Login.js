@@ -19,8 +19,10 @@ const Login = () => {
 
             if(res.data.success){
                 setMessage("Login successful!");
+                
             }else{
                 setMessage(res.data.message);
+                
             }
         }catch (err)  {
             setMessage("Error logging in.");
@@ -40,6 +42,7 @@ const Login = () => {
                 <form onSubmit={handleLogin} className="loginForm">
                     <h2>Welcome Back</h2>
                     <div className="login-input-fields">
+                        <p className="loginMessage"> {message}</p>
                         <input
                             className="login-input"
                             type="email"
@@ -59,9 +62,8 @@ const Login = () => {
                     </div>
                     <Link to='/ResetPassword' className="reset-forgot-pass">Forgot Password?</Link>
                     <button type="submit" className="login-btn">Login</button>                    
-                    <p className="dont-have-account">Dont' have an account? <Link to="/" className="dont-have-account-link" >Sign Up here!</Link></p>
+                    <p className="dont-have-account">Dont' have an account? <Link to="/SignUp" className="dont-have-account-link" >Sign Up here!</Link></p>
                 </form>
-                <p className="loginMessage"> {message}</p>
             </div>
          </div>
     );
