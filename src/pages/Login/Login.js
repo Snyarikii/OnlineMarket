@@ -18,14 +18,18 @@ const Login = () => {
             });
 
             if(res.data.success){
-                setMessage("Login successful!");
+                setMessage(res.data.message);
                 
             }else{
-                setMessage(res.data.message);
+                setMessage(res.data.error || "Login failed");
                 
             }
         }catch (err)  {
-            setMessage("Error logging in.");
+            if(err.response && err.response.data && err.response.data.error) {
+                setMessage(err.response.data.error);
+            } else {
+                setMessage("Error logging in.");
+            }
         }
     };
 
