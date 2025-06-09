@@ -67,11 +67,17 @@ const ResetPassword = () => {
                     <div className="reset-input-fields">
                        <input
                             className="reset-input"
+                            type="text"
+                            placeholder="Email"
+                            required
+                        /><br/>
+                       <input
+                            className="reset-input"
                             type='password'
                             placeholder="New Password"
                             onKeyUp={checkPasswordStrength}
                             required
-                        /><br /><br/>
+                        /><br />
                         <input
                             className="reset-input"
                             type="password"
