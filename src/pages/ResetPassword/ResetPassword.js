@@ -97,6 +97,7 @@ const ResetPassword = () => {
                 <form className="reset-form" onSubmit={handleSubmit}>
                     <h2>Reset Password</h2>
                     <div className="reset-input-fields">
+                        {message && <p className="reset-message">{message}</p>}
                        <input
                             className="reset-input"
                             type="email"
@@ -123,7 +124,6 @@ const ResetPassword = () => {
                                 {strength}
                             </p>
                             <span ref={checkmarkRef} className="hidden">&#10004;</span>
-                            {message && <p className="reset-message">{message}</p>}
                         </div>
                     </div>
                     <button className="reset-btn">Change Password</button>

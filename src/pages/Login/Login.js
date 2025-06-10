@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from './Login.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -18,7 +20,13 @@ const Login = () => {
             });
 
             if(res.data.success){
+                localStorage.setItem('token', res.data.token);
+                localStorage.setItem('user', res.data.user);
                 setMessage(res.data.message);
+
+                setTimeout(() => {
+                    navigate('/Index');
+                }, 1500);
                 
             }else{
                 setMessage(res.data.error || "Login failed");

@@ -5,6 +5,7 @@ import Login from "./pages/Login/Login";
 import LandingPage from './pages/Landingpage/Landingpage';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import SignUp from './pages/SignUp/SignUp';
+import Index from './pages/Index/Index';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path='/Login' element={<Login />} />
         <Route path='/ResetPassword' element={<ResetPassword />} />
         <Route path='/SignUp' element={<SignUp />} />
+        <Route path='/Index' element={<Index />} />
       </Routes>
     </BrowserRouter>
   );
