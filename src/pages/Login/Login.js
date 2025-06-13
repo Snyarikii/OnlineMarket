@@ -24,9 +24,18 @@ const Login = () => {
                 localStorage.setItem('user', res.data.user);
                 setMessage(res.data.message);
 
-                setTimeout(() => {
-                    navigate('/Index');
-                }, 1500);
+                const userRole = res.data.user.role;
+                if(userRole === 'buyer') {
+                    setTimeout(() => {
+                        navigate('/Index');
+                    }, 1500);
+                } else if(userRole === 'seller') {
+                    setTimeout(() => {
+                        navigate('/Dashboard');
+                    }, 1500);
+                } else {
+                    navigate('/');
+                }
                 
             }else{
                 setMessage(res.data.error || "Login failed");
