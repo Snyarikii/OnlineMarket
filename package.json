@@ -1,0 +1,18 @@
+{
+  "name": "fleamarket",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "fleamarket": "npm start --prefix fleamarket",
+    "server": "nodemon server/server.js",
+    "dev": "concurrently \"npm run server\" \"npm run fleamarket\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
