@@ -1,0 +1,35 @@
+.index-header{
+    position: fixed;
+    background-color: rgb(80, 80, 191);
+    width: 100%;
+    justify-content: space-between;
+    left: 0;
+    top: 0;
+    display: flex;
+    z-index: 1000;
+    height: 15vh;
+}
+.index-header .index-h1{
+    font-family: Epilogue;
+    margin-left: 30px;
+    color: white;
+    margin-top: 25px;
+}
+.index-nav{
+    padding-top: 30px;
+    justify-content: space-around;
+    margin-right: 30px;
+}
+.index-logout-link{
+    font-family: Inter;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.index-logout-link:hover{
+    background-color: rgb(159, 159, 255);
+    color: black;
+}
