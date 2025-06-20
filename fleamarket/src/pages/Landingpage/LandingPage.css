@@ -1,214 +1,299 @@
-.landingPage-body{
-    margin:0;
-    justify-content: center;
+/* General Body & Font Styles */
+.lp-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    background-color: #fff;
+}
+
+/* Header Styles */
+.lp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background-color: #2563eb;
+    border-bottom: 1px solid #e0e0e0;
+    height: 70px;
+}
+
+.lp-logo a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+    text-decoration: none;
+}
+.lp-logo-img {
+    height: 80px; /* Adjust the height as needed */
+    width: auto;  /* Maintains the aspect ratio */
+    display: block; /* Removes any extra space below the image */
+}
+.lp-nav-center a {
+    margin: 0 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.lp-nav-right {
+    display: flex;
     align-items: center;
 }
-.landingPage-header{
-    background-color: rgb(80, 80, 191);
-    position: fixed;
-    width:100%;
-    justify-content: space-between;
-    left: 0;
-    top: 0;
-    display: flex;
-    z-index: 1000;
-    height: 15vh;
-}
-.landingPage-h1{
-    font-family: Epilogue;
-    margin-left: 30px;
-    color: white;
-    margin-top: 25px;
-    
-}
-.landingPage-nav{
-    padding-top: 30px;
-    justify-content: space-around;
-    margin-right: 30px;
-}
 
-.landingPage-sign-in-link{
-    font-family: Inter;
-    color: white;
+.lp-nav-btn {
     text-decoration: none;
-    font-weight: 500;
-    font-size: 16px;
-    padding: 5px 10px;
+    padding: 8px 16px;
     border-radius: 4px;
-}
-.landingPage-sign-in-link:hover{
-    background-color: rgb(159, 159, 255);
-    color: black;
-}
-.landingPage-section1{
-    display: flex;
-    height: 400px;
-}
-.landingPage-motto{
-    /* position: absolute; */
-    margin-top: 100px;
-    text-align: center;
-    bottom: 20px;
-    left: 20px;
-    color: white;
-    font-size: 1.5rem;
-    padding: 2px;
-    border-radius: 5px;
-}
-.landingPage-motto h2{
-    font-family: Epilogue;
-    margin-left: 150px;
-    margin-top: 100px;
-    color: black;
-    font-size: 40px;
-}
-.landingPage-motto p{
-    font-family: Inter;
-    margin-left: 150px;
-    color: black;
-    font-size: 20px;
+    margin-left: 10px;
+    font-weight: 500;
 }
 
-/*Section 2*/
-.landingPage-section2{
-    background-color: white;
+.lp-login-btn {
+    color: #333;
 }
-.landingPage-section2 h3{
-    font-family: Epilogue;
-    text-align: center;
-    font-size: 24px;
-    padding: 20px;
-}
-.landingPage-card-container{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 1200px;
-    gap: 10px;
-}
-.landingPage-card{
-    background-color: white;
-    border-radius: 20px;
-    border-color: rgb(184, 182, 182);
-    box-shadow: 0 0 10px 5px rgba(73, 43, 133, 0.15);
-    padding: 20px;
-    width: 250px;
-    text-align: center;
-    margin-left: 40px;
-    margin-bottom: 20px;
-    transition: transform 0.3s ease;
-}
-.landingPage-card:hover{
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba( 0,0,0,0.2);
+
+.lp-signup-btn {
     background-color: #f0f0f0;
-    cursor: default;
-}
-@media (max-width: 768px) {
-    .landingPage-card-container {
-        align-items: center;
-    }
-    .landingPage-card{
-        width:100px;
-    }
-}
-.landingPage-card img{
-    width: 100%;
-    border-radius:  8px 8px 0 0;
-    margin-top: 2px;
-}
-.landingPage-card p{
-    color: black;
-    font-family: Inter;
+    color: #333;
+    border: 1px solid #ccc;
 }
 
-/*Engagement section*/
-.landingPage-engagement-section{
-    margin-top: 40px;
+/* General Section Styles */
+.lp-section {
+    padding: 80px 5%;
     text-align: center;
 }
-.landingPage-engagement-section h2{
-    font-family: Epilogue;
-    font-size: 28px;
-    margin-bottom: 40px;
+
+.lp-section-title h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #000;
 }
-.landingPage-services{
+
+.lp-section-title p {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+/* Hero Section */
+.lp-hero {
+    background-color: #fff;
+}
+
+.lp-hero h1 {
+    font-size: 3rem;
+    color: #000;
+}
+
+.lp-hero p {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 15px 0 30px 0;
+}
+
+.lp-shop-now-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Features Section */
+.lp-features-bg {
+    background-color: #f9f9f9;
+}
+
+.lp-features-grid {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 20px; 
+    gap: 30px;
 }
-.landingPage-service{
-    background-color: #9ec0f8;
-    border: 1px solid #ddd;
+
+.lp-feature-item {
+    background-color: #e9e9e9;
+    padding: 60px 80px;
     border-radius: 8px;
-    padding: 20px;
-    width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
-.landingPage-service h3{
-    font-family: Epilogue;
-    font-size: 20px;
+
+/* New Products Section */
+.lp-new-products-bg {
+    background-color: #f0f0f0;
+}
+
+.lp-products-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.lp-product-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    width: 300px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.lp-product-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #e0f2fe;
+    color: #0c546e;
+    padding: 5px 8px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.lp-product-image-placeholder {
+    width: 100%;
+    height: 180px;
+    background-color: #e9e9e9;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.lp-product-card h3 {
+    font-size: 1.4rem;
+    color: #000;
+}
+
+.lp-product-card p {
+    color: #666;
+    margin: 10px 0 20px 0;
+}
+
+.lp-buy-now-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Split Content Section */
+.lp-split-section {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 50px;
+}
+
+.lp-split-left {
+    flex-basis: 50%;
+}
+
+.lp-split-left h2 {
+    font-size: 2.5rem;
+}
+
+.lp-split-right {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lp-small-card {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.lp-small-card-img {
+    width: 80px;
+    height: 80px;
+    background-color: #e9e9e9;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.lp-small-card-text {
+    margin-left: 20px;
+}
+
+.lp-small-card-text h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.5rem;
+}
+
+/* Footer Styles */
+.lp-footer {
+    background-color: #333;
+    color: #fff;
+    padding: 60px 5%;
+}
+
+.lp-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.lp-footer-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.lp-footer-col h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+}
+
+.lp-footer-col a,
+.lp-footer-col p {
+    color: #ccc;
+    text-decoration: none;
     margin-bottom: 10px;
 }
-.landingPage-service p {
-    font-family: Inter;
-    font-size: 16px;
-}
- .landingPage-service:hover {
-    cursor: default;
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
- @media (max-width: 768px) {
-    .landingPage-services {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .landingPage-service {
-      width: 100%;
-    }
-}
-/* Get Started */
-.landingPage-get-started{
-    text-align: center;
-    height: 200px;
-    background-color: #f7f8f6c7;
-  }
-.landingPage-get-started h3{
-    font-family: Epilogue;
-    padding: 30px;
-}
-.landingPage-buttons{
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    
-}
-.landingPage-buy-btn, .landingPage-sell-btn{
-    font-family: Inter;
-    width: 200px;
-    height: 7vh;
-    border-radius: 14px;
-    background-color: rgb(80, 80, 191);
-    color: white;
-    font-weight: 400;
-    margin-bottom: 30px;
-    border: none;
-}
-.landingPage-buy-btn:hover, .landingPage-sell-btn:hover{
-    background-color: rgb(93, 93, 154);
-    color: black;
+
+.lp-footer-col a:hover {
+    color: #fff;
 }
 
-/* Footer */
-.landingPage-footer{
-    font-family: Inter;
-    text-align: center;
-    background-color: rgb(103, 103, 103);
-    color: white;
-    height: 50px;
-    padding: 2px;
+.lp-social-icons {
+    margin-top: 10px;
+}
+
+.lp-social-icons a {
+    margin-right: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.lp-newsletter-form {
+    display: flex;
+    margin-top: -10px; /* Aligns with "Insert email" text */
+}
+
+.lp-newsletter-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #555;
+    background-color: #444;
+    border-radius: 4px 0 0 4px;
+    color: #fff;
+}
+
+.lp-newsletter-form button {
+    padding: 10px 15px;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+    white-space: nowrap;
 }
