@@ -33,6 +33,10 @@ const Login = () => {
                     setTimeout(() => {
                         navigate('/Dashboard');
                     }, 1500);
+                } else if (userRole === 'admin') {
+                    setTimeout(() => {
+                        navigate('/Dashboard');
+                    }, 1500);
                 } else {
                     navigate('/');
                 }

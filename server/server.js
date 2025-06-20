@@ -1,5 +1,5 @@
 require('dotenv').config({ path:__dirname + '/.env'});
-console.log("ACCESS_TOKEN_SECRET: ", process.env.ACCESS_TOKEN_SECRET);
+//console.log("ACCESS_TOKEN_SECRET: ", process.env.ACCESS_TOKEN_SECRET);
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "Stevey-boy12$",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -47,6 +47,15 @@ function authenticateToken(req, res, next){
         next();
     });
 };
+
+
+
+// const adminPassword = 'Admin12#';
+// const saltRounds = 10;
+// bcrypt.hash(adminPassword, saltRounds, (err, hash) => {
+//     if(err) throw err;
+//     console.log("Hashed password:", hash);
+// });
 
 // Login API
 app.post("/api/login", (req, res) => {
