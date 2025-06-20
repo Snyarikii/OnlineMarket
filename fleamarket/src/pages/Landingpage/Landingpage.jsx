@@ -1,141 +1,178 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './LandingPage.css'; // Corrected import for standard CSS
-import logo from '../../assets/logo2.png'; // 1. IMPORT YOUR LOGO HERE
+import './LandingPage.css';
+
+// Import assets
+import logo from '../../assets/logo2.png';
+import fashionIcon from '../../assets/fashion.png';
+import electronicsIcon from '../../assets/electronics.png';
+import booksIcon from '../../assets/books.png';
+import beautyIcon from '../../assets/beauty.png';
+
+// --- Data for mapped components ---
+const CATEGORIES = [
+  {
+    icon: fashionIcon,
+    title: 'Fashion',
+    description: 'Express your style with trendy outfits, shoes, and accessories for every occasion.',
+  },
+  {
+    icon: electronicsIcon,
+    title: 'Electronics',
+    description: 'Upgrade your tech game with the latest gadgets and accessories.',
+  },
+  {
+    icon: booksIcon,
+    title: 'Books and Stationary',
+    description: 'Stay ahead in your studies with essential reads and study tools.',
+  },
+  {
+    icon: beautyIcon,
+    title: 'Health & Beauty',
+    description: 'Glow up with skincare, wellness products, and beauty essentials.',
+  },
+];
+
+// --- Sub-components for better organization ---
+
+// A reusable card for the "Shop for best products" section
+const CategoryCard = ({ icon, title, description }) => (
+  <div className="category-card">
+    <img src={icon} alt={title} className="category-card-icon" />
+    <h3 className="category-card-title">{title}</h3>
+    <p className="category-card-description">{description}</p>
+  </div>
+);
+
+// A reusable card for the "User Engagement" section
+const EngagementCard = ({ title, children }) => (
+    <div className="engagement-card">
+        <h3>{title}</h3>
+        <p>{children}</p>
+    </div>
+);
+
+
+// --- Main Page Component ---
 
 const LandingPage = () => {
-    return (
-        <div className="lp-container">
-            {/* Header */}
-            <header className="lp-header">
-                <div className="lp-logo">
-                     <Link to="/">
-                        <img src={logo} alt="Flea Market Logo" className="lp-logo-img" />
-                    </Link>
-                </div>
-                <nav className="lp-nav-center">
-                    <Link to="#">[Account]</Link>
-                    <Link to="#">[Orders]</Link>
-                    <Link to="#">[Cart]</Link>
-                </nav>
-                <div className="lp-nav-right">
-                    <Link to="/Login" className="lp-nav-btn lp-login-btn">Log In</Link>
-                    <Link to="/SignUp" className="lp-nav-btn lp-signup-btn">Sign Up</Link>
-                </div>
-            </header>
-
-            <main>
-                {/* Hero Section */}
-                <section className="lp-section lp-hero">
-                    <h1>Flea Market</h1>
-                    <p>Where you trade smarter</p>
-                    <button className="lp-shop-now-btn">Shop now</button>
-                </section>
-
-                {/* Features Section */}
-                <section className="lp-section lp-features-bg">
-                    <div className="lp-features-grid">
-                        <div className="lp-feature-item">Fashion</div>
-                        <div className="lp-feature-item">Electronics</div>
-                        <div className="lp-feature-item">Books and stationery</div>
-                    </div>
-                </section>
-
-                {/* New Products Section */}
-                <section className="lp-section lp-new-products-bg">
-                    <div className="lp-section-title">
-                        <h2>[text]</h2>
-                        <p>[text]</p>
-                    </div>
-                    <div className="lp-products-grid">
-                        {/* Product Card 1 */}
-                        <div className="lp-product-card">
-                            <div className="lp-product-badge">NEW PRODUCT</div>
-                            <div className="lp-product-image-placeholder"></div>
-                            <h3>[text]</h3>
-                            <p>[text]</p>
-                            <button className="lp-buy-now-btn">Buy now</button>
-                        </div>
-                        {/* Product Card 2 */}
-                        <div className="lp-product-card">
-                            <div className="lp-product-badge">NEW PRODUCT</div>
-                            <div className="lp-product-image-placeholder"></div>
-                            <h3>[text]</h3>
-                            <p>[text]</p>
-                            <button className="lp-buy-now-btn">Buy now</button>
-                        </div>
-                        {/* Product Card 3 */}
-                        <div className="lp-product-card">
-                            <div className="lp-product-badge">NEW PRODUCT</div>
-                            <div className="lp-product-image-placeholder"></div>
-                            <h3>[text]</h3>
-                            <p>[text]</p>
-                            <button className="lp-buy-now-btn">Buy now</button>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Split Content Section */}
-                <section className="lp-section lp-split-section">
-                    <div className="lp-split-left">
-                        <h2>[text]</h2>
-                        <p>[text]</p>
-                    </div>
-                    <div className="lp-split-right">
-                        <div className="lp-small-card">
-                            <div className="lp-small-card-img"></div>
-                            <div className="lp-small-card-text">
-                                <h4>$9</h4>
-                                <p>[text]</p>
-                            </div>
-                        </div>
-                        <div className="lp-small-card">
-                            <div className="lp-small-card-img"></div>
-                            <div className="lp-small-card-text">
-                                <h4>$9</h4>
-                                <p>[text]</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            {/* Footer */}
-            <footer className="lp-footer">
-                <div className="lp-footer-grid">
-                    <div className="lp-footer-col">
-                        <div className="lp-logo">[Logo]</div>
-                        <p>Let's stay in touch! Sign up to our newsletter for exclusive updates.</p>
-                        <div className="lp-social-icons">
-                            {/* In a real app, these would be icons */}
-                            <Link to="#">F</Link>
-                            <Link to="#">I</Link>
-                        </div>
-                    </div>
-                    <div className="lp-footer-col">
-                        <p>Insert your email address here</p>
-                        <div className="lp-newsletter-form">
-                            <input type="email" placeholder="Email address" />
-                            <button>Subscribe now</button>
-                        </div>
-                    </div>
-                    <div className="lp-footer-col">
-                        <h4>Help</h4>
-                        <Link to="#">FAQ</Link>
-                        <Link to="#">Customer service</Link>
-                        <Link to="#">How to guides</Link>
-                        <Link to="#">Contact us</Link>
-                    </div>
-                    <div className="lp-footer-col">
-                        <h4>Other</h4>
-                        <Link to="#">Privacy Policy</Link>
-                        <Link to="#">Terms of Service</Link>
-                        <Link to="#">Subscriptions</Link>
-                    </div>
-                </div>
-            </footer>
+  return (
+    <div className="landing-page">
+      <header className="header">
+        <Link to="/" className="header-logo-link">
+          <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+        </Link>
+        <nav className="header-nav">
+          <Link to="#">Account</Link>
+          <Link to="#">Orders</Link>
+          <Link to="#">Cart</Link>
+        </nav>
+        <div className="header-actions">
+          <Link to="/Login" className="btn btn-login">Log In</Link>
+          <Link to="/SignUp" className="btn btn-signup">Sign Up</Link>
         </div>
-    );
+      </header>
+
+      <main>
+        <section className="section hero-section">
+          <h1 className="hero-title">Flea Market</h1>
+          <p className="hero-subtitle">Where you trade smarter</p>
+          <button className="btn btn-primary">Shop now</button>
+        </section>
+
+        <section className="section engagement-section">
+          <div className="section-title">
+            <h2>User Engagement</h2>
+          </div>
+          <div className="engagement-grid">
+            <EngagementCard title="Rate Products">
+                Give a star rating to the products and help others discover the best products!
+            </EngagementCard>
+            <EngagementCard title="Add to Cart">
+                Found something you love? Add it to your cart and check out when you're ready!
+            </EngagementCard>
+            <EngagementCard title="Add To Favorites">
+                Keep track of your must-have items with a personalized favorites list.
+            </EngagementCard>
+          </div>
+          <div className="cta-container">
+            <h3>Buy or Sell Products</h3>
+            <div className="cta-buttons">
+              <Link to="/Login" className="btn btn-secondary">Buy Products</Link>
+              <Link to="/Login" className="btn btn-secondary">Sell Your Products</Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section categories-section">
+          <div className="section-title">
+            <h2>Shop for the best products.</h2>
+          </div>
+          <div className="categories-grid">
+            {CATEGORIES.map((category) => (
+              <CategoryCard
+                key={category.title}
+                icon={category.icon}
+                title={category.title}
+                description={category.description}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="section offers-section">
+            <div className="offers-content">
+                <h2>Offers</h2>
+                <p>Check out our latest deals and discounts!</p>
+            </div>
+            <div className="offers-cards">
+                <div className="offer-card">
+                    <div className="offer-card-img-placeholder"></div>
+                    <div className="offer-card-text">
+                        <h4>$9</h4>
+                        <p>Special Item</p>
+                    </div>
+                </div>
+                <div className="offer-card">
+                    <div className="offer-card-img-placeholder"></div>
+                    <div className="offer-card-text">
+                        <h4>$9</h4>
+                        <p>Another Deal</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="footer-grid">
+          <div className="footer-column">
+            <img src={logo} alt="Flea Market Logo" className="footer-logo-img" />
+            <p>Let's stay in touch! Sign up to our newsletter for exclusive updates.</p>
+          </div>
+          <div className="footer-column">
+            <p>Insert your email address here</p>
+            <form className="newsletter-form">
+              <input type="email" placeholder="Email address" />
+              <button type="submit">Subscribe</button>
+            </form>
+          </div>
+          <div className="footer-column">
+            <h4>Help</h4>
+            <Link to="#">FAQ</Link>
+            <Link to="#">Customer Service</Link>
+            <Link to="#">Contact Us</Link>
+          </div>
+          <div className="footer-column">
+            <h4>Other</h4>
+            <Link to="#">Privacy Policy</Link>
+            <Link to="#">Terms of Service</Link>
+            <Link to="#">Subscriptions</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 };
 
 export default LandingPage;

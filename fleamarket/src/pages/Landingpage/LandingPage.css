@@ -1,299 +1,356 @@
-/* General Body & Font Styles */
-.lp-container {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    background-color: #fff;
+/*
+ * Landing Page Stylesheet
+ * -----------------------
+ * 1. Global & Root Variables
+ * 2. General Layout & Typography
+ * 3. Buttons
+ * 4. Header
+ * 5. Hero Section
+ * 6. Engagement Section
+ * 7. Categories Section
+ * 8. Offers Section
+ * 9. Footer
+ * 10. Responsive Media Queries
+*/
+
+/* 1. Global & Root Variables */
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #4F46E5;
+  --color-dark: #1F2937;
+  --color-light: #ffffff;
+  --color-text: #333;
+  --color-text-subtle: #555;
+  --color-background-light: #F9FAFB;
+  --color-background-dark: #333;
+  --color-engagement-bg: #BFDBFE;
+  --color-engagement-text: #1E3A8A;
+  --shadow-card: 0 8px 30px rgba(124, 124, 184, 0.15);
+  --shadow-card-hover: 0 12px 40px rgba(124, 124, 184, 0.25);
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
 }
 
-/* Header Styles */
-.lp-header {
+/* 2. General Layout & Typography */
+.landing-page {
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background-color: var(--color-light);
+}
+
+.section {
+  padding: 60px 5%;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+/* 3. Buttons */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-light);
+}
+
+.btn-secondary:hover {
+  background-color: #4338CA;
+}
+
+.btn-login {
+  color: var(--color-light);
+}
+
+.btn-signup {
+  background-color: var(--color-light);
+  color: var(--color-primary);
+}
+
+/* 4. Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5%;
+  background-color: var(--color-primary);
+  height: 80px;
+}
+
+.header-logo-img {
+  height: 60px;
+  display: block;
+}
+
+.header-nav a {
+  margin: 0 20px;
+  text-decoration: none;
+  color: var(--color-light);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* 5. Hero Section */
+.hero-section {
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  color: var(--color-dark);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text-subtle);
+  margin: 15px 0 30px 0;
+}
+
+/* 6. Engagement Section */
+.engagement-section {
+  background-color: var(--color-background-light);
+  text-align: center;
+}
+
+.engagement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.engagement-card {
+  background-color: var(--color-engagement-bg);
+  border-radius: var(--border-radius-md);
+  padding: 2rem;
+  color: var(--color-engagement-text);
+}
+
+.engagement-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.cta-container {
+  margin-top: 4rem;
+}
+
+.cta-container h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 1.5rem;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* 7. Categories Section */
+.categories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.category-card {
+  background-color: var(--color-light);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  text-align: center;
+  width: 300px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.category-card-icon {
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+.category-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 0.75rem;
+}
+
+.category-card-description {
+  font-size: 1rem;
+  color: var(--color-text-subtle);
+  line-height: 1.5;
+}
+
+/* 8. Offers Section */
+.offers-section {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 5%;
-    background-color: #2563eb;
-    border-bottom: 1px solid #e0e0e0;
-    height: 70px;
-}
-
-.lp-logo a {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #000;
-    text-decoration: none;
-}
-.lp-logo-img {
-    height: 80px; /* Adjust the height as needed */
-    width: auto;  /* Maintains the aspect ratio */
-    display: block; /* Removes any extra space below the image */
-}
-.lp-nav-center a {
-    margin: 0 20px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-}
-
-.lp-nav-right {
-    display: flex;
-    align-items: center;
-}
-
-.lp-nav-btn {
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    margin-left: 10px;
-    font-weight: 500;
-}
-
-.lp-login-btn {
-    color: #333;
-}
-
-.lp-signup-btn {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
-}
-
-/* General Section Styles */
-.lp-section {
-    padding: 80px 5%;
-    text-align: center;
-}
-
-.lp-section-title h2 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    color: #000;
-}
-
-.lp-section-title p {
-    font-size: 1.1rem;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto 40px auto;
-}
-
-/* Hero Section */
-.lp-hero {
-    background-color: #fff;
-}
-
-.lp-hero h1 {
-    font-size: 3rem;
-    color: #000;
-}
-
-.lp-hero p {
-    font-size: 1.2rem;
-    color: #555;
-    margin: 15px 0 30px 0;
-}
-
-.lp-shop-now-btn {
-    padding: 12px 24px;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-/* Features Section */
-.lp-features-bg {
-    background-color: #f9f9f9;
-}
-
-.lp-features-grid {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-}
-
-.lp-feature-item {
-    background-color: #e9e9e9;
-    padding: 60px 80px;
-    border-radius: 8px;
-}
-
-/* New Products Section */
-.lp-new-products-bg {
-    background-color: #f0f0f0;
-}
-
-.lp-products-grid {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.lp-product-card {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    width: 300px;
-    padding: 20px;
-    position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.lp-product-badge {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background-color: #e0f2fe;
-    color: #0c546e;
-    padding: 5px 8px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.lp-product-image-placeholder {
-    width: 100%;
-    height: 180px;
-    background-color: #e9e9e9;
-    border-radius: 4px;
-    margin: 20px 0;
-}
-
-.lp-product-card h3 {
-    font-size: 1.4rem;
-    color: #000;
-}
-
-.lp-product-card p {
-    color: #666;
-    margin: 10px 0 20px 0;
-}
-
-.lp-buy-now-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #444;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-/* Split Content Section */
-.lp-split-section {
-    display: flex;
-    align-items: center;
-    text-align: left;
     gap: 50px;
 }
-
-.lp-split-left {
+.offers-content {
     flex-basis: 50%;
 }
-
-.lp-split-left h2 {
-    font-size: 2.5rem;
-}
-
-.lp-split-right {
+.offers-cards {
     flex-basis: 50%;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
-
-.lp-small-card {
+.offer-card {
     display: flex;
     align-items: center;
-    background-color: #f9f9f9;
+    background-color: var(--color-background-light);
     padding: 15px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-sm);
 }
-
-.lp-small-card-img {
+.offer-card-img-placeholder {
     width: 80px;
     height: 80px;
     background-color: #e9e9e9;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     flex-shrink: 0;
 }
-
-.lp-small-card-text {
+.offer-card-text {
     margin-left: 20px;
 }
-
-.lp-small-card-text h4 {
+.offer-card-text h4 {
     margin: 0 0 5px 0;
     font-size: 1.5rem;
 }
 
-/* Footer Styles */
-.lp-footer {
-    background-color: #333;
-    color: #fff;
-    padding: 60px 5%;
+/* 9. Footer */
+.footer {
+  background-color: var(--color-background-dark);
+  color: #ccc;
+  padding: 60px 5%;
 }
 
-.lp-footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
 }
 
-.lp-footer-col {
-    display: flex;
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo-img {
+    height: 50px;
+    width: auto;
+    margin-bottom: 1rem;
+    filter: brightness(0) invert(1); /* Makes the logo white */
+}
+
+.footer-column h4 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: var(--color-light);
+}
+
+.footer-column a,
+.footer-column p {
+  color: #ccc;
+  text-decoration: none;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.footer-column a:hover {
+  color: var(--color-light);
+}
+
+.newsletter-form {
+  display: flex;
+}
+
+.newsletter-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #555;
+  background-color: #444;
+  border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+  color: var(--color-light);
+}
+
+.newsletter-form button {
+  padding: 10px 15px;
+  background-color: #555;
+  color: var(--color-light);
+  border: none;
+  cursor: pointer;
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+/* 10. Responsive Media Queries */
+@media (max-width: 768px) {
+  .engagement-grid {
+    grid-template-columns: 1fr; /* Stack cards on mobile */
+  }
+
+  .header {
     flex-direction: column;
-}
+    height: auto;
+    padding: 20px;
+    gap: 20px;
+  }
 
-.lp-footer-col h4 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: #f0f0f0;
-}
+  .header-nav {
+    order: 3;
+  }
 
-.lp-footer-col a,
-.lp-footer-col p {
-    color: #ccc;
-    text-decoration: none;
-    margin-bottom: 10px;
-}
+  .header-actions {
+    order: 2;
+  }
 
-.lp-footer-col a:hover {
-    color: #fff;
-}
-
-.lp-social-icons {
-    margin-top: 10px;
-}
-
-.lp-social-icons a {
-    margin-right: 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.lp-newsletter-form {
-    display: flex;
-    margin-top: -10px; /* Aligns with "Insert email" text */
-}
-
-.lp-newsletter-form input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #555;
-    background-color: #444;
-    border-radius: 4px 0 0 4px;
-    color: #fff;
-}
-
-.lp-newsletter-form button {
-    padding: 10px 15px;
-    background-color: #555;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 0 4px 4px 0;
-    white-space: nowrap;
+  .offers-section {
+      flex-direction: column;
+      text-align: center;
+  }
 }
