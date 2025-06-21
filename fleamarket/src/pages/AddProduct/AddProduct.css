@@ -1,0 +1,131 @@
+.add-product-page {
+  background-color: #F9FAFB;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  height: 80px;
+}
+
+.page-header h1 {
+  color: #2563eb;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.page-header nav a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.page-header nav a:hover {
+  background-color: #EFF6FF;
+}
+
+.page-main {
+  padding: 40px 5%;
+  margin-top: 15vh; /* <-- ADD THIS LINE */
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 2rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-title {
+  text-align: center;
+  color: #1F2937;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #1F2937;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-message {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    font-weight: 500;
+}
+.form-message.error {
+    background-color: #FEE2E2;
+    color: #DC2626;
+}
+.form-message.success {
+    background-color: #D1FAE5;
+    color: #059669;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 15px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #1D4ED8;
+}
+
+.btn-submit:disabled {
+    background-color: #93C5FD;
+    cursor: not-allowed;
+}
