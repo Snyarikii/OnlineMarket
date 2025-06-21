@@ -11,6 +11,7 @@ import AdminLayout from './components/AdminLayout/AdminLayout';
 import ManageCategories from './pages/Admin/ManageCategories';
 import ManageUsers from './pages/Admin/ManageUsers';
 import AddProduct from './pages/AddProduct/AddProduct';
+import ManageProducts from './pages/Admin/ManageProducts';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path='/Admin' element={<AdminLayout />}>
           <Route path='ManageCategories' element={<ManageCategories />} />
           <Route path='ManageUsers' element={<ManageUsers />} />
+          <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
       </Routes>
     </BrowserRouter>

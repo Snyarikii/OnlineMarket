@@ -25,7 +25,7 @@ const PORT = 3001;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -279,4 +279,39 @@ app.put('/api/admin/users/:id/role', (req, res) => {
         if (err) return res.status(500).json({ error: err});
         res.json({ message: 'User role updated successfully'});
     });
+});
+
+//Get all products
+app.get('/api/admin/products', authenticateToken, async (req, res) => {
+    try {
+        const [rows] = await con.promise().query('SELECT * FROM products');
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching products"});
+    }
+});
+
+//Admin approve product
+app.put('/api/admin/products/:productId/approve', authenticateToken, async (req, res) => {
+    const { productId } = req.params;
+    try {
+        await con.promise().query('UPDATE products SET status = ? WHERE id = ?', ['approved', productId]);
+        res.json({ message: "Product approved successfully"});
+    } catch (error) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to approve product"});
+    }
+});
+
+//Admin reject product
+app.put('/api/admin/products/:productId/reject', authenticateToken, async (req, res) => {
+    const { productId } = req.params;
+    try {
+        await con.promise().query('UPDATE products SET status = ? WHERE id = ?', ['rejected', productId]);
+        res.json({ message: "Product rejected successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to reject product"});
+    }
 });
