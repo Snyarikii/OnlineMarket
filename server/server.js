@@ -6,12 +6,26 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'uploads/'));
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+})
+
+const upload = multer({ storage: storage});
 
 const app = express()
 const PORT = 3001;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads'));
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -157,13 +171,33 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
-//Seller Add product endpoint
+//Seller get categories endpoint
 app.get('/api/categories', authenticateToken, async (req, res) => {
     try {
         const [categories] = await con.promise().query('SELECT id, name FROM categories');
         res.json(categories);
     } catch (err) {
         res.status(500).json({ message: 'Error fetching categories'});
+    }
+});
+//Seller Add product endpoint
+app.post('/api/products', authenticateToken, upload.single('productImage'), async (req, res) => {
+  try {
+        const sellerId = req.user.id; // from your authentication middleware
+        const { title, description, price, category_id, condition } = req.body;
+        const imageUrl = req.file ? req.file.filename : null;
+        const status = 'pending'; // New listings start as pending approval
+
+        const [result] = await con.promise().query(
+            `INSERT INTO products (seller_id, category_id, title, description, price, product_condition, status, image_url)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [sellerId, category_id, title, description, price, condition, status, imageUrl]
+        );
+
+        res.status(201).json({ message: 'Product created successfully.', productId: result.insertId });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error creating product.' });
     }
 });
 
