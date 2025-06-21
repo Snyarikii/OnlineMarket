@@ -76,7 +76,7 @@ const AdminLayout = () => {
                     <ul>
                         <li><Link to="ManageCategories">Manage Categories</Link></li>
                         <li><Link to="/admin/products">Manage Products</Link></li>
-                        <li><Link to="/admin/users">Manage Users</Link></li>
+                        <li><Link to="ManageUsers">Manage Users</Link></li>
                         <li><a onClick={LogOut}>Log Out</a></li>
                     </ul>
                 </nav>

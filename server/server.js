@@ -201,3 +201,38 @@ app.put('/api/admin/categories/:id', authenticateToken, (req, res) => {
         res.json({ success: true, message: 'Category updated successfully'});
     });
 });
+
+//Get all users
+app.get('/api/admin/users', (req, res) => {
+    const sql = 'SELECT id, name, email, role FROM users';
+    con.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err});
+        res.json(results);
+    });
+});
+
+//Delete user by ID
+app.delete('/api/admin/users/:id', (req, res) => {
+    const userId = req.params.id;
+    const sql = "DELETE FROM users WHERE id = ?";
+    con.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err});
+        res.json({ message: "User deleted successfully."});
+    });
+});
+
+//Update user role
+app.put('/api/admin/users/:id/role', (req, res) => {
+    const userId = req.params.id;
+    const { role } = req.body;
+
+    if(!['buyer', 'seller', 'admin'].includes(role)) {
+        return res.status(400).json({ error: "Invalid role."});
+    }
+
+    const sql = "UPDATE users SET role = ? WHERE id = ?";
+    con.query(sql, [role, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err});
+        res.json({ message: 'User role updated successfully'});
+    });
+});

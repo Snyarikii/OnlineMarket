@@ -9,6 +9,7 @@ import Index from './pages/Index/Index';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AdminLayout from './components/AdminLayout/AdminLayout';
 import ManageCategories from './pages/Admin/ManageCategories';
+import ManageUsers from './pages/Admin/ManageUsers';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
 
         <Route path='/Admin' element={<AdminLayout />}>
           <Route path='ManageCategories' element={<ManageCategories />} />
+          <Route path='ManageUsers' element={<ManageUsers />} />
         </Route>
       </Routes>
     </BrowserRouter>
