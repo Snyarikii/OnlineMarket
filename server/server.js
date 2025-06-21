@@ -59,7 +59,6 @@ function authenticateToken(req, res, next){
 
 // Login API
 app.post("/api/login", (req, res) => {
-    console.log("Login API hit");
     const {email, password } = req.body;
 
     const query = "SELECT * FROM users WHERE email = ?";
@@ -156,4 +155,49 @@ app.post('/Index', authenticateToken, (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+});
+
+// Admin APIs
+// Get all categories
+app.get('/api/admin/categories', authenticateToken, (req, res) => {
+    if(req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+
+    con.query("SELECT * FROM categories", (err, results) => {
+        if(err) return res.status(500).json({ error: 'Database error'});
+        res.json(results);
+    });
+});
+
+// Add new category
+app.post('/api/admin/categories', authenticateToken, (req, res) => {
+    if(req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden'});
+
+    const { name } = req.body;
+    con.query("INSERT INTO categories (name) VALUES (?)", [name], (err, results) => {
+        if(err) return res.status(500).json({ error: 'Database error'});
+        res.json({ success : true, message: 'Category added successfully'});
+    });
+});
+
+// Delete category
+app.delete('/api/admin/categories/:id', authenticateToken, (req, res) => {
+    if(req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden'});
+
+    con.query("DELETE FROM categories WHERE id = ?", [req.params.id], (err, result) => {
+        if(err) return res.status(500).json({ error: 'Database error'});
+        res.json({ success: true, message: 'Category deleted successfully'});
+    });
+});
+
+//Update category name by ID
+app.put('/api/admin/categories/:id', authenticateToken, (req, res) => {
+    if(req.user.role !=='admin') return res.status(403).json({ error: "Forbidden"});
+
+    const { name } = req.body;
+    const { id } = req.params;
+
+    con.query("UPDATE categories SET name = ? WHERE id = ?", [name, id], (err, result) => {
+        if(err) return res.status(500).json({ error: 'Database error'});
+        res.json({ success: true, message: 'Category updated successfully'});
+    });
 });

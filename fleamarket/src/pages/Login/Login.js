@@ -35,7 +35,7 @@ const Login = () => {
                     }, 1500);
                 } else if (userRole === 'admin') {
                     setTimeout(() => {
-                        navigate('/Dashboard');
+                        navigate('/Admin');
                     }, 1500);
                 } else {
                     navigate('/');

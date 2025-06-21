@@ -7,6 +7,8 @@ import ResetPassword from './pages/ResetPassword/ResetPassword';
 import SignUp from './pages/SignUp/SignUp';
 import Index from './pages/Index/Index';
 import Dashboard from './pages/Dashboard/Dashboard';
+import AdminLayout from './components/AdminLayout/AdminLayout';
+import ManageCategories from './pages/Admin/ManageCategories';
 
 
 function App() {
@@ -19,6 +21,10 @@ function App() {
         <Route path='/SignUp' element={<SignUp />} />
         <Route path='/Index' element={<Index />} />
         <Route path='/Dashboard' element={<Dashboard />} />
+
+        <Route path='/Admin' element={<AdminLayout />}>
+          <Route path='ManageCategories' element={<ManageCategories />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
