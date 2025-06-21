@@ -157,6 +157,16 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
+//Seller Add product endpoint
+app.get('/api/categories', authenticateToken, async (req, res) => {
+    try {
+        const [categories] = await con.promise().query('SELECT id, name FROM categories');
+        res.json(categories);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching categories'});
+    }
+});
+
 // Admin APIs
 // Get all categories
 app.get('/api/admin/categories', authenticateToken, (req, res) => {
