@@ -201,6 +201,19 @@ app.post('/api/products', authenticateToken, upload.single('productImage'), asyn
     }
 });
 
+//Buyer view product endpoint
+app.get('/api/products/approved', async (req, res) => {
+    try {
+        const [rows] = await con.promise().query(
+            "SELECT id, title, price, product_condition, image_url FROM products WHERE status = 'approved'"
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error("Error fetching approved products:",error );
+        res.status(500).json({ error: "Failed to fetch products"});
+    }
+});
+
 // Admin APIs
 // Get all categories
 app.get('/api/admin/categories', authenticateToken, (req, res) => {

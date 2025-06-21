@@ -32,7 +32,7 @@ const ManageProducts = () => {
 
     const approveProduct = async (productId) => {
         try {
-            const token = localStorage.get('token');
+            const token = localStorage.getItem('token');
             await axios.put(`http://localhost:3001/api/admin/products/${productId}/approve`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
