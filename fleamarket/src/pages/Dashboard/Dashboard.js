@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Dashboard.css';
+import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -72,6 +72,7 @@ const Dashboard = () => {
                 <h1 className="dashboard-h1">Flea Market</h1>
                 <nav className="dashboard-nav">
                     <Link to='/LandingPage' className="dashboard-logout-link" onClick={LogOut}>Logout</Link>
+                    <Link to='/add-product' className="dashboard-addProduct-link"onClick={navigate('/add-product')}>Add product</Link>
                 </nav>
             </header>
             <div className="dashboard-section">

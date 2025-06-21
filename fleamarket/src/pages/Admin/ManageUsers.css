@@ -4,8 +4,34 @@
 
 h2 {
   margin-bottom: 1.5rem;
+  text-align: center;
 }
-
+.User-search {
+  display: flex;
+  align-items: center;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 600px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  padding: 8px  15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
+.search-icon {
+  font-size: 20px;
+  color: #777;
+  margin-right: 8px;
+}
+.user-search-input{
+  padding: 15px;
+  border: none;
+  flex: 1;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+}
 .message {
   color: green;
   margin-bottom: 1rem;

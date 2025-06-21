@@ -22,8 +22,7 @@ function App() {
         <Route path='/SignUp' element={<SignUp />} />
         <Route path='/Index' element={<Index />} />
         <Route path='/Dashboard' element={<Dashboard />} />
-        // This is the corrected, lowercase path
-<Route path="/add-product" element={<AddProduct />} />
+        <Route path="/add-product" element={<AddProduct />} />
         <Route path='/Admin' element={<AdminLayout />}>
           <Route path='ManageCategories' element={<ManageCategories />} />
           <Route path='ManageUsers' element={<ManageUsers />} />

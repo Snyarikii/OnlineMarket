@@ -149,7 +149,7 @@ app.get('/posts', authenticateToken, (req, res) =>{
     const userPosts = posts.filter(post => post.email === req.user.email);
     res.json(userPosts);
 });
-app.post('/Index', authenticateToken, (req, res) => {
+app.get('/Index', authenticateToken, (req, res) => {
     res.json({ message: 'Welcome to the homepage!', user: req.user});
 });
 

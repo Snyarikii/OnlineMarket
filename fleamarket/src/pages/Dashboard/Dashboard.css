@@ -20,7 +20,7 @@
     justify-content: space-around;
     margin-right: 30px;
 }
-.dashboard-logout-link{
+.dashboard-logout-link, .dashboard-addProduct-link{
     font-family: Inter;
     color: white;
     text-decoration: none;
@@ -29,7 +29,7 @@
     border-radius: 4px;
     transition: background-color 0.3s;
 }
-.dashboard-logout-link:hover{
+.dashboard-logout-link:hover, .dashboard-addProduct-link:hover{
     background-color: rgb(159, 159, 255);
     color: black;
 }
