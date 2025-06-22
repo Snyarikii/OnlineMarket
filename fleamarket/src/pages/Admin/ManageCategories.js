@@ -38,7 +38,7 @@ const ManageCategories = () => {
     };
 
     const deleteCategory = (id) => {
-        if(window.confirm('Are you sure you want to delet this category?')){
+        if(window.confirm('Are you sure you want to delete this category?')){
             axios.delete(`http://localhost:3001/api/admin/categories/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
