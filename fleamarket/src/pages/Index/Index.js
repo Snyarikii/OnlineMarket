@@ -28,7 +28,14 @@ const Index = ({ setUser, setLoggingOut }) => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');    
+    const [error, setError] = useState('');
+    const [categories, setCategories] = useState([]);
+
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    
 
     // This hook runs once when the component loads
     useEffect(() => {
@@ -53,8 +60,44 @@ const Index = ({ setUser, setLoggingOut }) => {
             }
         };
 
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/categories', {
+                    headers: {
+                        'Authorization' : `Bearer ${token}`
+                    }
+                });
+                setCategories(response.data);
+            } catch (err) {
+                console.error('Error fetching categories', err);
+            }
+        };
         fetchApprovedProducts();
-    }, [navigate]);
+        fetchCategories();
+    }, [navigate], []);
+
+    useEffect(() => {
+        filterProducts();
+    }, [searchQuery, products, selectedCategory]);
+
+
+    const filterProducts = () => {
+        let filtered = [...products];
+        console.log('Products:', products);
+
+        if (searchQuery.trim() !== '') {
+            filtered = filtered.filter(product => 
+                product.title.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+        
+        if(selectedCategory.trim() !== '') {
+            filtered = filtered.filter(product => 
+                product.category_id === Number(selectedCategory)
+            );
+        }
+        setFilteredProducts(filtered);
+    };
     
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -77,13 +120,17 @@ const Index = ({ setUser, setLoggingOut }) => {
             <header className="marketplace-header">
                 <div className="header-logo" onClick={() => navigate('/Index')}>FleaMarket</div>
                 <div className="header-search-bar">
-                    <input type="text" placeholder="Search for products..." />
-                    <button>Search</button>
+                    <input 
+                        type="text" 
+                        placeholder="Search for products..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                    />
                 </div>
                 <nav className="header-nav-links">
                     <Link to="/orders">My Orders</Link>
                     <Link to="/cart">Cart</Link>
-                    <button onClick={LogOut} className="btn-logout">Logout</button>
+                    <a onClick={LogOut}>Log out</a>
                 </nav>
             </header>
 
@@ -92,7 +139,14 @@ const Index = ({ setUser, setLoggingOut }) => {
                     <h3>Filters</h3>
                     <div className="filter-group">
                         <label>Category</label>
-                        <select><option>All Categories</option></select>
+                        <select onChange={(e) => setSelectedCategory(e.target.value)}>
+                            <option value="">All Categories</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="filter-group">
                         <label>Price Range</label>
@@ -111,8 +165,8 @@ const Index = ({ setUser, setLoggingOut }) => {
                         <p className="error-message">{error}</p>
                     ) : (
                         <div className="products-grid">
-                            {products.length > 0 ? (
-                                products.map(product => (
+                            {filteredProducts.length > 0 ? (
+                                filteredProducts.map(product => (
                                     <ProductCard key={product.id} product={product} />
                                 ))
                             ) : (

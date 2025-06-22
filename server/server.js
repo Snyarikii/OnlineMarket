@@ -205,7 +205,7 @@ app.post('/api/products', authenticateToken, upload.single('productImage'), asyn
 app.get('/api/products/approved', async (req, res) => {
     try {
         const [rows] = await con.promise().query(
-            "SELECT id, title, price, product_condition, image_url FROM products WHERE status = 'approved'"
+            "SELECT id, category_id, seller_id, title, price, product_condition, image_url FROM products WHERE status = 'approved'"
         );
         res.json(rows);
     } catch (error) {

@@ -8,10 +8,6 @@ import './ProductDetails.css';
 // A detailed header
 const ProductHeader = () => (
     <header className="details-header">
-        <div className="header-top-bar">
-            <Link to="#" className="header-auth-link">Log In</Link>
-            <Link to="#" className="header-auth-link">Sign Up</Link>
-        </div>
         <div className="header-main">
             <Link to="/Index" className="header-logo">Logo</Link>
             <nav className="header-nav">

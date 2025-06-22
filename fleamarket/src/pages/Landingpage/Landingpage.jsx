@@ -58,15 +58,10 @@ const EngagementCard = ({ title, children }) => (
 const LandingPage = () => {
   return (
     <div className="landing-page">
-      <header className="header">
+      <header className="landing-page-header">
         <Link to="/" className="header-logo-link">
           <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
         </Link>
-        <nav className="header-nav">
-          <Link to="#">Account</Link>
-          <Link to="#">Orders</Link>
-          <Link to="#">Cart</Link>
-        </nav>
         <div className="header-actions">
           <Link to="/Login" className="btn btn-login">Log In</Link>
           <Link to="/SignUp" className="btn btn-signup">Sign Up</Link>

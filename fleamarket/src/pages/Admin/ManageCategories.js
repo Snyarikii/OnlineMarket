@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Link, useNavigate} from 'react-router';
+import {Link, useNavigate } from 'react-router';
 import axios from "axios";
 import styles from './ManageCategories.css'
 
 const ManageCategories = () => {
+    const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState("");
     const [editingId, setEditingId] = useState(null);

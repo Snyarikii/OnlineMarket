@@ -7,7 +7,7 @@
 }
 .login-header{
     position: fixed;
-    background-color: rgb(80, 80, 191);
+    background-color:#2563eb;
     width: 100%;
     justify-content: space-between;
     left: 0;
@@ -83,7 +83,7 @@
 .login-input-fields .login-input{
     width: 300px;
     height: 3vh;
-    border: 2px solid rgb(80, 80, 191);
+    border: 2px solid #2563eb;
     border-radius: 20px;
     padding: 15px;
 }
@@ -103,17 +103,19 @@
 .login-btn{
     font-family: Inter;
     font-weight: 500;
-    width: 30%;
+    width: 40%;
     height: 7vh;
-    border-radius: 20px;
-    background-color: transparent;
-    border-color: rgb(80, 80, 191);
+    border-radius: 8px;
+    background-color: #2563eb;
+    /* border-color: rgb(80, 80, 191); */
+    color: #ffffff;
+    border: none;
     margin-top: 25px;
     font-weight: 400;
     justify-content: center;
 }
 .login-btn:hover{
-    border-color: rgb(159, 159, 255);
+    background-color: #1D4ED8;
 }
 .dont-have-account{
     margin-top: 30px;
