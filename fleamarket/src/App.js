@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Login from "./pages/Login/Login";
@@ -13,24 +13,50 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import AddProduct from './pages/AddProduct/AddProduct';
 import ManageProducts from './pages/Admin/ManageProducts';
 import ProductDetails from './pages/buying/ProductDetails'; // <-- IMPORT FROM THE NEW PATH
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+
+
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if(token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Invalid user data in localstorage');
+      }
+    } else {
+      console.log("No token or user found in localstorage");
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) return <div>Loading...</div>
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<LandingPage />} />
-        <Route path='/Login' element={<Login />} />
+        <Route path='/Login' element={<Login setUser={setUser} />} />
         <Route path='/ResetPassword' element={<ResetPassword />} />
         <Route path='/SignUp' element={<SignUp />} />
-        <Route path='/Index' element={<Index />} />
-        <Route path='/Dashboard' element={<Dashboard />} />
-        <Route path="/add-product" element={<AddProduct />} />
-        <Route path='/Admin' element={<AdminLayout />}>
+
+        <Route path='/Index' element={<ProtectedRoute allowedRoles={['buyer']} user={user} loggingOut={loggingOut}> <Index setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
+        <Route path='/Dashboard' element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><Dashboard setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
+        <Route path="/add-product" element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><AddProduct setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
+        <Route path='/Admin' element={<ProtectedRoute allowedRoles={['admin']} user={user} loggingOut={loggingOut}><AdminLayout setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>}>
           <Route path='ManageCategories' element={<ManageCategories />} />
           <Route path='ManageUsers' element={<ManageUsers />} />
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
          {/* ADD THIS NEW DYNAMIC ROUTE for product details */}
-        <Route path="/product/:productId" element={<ProductDetails />} />
+        <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

@@ -24,11 +24,11 @@ const ProductCard = ({ product }) => {
 };
 
 // Main Marketplace Page Component 
-const Index = () => {
+const Index = ({ setUser, setLoggingOut }) => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [error, setError] = useState('');    
 
     // This hook runs once when the component loads
     useEffect(() => {
@@ -55,13 +55,21 @@ const Index = () => {
 
         fetchApprovedProducts();
     }, [navigate]);
+    
+    function LogOut() {
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+        if(!confirmLogout) return;
 
-    const handleLogout = () => {
-        if (window.confirm("Are you sure you want to log out?")) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            navigate('/');
-        }
+        setLoggingOut(true);
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        navigate('/');
+
+        setTimeout(() => {
+            setLoggingOut(false);
+        }, 500);
     };
 
     return (
@@ -73,10 +81,9 @@ const Index = () => {
                     <button>Search</button>
                 </div>
                 <nav className="header-nav-links">
-                    <Link to="/add-product">Sell</Link>
                     <Link to="/orders">My Orders</Link>
                     <Link to="/cart">Cart</Link>
-                    <button onClick={handleLogout} className="btn-logout">Logout</button>
+                    <button onClick={LogOut} className="btn-logout">Logout</button>
                 </nav>
             </header>
 

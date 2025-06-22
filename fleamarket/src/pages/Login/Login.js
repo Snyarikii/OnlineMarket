@@ -3,7 +3,7 @@ import axios from "axios";
 import styles from './Login.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ setUser }) => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
@@ -21,7 +21,8 @@ const Login = () => {
 
             if(res.data.success){
                 localStorage.setItem('token', res.data.token);
-                localStorage.setItem('user', res.data.user);
+                localStorage.setItem('user', JSON.stringify(res.data.user));
+                setUser(res.data.user);
                 setMessage(res.data.message);
 
                 const userRole = res.data.user.role;
