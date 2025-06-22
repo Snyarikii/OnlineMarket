@@ -12,7 +12,7 @@ import ManageCategories from './pages/Admin/ManageCategories';
 import ManageUsers from './pages/Admin/ManageUsers';
 import AddProduct from './pages/AddProduct/AddProduct';
 import ManageProducts from './pages/Admin/ManageProducts';
-
+import ProductDetails from './pages/buying/ProductDetails'; // <-- IMPORT FROM THE NEW PATH
 function App() {
   return (
     <BrowserRouter>
@@ -29,6 +29,8 @@ function App() {
           <Route path='ManageUsers' element={<ManageUsers />} />
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
+         {/* ADD THIS NEW DYNAMIC ROUTE for product details */}
+        <Route path="/product/:productId" element={<ProductDetails />} />
       </Routes>
     </BrowserRouter>
   );

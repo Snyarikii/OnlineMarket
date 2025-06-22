@@ -328,3 +328,52 @@ app.put('/api/admin/products/:productId/reject', authenticateToken, async (req, 
         res.status(500).json({ message: "Failed to reject product"});
     }
 });
+
+// In server.js
+
+// --- ADD THIS ENDPOINT: To get a single product's details ---
+app.get('/api/products/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        // This SQL query joins the products, users, and categories tables
+        // to get all the info we need for the details page in one call.
+        const sql = `
+            SELECT p.*, u.name as seller_name, c.name as category_name 
+            FROM products p
+            LEFT JOIN users u ON p.seller_id = u.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.id = ? AND p.status = 'approved'
+        `;
+        const [rows] = await con.promise().query(sql, [id]);
+
+        if (rows.length === 0) {
+            // This happens if the product ID doesn't exist or isn't approved
+            return res.status(404).json({ message: "Product not found or not available." });
+        }
+        res.json(rows[0]);
+    } catch (error) {
+        console.error("Error fetching single product:", error);
+        res.status(500).json({ error: "Failed to fetch product details." });
+    }
+});
+
+
+// --- AND ADD THIS ENDPOINT: To get other products from the same seller ---
+app.get('/api/sellers/:sellerId/products', async (req, res) => {
+    try {
+        const { sellerId } = req.params;
+        const { exclude: excludeProductId } = req.query; // This is used to exclude the current product
+
+        const sql = `
+            SELECT id, title, price, product_condition, image_url 
+            FROM products 
+            WHERE seller_id = ? AND status = 'approved' AND id != ?
+            LIMIT 4
+        `;
+        const [rows] = await con.promise().query(sql, [sellerId, excludeProductId || 0]);
+        res.json(rows);
+    } catch (error) {
+        console.error("Error fetching seller's products:", error);
+        res.status(500).json({ error: "Failed to fetch seller's products." });
+    }
+});

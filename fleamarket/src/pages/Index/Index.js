@@ -19,6 +19,7 @@ const ProductCard = ({ product }) => {
                 <p className="product-card-price">Ksh {Number(product.price).toLocaleString()}</p>
                 <p className="product-card-condition">{product.product_condition}</p>
                 <button className="btn-view-product">View Details</button>
+                <Link to={`/product/${product.id}`} className="btn-view-product">View Details</Link>
             </div>
         </div>
     );
