@@ -1,153 +1,124 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import './Index.css';
 import axios from "axios";
 
+// --- Reusable Product Card Component ---
+// This makes the main code cleaner and is a standard React practice.
+const ProductCard = ({ product }) => {
+    // Correctly construct the image URL based on your server setup
+    const imageUrl = product.image_url ? `http://localhost:3001/uploads/${product.image_url}` : 'https://via.placeholder.com/300';
+
+    return (
+        <div className="product-card">
+            <div className="product-card-image-container">
+                <img src={imageUrl} alt={product.title} className="product-card-image" />
+            </div>
+            <div className="product-card-content">
+                <h4 className="product-card-title">{product.title}</h4>
+                <p className="product-card-price">Ksh {Number(product.price).toLocaleString()}</p>
+                <p className="product-card-condition">{product.product_condition}</p>
+                <button className="btn-view-product">View Details</button>
+            </div>
+        </div>
+    );
+};
+
+// --- Main Marketplace Page Component ---
 const Index = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // This hook runs once when the component loads
     useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get('http://localhost:3001/api/products/approved');
-            setProducts(response.data);
-            setLoading(false);
-        } catch (err) {
-            console.error("Error fetching products:", err);
-            setError("Failed to load products.");
-            setLoading(false);
-        }
-    };
-
-    const onLoad = () => {
+        // We still check for a token to ensure only logged-in users can browse
         const token = localStorage.getItem('token');
-
-        if(!token) {
-            alert("You are not logged in. Redirect to Login page.");
+        if (!token) {
+            alert("Please log in to browse the marketplace.");
             navigate('/Login');
-        } else {
-            fetch('http://localhost:3001/Index', {
-                method: "GET",
-                headers:{
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if(response.status === 401 || response.status === 403) {
-                    alert(" You are not logged in. Redirect to Login page.");
-                    navigate('/Login');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => console.error("Error loading homepage: ", error));
-        }
-    };
-
-    useEffect(()=>{
-        onLoad()
-    },[]);
-
-    function LogOut(){
-        // eslint-disable-next-line no-alert
-        const confirmLogout = window.confirm("Are you sure you want to log out?");
-        if(!confirmLogout){
             return;
         }
-        const token = localStorage.getItem('token');
-        if(token){
-            fetch('http://localhost:3001/logout', {
-                method: 'POST',
-                headers: {
-                    "Authorization" : `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if(response.ok){
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    navigate('/');
-                } else {
-                    console.error("Failed to log out on the server");
-                }
-            })
-            .catch(error => console.error("Logout error", error));
-        } else {
-            console.log("No token found. redirecting to Login");
-            navigate("/Login");
+
+        const fetchApprovedProducts = async () => {
+            try {
+                // Fetching from the correct buyer-facing endpoint
+                const response = await axios.get('http://localhost:3001/api/products/approved');
+                setProducts(response.data);
+            } catch (err) {
+                console.error("Error fetching products:", err);
+                setError("Failed to load products. The server might be down.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchApprovedProducts();
+    }, [navigate]);
+
+    const handleLogout = () => {
+        if (window.confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/');
         }
     };
 
-    return(
-        <div className="index-body">
-           {/* Header/Nav */}
-           <header className="index-navbar">
-            <div className="index-logo">FleaMarket</div>
-            <nav className="index-nav-links">
-                <a href='#'>Orders</a>
-                <a href='#'>Cart</a>
-                <Link to='/Login' onClick={LogOut}>Log out</Link>
-            </nav>
-            <div className="index-search-bar">
-                <input type="text" placeholder="Search product" />
-            </div>
-           </header>
+    return (
+        <div className="marketplace-body">
+            <header className="marketplace-header">
+                <div className="header-logo" onClick={() => navigate('/Index')}>FleaMarket</div>
+                <div className="header-search-bar">
+                    <input type="text" placeholder="Search for products..." />
+                    <button>Search</button>
+                </div>
+                <nav className="header-nav-links">
+                    <Link to="/add-product">Sell</Link>
+                    <Link to="/orders">My Orders</Link>
+                    <Link to="/cart">Cart</Link>
+                    <button onClick={handleLogout} className="btn-logout">Logout</button>
+                </nav>
+            </header>
 
-           {/* Hero section */}
-
-            <section className="index-hero-section">
-                <h2>Welcome to the Marketplace!</h2>
-                <p>Discover great deals today.</p>
-            </section>
-
-            {/* Main content */}
-            <div className="index-main-content">
-                {/* Filter Sidebar */}
-                <aside className="index-filters">
-                    <h3>Filter</h3>
-                    <select><option>Category</option></select>
-                    <select><option>Price Range</option></select>
-                    <select><option>Condition</option></select>
+            <main className="marketplace-main">
+                <aside className="filters-sidebar">
+                    <h3>Filters</h3>
+                    <div className="filter-group">
+                        <label>Category</label>
+                        <select><option>All Categories</option></select>
+                    </div>
+                    <div className="filter-group">
+                        <label>Price Range</label>
+                        <select><option>Any Price</option></select>
+                    </div>
+                    <div className="filter-group">
+                        <label>Condition</label>
+                        <select><option>Any Condition</option></select>
+                    </div>
                 </aside>
 
-                {/* Products Grid */}
-                <section className="index-products-grid">
+                <section className="products-grid-container">
                     {loading ? (
-                        <p>Loading products...</p>
+                        <p className="loading-text">Loading products...</p>
                     ) : error ? (
-                        <p className="index-error">{error}</p>
+                        <p className="error-message">{error}</p>
                     ) : (
-                        products.map(product => (
-                            <div key={product.id} className="index-product-card">
-                                <img src={`http://localhost:3001/uploads/${product.image_url}`} alt={product.title} />
-                                <h4>{product.title}</h4>
-                                <p className="index-price"> Ksh {product.price}</p>
-                                <p className="index-condition">{product.product_condition}</p>
-                            </div>
-                        ))
+                        <div className="products-grid">
+                            {products.length > 0 ? (
+                                products.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))
+                            ) : (
+                                <p>No products are currently available. Check back later!</p>
+                            )}
+                        </div>
                     )}
                 </section>
-            </div>
-            {/* Footer */}
-            <footer className="index-footer">
-                <div className="index-footer-top">
-                    <p>Let's keep in touch! join our newsletter</p>
-                    <input type='email' placeholder="Enter your email" />
-                    <button>Subscribe</button>
-                </div>
-                <div className="index-fotter-links">
-                    <div>About us</div>
-                    <div>Privacy policy</div>
-                    <div>Terms</div>
-                </div>
+            </main>
+            
+            <footer className="marketplace-footer">
+                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
             </footer>
         </div>
     );
