@@ -329,9 +329,8 @@ app.put('/api/admin/products/:productId/reject', authenticateToken, async (req, 
     }
 });
 
-// In server.js
 
-// --- ADD THIS ENDPOINT: To get a single product's details ---
+// ENDPOINT: To get a single product's details ---
 app.get('/api/products/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -358,7 +357,7 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 
-// --- AND ADD THIS ENDPOINT: To get other products from the same seller ---
+// --- endpoint To get other products from the same seller ---
 app.get('/api/sellers/:sellerId/products', async (req, res) => {
     try {
         const { sellerId } = req.params;

@@ -5,7 +5,7 @@ import './ProductDetails.css';
 
 // --- Reusable Sub-Components ---
 
-// A more detailed header matching the wireframe
+// A detailed header
 const ProductHeader = () => (
     <header className="details-header">
         <div className="header-top-bar">
@@ -43,7 +43,7 @@ const MiniProductCard = ({ product }) => {
     );
 };
 
-// A detailed footer matching the wireframe
+// A detailed footer
 const ProductFooter = () => (
     <footer className="details-footer">
         <div className="footer-newsletter">

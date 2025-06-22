@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Index.css';
 import axios from "axios";
 
-// --- Reusable Product Card Component ---
-// This makes the main code cleaner and is a standard React practice.
+
 const ProductCard = ({ product }) => {
     // Correctly construct the image URL based on your server setup
     const imageUrl = product.image_url ? `http://localhost:3001/uploads/${product.image_url}` : 'https://via.placeholder.com/300';
@@ -18,14 +17,13 @@ const ProductCard = ({ product }) => {
                 <h4 className="product-card-title">{product.title}</h4>
                 <p className="product-card-price">Ksh {Number(product.price).toLocaleString()}</p>
                 <p className="product-card-condition">{product.product_condition}</p>
-                <button className="btn-view-product">View Details</button>
                 <Link to={`/product/${product.id}`} className="btn-view-product">View Details</Link>
             </div>
         </div>
     );
 };
 
-// --- Main Marketplace Page Component ---
+// Main Marketplace Page Component 
 const Index = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
