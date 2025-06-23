@@ -71,6 +71,32 @@ const Cart = () => {
         }
     };
 
+    const handlePlaceOrder = async (item) => {
+        console.log(item);
+        const confirmOrder = window.confirm(`Place order for ${item.title}?`);
+        if(!confirmOrder) return;
+
+        try {
+            const token = localStorage.getItem('token');
+
+            await axios.post('http://localhost:3001/api/orders', 
+                {
+                    item_id: item.id,
+                    quantity: item.quantity,
+                    total_price: item.price * item.quantity
+                },
+                {
+                    headers: {Authorization: `Bearer ${token}`}
+                }
+            );
+
+            setCartItems(prev => prev.filter(cartItem => cartItem.cartId !== item.cartId));
+            alert("Order placed successfully!");
+        } catch (err) {
+            console.error("Error placing order:", err);
+            alert("Could not place order. Please try again.");
+        }
+    }
     const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     if(loading) return <p>Loading cart...</p>;
@@ -103,10 +129,12 @@ const Cart = () => {
                                         <p>Quantity: {item.quantity}</p>
                                         <button onClick={() => removeItem(item.cartId)}>Remove</button>
                                     </div>
-                                    <div className="quantity-controls">
-                                        <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)}>-</button>
-                                        <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}>+</button>
-
+                                    <div className="cart-buttons">
+                                        <div className="quantity-controls">
+                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)}>-</button>
+                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}>+</button>
+                                        </div>
+                                        <button className="cart-placeOrder-btn" onClick={() => handlePlaceOrder(item)}>Place order</button>
                                     </div>
                                 </div>
                             ))}
@@ -114,7 +142,6 @@ const Cart = () => {
 
                         <div className="cart-summary">
                             <h2>Total: Ksh {Number(totalPrice).toLocaleString()}</h2>
-                            <button className="checkout-btn">Proceed to Checkout</button>
                         </div>
                     </>
                 )}

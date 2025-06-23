@@ -118,7 +118,7 @@ const Index = ({ setUser, setLoggingOut }) => {
     return (
         <div className="marketplace-body">
             <header className="marketplace-header">
-                <div className="index-header-logo" onClick={() => navigate('/Index')}>FleaMarket</div>
+                <h1 className="index-header-logo">Flea Market</h1>
                 <div className="index-header-search-bar">
                     <input 
                         type="text" 

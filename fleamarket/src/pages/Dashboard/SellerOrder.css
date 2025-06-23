@@ -55,6 +55,27 @@
     border-bottom: none; /* Removes bottom border from the last row */
 }
 
+.order-actions {
+    margin-top: 5px;
+}
+.sellerOrder-approve-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.sellerOrder-reject-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
 .no-orders-cell {
     text-align: center;
     padding: 3rem;

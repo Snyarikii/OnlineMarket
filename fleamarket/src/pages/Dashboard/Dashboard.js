@@ -154,6 +154,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                     )}
                 </div>
             </div>
+            <h4 className="status-information">Note: <p>Check your product status. If not approved, wait for admin approval. Approved products will be visible to buyers.</p></h4>
 
         </div>
     );

@@ -30,7 +30,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "Stevey-boy12$",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -57,7 +57,7 @@ function authenticateToken(req, res, next){
             console.error("Token verification failed: ", err);
             return res.status(403).json({ message: "Invalid or expired token"});
         }
-        console.log(user);
+        // console.log(user);
         req.user = user;
         next();
     });
@@ -214,6 +214,26 @@ app.get('/api/products/myProducts', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch seller products"});
     }
 });
+//Seller update order status
+app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    if(!['approved', 'rejected'].includes(status)) {
+        return res.status(400).send("Invalid status");
+    }
+
+    try {
+        await con.promise().query(
+            "UPDATE orders SET order_status = ?, updated_at = NOW() WHERE id = ?",
+            [status, orderId]
+        );
+        res.status(200).send("Order status updated");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Failed to update order status");
+    }
+});
 
 //Buyer view product endpoint
 app.get('/api/products/approved', async (req, res) => {
@@ -301,6 +321,25 @@ app.put('/api/cart/:cartId', authenticateToken, async (req, res) => {
     }
 });
 
+//Buyer place order endpoint
+app.post('/api/orders', authenticateToken, async(req, res) => {
+    const buyerId = req.user.id;
+    const { item_id, quantity, total_price } = req.body;
+    // console.log(req.body);
+
+    const sql = `
+        INSERT INTO orders (buyer_id, item_id, quantity, total_price, order_status, order_date) 
+        VALUES (?,?,?,?, 'pending', NOW())
+    `;
+
+    con.query(sql, [buyerId, item_id, quantity, total_price], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).send("Error placing order.");
+        }
+        res.status(201).json({ message: "Order placed successfully!"});
+    });
+});
 
 // Admin APIs
 // Get all categories

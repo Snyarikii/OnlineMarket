@@ -36,6 +36,29 @@ const SellerOrder = () => {
         fetchSellerOrders();
     }, [navigate]);
 
+    const handleUpdateStatus = async (orderId, newStatus) => {
+        const token = localStorage.getItem('token');
+        if(!token) {
+            alert("Please log in again.");
+            navigate('/Login');
+            return;
+        }
+
+        try {
+            await axios.put(`http://localhost:3001/api/orders/${orderId}/status`, 
+                {status: newStatus},
+                { headers: {Authorization: `Bearer ${token}` } }
+            );
+
+            setOrders(prevOrders => prevOrders.map(order => 
+                order.order_id === orderId ? { ...order, order_status: newStatus} : order
+            ));
+        } catch (err) {
+            console.error("Error updating order status:", err);
+            alert("Failed to update order status. Please try again.");
+        }
+    };
+
     return (
         <div className="seller-orders-container">
             <div className="seller-orders-header">
@@ -75,6 +98,12 @@ const SellerOrder = () => {
                                             <span className={`status-badge status-${order.order_status.toLowerCase()}`}>
                                                 {order.order_status}
                                             </span>
+                                            {order.order_status === 'pending' && (
+                                                <div className='order-actions'>
+                                                    <button onClick={() => handleUpdateStatus(order.order_id, 'approved')} className='sellerOrder-approve-btn'>Approve</button>
+                                                    <button onClick={() => handleUpdateStatus(order.order_id, 'rejected')} className='sellerOrder-reject-btn'>Reject</button>
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

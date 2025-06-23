@@ -38,7 +38,7 @@
 }
 .dashboard-logout-link, .dashboard-addProduct-link{
     font-family: Inter;
-    color: #4F46E5;;
+    color: white;
     text-decoration: none;
     font-size: 16px;
     padding: 5px 10px;
@@ -48,8 +48,7 @@
 .dashboard-orders-link { /* <-- Add the new class here */
     color: white;
     text-decoration: none;
-    font-weight: 500;
-    padding: 8px 16px;
+    padding: 5px 10px;
     border-radius: 6px;
     transition: background-color 0.2s ease;
 }
@@ -58,7 +57,8 @@
     color: black;
 }
 .dashboard-orders-link:hover { /* <-- And also here */
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgb(159, 159, 255);
+    color: black;
 }
 
 .dashboard-container{
@@ -160,4 +160,10 @@
 }
 .dashboard-update-btn:hover{
     background-color: #0056b3;
+}
+
+.status-information {
+    font-family: Inter;
+    margin-left: 40px;
+
 }

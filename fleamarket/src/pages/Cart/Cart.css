@@ -101,10 +101,15 @@
     background-color: #c5303c;
 }
 
+.cart-buttons {
+    margin-top: 20px;
+}
+
 .quantity-controls{
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 15px;
 }
 
 .quantity-controls button {
@@ -119,6 +124,21 @@
 .quantity-controls button:hover {
     background-color: #0056b3;
 }
+
+.cart-placeOrder-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.cart-placeOrder-btn:hover {
+    background-color: #0056b3;
+}
+
 
 .cart-summary {
     margin-top: 2rem;
