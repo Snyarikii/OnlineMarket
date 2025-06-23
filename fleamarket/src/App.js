@@ -13,10 +13,11 @@ import ManageCategories from './pages/Admin/ManageCategories';
 import ManageUsers from './pages/Admin/ManageUsers';
 import AddProduct from './pages/AddProduct/AddProduct';
 import ManageProducts from './pages/Admin/ManageProducts';
-import ProductDetails from './pages/buying/ProductDetails'; // <-- IMPORT FROM THE NEW PATH
+import ProductDetails from './pages/buying/ProductDetails'; 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Cart from './pages/Cart/Cart';
 import BuyerOrders from './pages/buying/BuyerOrders';
+import SellerOrder from './pages/Dashboard/SellerOrder';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,6 +61,7 @@ function App() {
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
+        <Route path="/dashboard/orders" element={<SellerOrder />} />
         <Route path="/orders" element={<BuyerOrders />} />
       </Routes>
     </BrowserRouter>

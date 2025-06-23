@@ -104,6 +104,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                 <nav className="dashboard-nav">
                     <a onClick={LogOut} className="dashboard-logout-link">Log Out</a>
                     <Link to='/add-product' className="dashboard-addProduct-link">Add product</Link>
+                    <Link to='/dashboard/orders' className="dashboard-orders-link">View Orders</Link>
                 </nav>
             </header>
             <h1 className="dashboard-h1">My Products</h1>
