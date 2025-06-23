@@ -1,0 +1,15 @@
+.admin-index {
+    text-align: center;
+}
+.admin-index h1 {
+    font-family: Epilogue;
+}
+.admin-index p {
+    font-family: Inter;
+    font-weight: 500;
+}
+
+.admin-information {
+    font-family: Inter;
+    margin-top: 60px;
+}

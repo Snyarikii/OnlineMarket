@@ -8,6 +8,7 @@ import SignUp from './pages/SignUp/SignUp';
 import Index from './pages/Index/Index';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AdminLayout from './components/AdminLayout/AdminLayout';
+import AdminIndex from './pages/Admin/AdminIndex';
 import ManageCategories from './pages/Admin/ManageCategories';
 import ManageUsers from './pages/Admin/ManageUsers';
 import AddProduct from './pages/AddProduct/AddProduct';
@@ -53,6 +54,7 @@ function App() {
         <Route path='/Dashboard' element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><Dashboard setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
         <Route path="/add-product" element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><AddProduct setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
         <Route path='/Admin' element={<ProtectedRoute allowedRoles={['admin']} user={user} loggingOut={loggingOut}><AdminLayout setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>}>
+          <Route index element={<AdminIndex />} />
           <Route path='ManageCategories' element={<ManageCategories />} />
           <Route path='ManageUsers' element={<ManageUsers />} />
           <Route path='ManageProducts' element={<ManageProducts />} />
