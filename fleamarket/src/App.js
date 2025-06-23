@@ -14,6 +14,7 @@ import AddProduct from './pages/AddProduct/AddProduct';
 import ManageProducts from './pages/Admin/ManageProducts';
 import ProductDetails from './pages/buying/ProductDetails'; // <-- IMPORT FROM THE NEW PATH
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import Cart from './pages/Cart/Cart';
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
         <Route path='/SignUp' element={<SignUp />} />
 
         <Route path='/Index' element={<ProtectedRoute allowedRoles={['buyer']} user={user} loggingOut={loggingOut}> <Index setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
+        <Route path='/Cart' element={<Cart />} />
         <Route path='/Dashboard' element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><Dashboard setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
         <Route path="/add-product" element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><AddProduct setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
         <Route path='/Admin' element={<ProtectedRoute allowedRoles={['admin']} user={user} loggingOut={loggingOut}><AdminLayout setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>}>
@@ -55,7 +57,6 @@ function App() {
           <Route path='ManageUsers' element={<ManageUsers />} />
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
-         {/* ADD THIS NEW DYNAMIC ROUTE for product details */}
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
       </Routes>
     </BrowserRouter>

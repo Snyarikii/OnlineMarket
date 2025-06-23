@@ -112,6 +112,33 @@ const ProductDetails = () => {
         fetchProductDetails();
     }, [productId]);
 
+    const handleAddToCart = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if(!token) {
+                alert("Please log in to add items to your cart.");
+                navigate('/Login');
+                return;
+            }
+
+            await axios.post(
+                'http://localhost:3001/api/products/addToCart',
+                { productId: product.id,
+                    quantity: quantity,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            alert("Product added to cart!");
+        } catch (err) {
+            console.error("Error adding product to cart:", err);
+            alert("Failed to add product to cart. Please try again.");
+        }
+    };
+
     if (loading) return <p className="loading-message">Loading Product...</p>;
     if (error) return <p className="error-message">{error}</p>;
     if (!product) return <p className="info-message">Product not found.</p>;
@@ -152,7 +179,7 @@ const ProductDetails = () => {
                             <p className="product-price">Ksh {Number(product.price).toLocaleString()}</p>
                         </div>
 
-                        <button className="add-to-bag-btn">Add to Bag</button>
+                        <button className="add-to-bag-btn" onClick={handleAddToCart}>Add to Cart</button>
                     </div>
                 </div>
 

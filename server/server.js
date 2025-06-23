@@ -57,6 +57,7 @@ function authenticateToken(req, res, next){
             console.error("Token verification failed: ", err);
             return res.status(403).json({ message: "Invalid or expired token"});
         }
+        console.log(user);
         req.user = user;
         next();
     });
@@ -213,6 +214,80 @@ app.get('/api/products/approved', async (req, res) => {
         res.status(500).json({ error: "Failed to fetch products"});
     }
 });
+//Buyer Add to card endpoint
+app.post('/api/products/addToCart', authenticateToken, (req, res) => {
+    const {productId, quantity} = req.body;
+    const userId = req.user.id;
+
+    if(!productId || !quantity) {
+        return res.status(400).send("ProductID and quantity are required");
+    }
+
+    const sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
+    con.query(sql, [userId, productId, quantity], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).send("Error adding to cart");
+        }
+        res.status(200).send("Product added to cart");
+    });
+});
+
+//Get Buyer cart endpoint
+app.get('/api/cart', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+
+    const sql = `
+        SELECT products.*, cart.id AS cartId, cart.quantity
+        FROM cart
+        INNER JOIN products ON cart.product_id = products.id
+        WHERE cart.user_id = ?
+    `;
+
+    try {
+        const [rows] = await con.promise().query(sql, [userId]);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.json(500).send("Failed to fetch cart items.");
+    }
+});
+
+//Buyer Remove from cart enpoint
+app.delete('/api/cart/:cartId', authenticateToken, (req, res) => {
+    const userId = req.user.id;
+    const { cartId } = req.params;
+
+    const sql = `DELETE FROM cart WHERE id = ? AND user_id = ?`;
+    con.query( sql, [cartId, userId ], (err, result) => {
+        if(err) {
+            console.error(err);
+            return res.status(500).send("Error removing item from cart");
+        }
+        res.status(200).send("Item removed from cart");
+    });
+});
+
+//Buyer update product quantity
+app.put('/api/cart/:cartId', authenticateToken, async (req, res) => {
+    const { quantity } = req.body;
+    const userId = req.user.id;
+    const cartId = req.params.cartId;
+
+    if (quantity < 1) {
+        return res.status(400).send("Quantity must be at least 1.");
+    }
+
+    try {
+        const sql = "UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?";
+        await con.promise().query(sql, [quantity, cartId, userId]);
+        res.status(200).send("Cart item quantity updated successfully");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Failed to update cart item quantity.");
+    }
+});
+
 
 // Admin APIs
 // Get all categories

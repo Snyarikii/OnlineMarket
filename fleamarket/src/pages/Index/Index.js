@@ -129,7 +129,7 @@ const Index = ({ setUser, setLoggingOut }) => {
                 </div>
                 <nav className="header-nav-links">
                     <Link to="/orders">My Orders</Link>
-                    <Link to="/cart">Cart</Link>
+                    <Link to="/Cart">Cart</Link>
                     <a onClick={LogOut}>Log out</a>
                 </nav>
             </header>
