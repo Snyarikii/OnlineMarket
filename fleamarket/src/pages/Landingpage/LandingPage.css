@@ -8,9 +8,8 @@
  * 5. Hero Section
  * 6. Engagement Section
  * 7. Categories Section
- * 8. Offers Section
- * 9. Footer
- * 10. Responsive Media Queries
+ * 8. Footer (Updated)
+ * 9. Responsive Media Queries
 */
 
 /* 1. Global & Root Variables */
@@ -39,16 +38,13 @@
   color: var(--color-text);
   background-color: var(--color-light);
 }
-
 .section {
   padding: 60px 5%;
 }
-
 .section-title {
   text-align: center;
   margin-bottom: 2rem;
 }
-
 .section-title h2 {
   font-size: 2.5rem;
   font-weight: 700;
@@ -67,29 +63,23 @@
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .btn:hover {
   transform: translateY(-2px);
 }
-
 .btn-primary {
   background-color: var(--color-dark);
   color: var(--color-light);
 }
-
 .btn-secondary {
   background-color: var(--color-secondary);
   color: var(--color-light);
 }
-
 .btn-secondary:hover {
   background-color: #4338CA;
 }
-
 .btn-login {
   color: var(--color-light);
 }
-
 .btn-signup {
   background-color: var(--color-light);
   color: var(--color-primary);
@@ -104,19 +94,10 @@
   background-color: var(--color-primary);
   height: 80px;
 }
-
 .header-logo-img {
   height: 60px;
   display: block;
 }
-
-.header-nav a {
-  margin: 0 20px;
-  text-decoration: none;
-  color: var(--color-light);
-  font-weight: 500;
-}
-
 .header-actions {
   display: flex;
   gap: 10px;
@@ -126,12 +107,10 @@
 .hero-section {
   text-align: center;
 }
-
 .hero-title {
   font-size: 3rem;
   color: var(--color-dark);
 }
-
 .hero-subtitle {
   font-size: 1.2rem;
   color: var(--color-text-subtle);
@@ -143,7 +122,6 @@
   background-color: var(--color-background-light);
   text-align: center;
 }
-
 .engagement-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -151,31 +129,26 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-
 .engagement-card {
   background-color: var(--color-engagement-bg);
   border-radius: var(--border-radius-md);
   padding: 2rem;
   color: var(--color-engagement-text);
 }
-
 .engagement-card h3 {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
 }
-
 .cta-container {
   margin-top: 4rem;
 }
-
 .cta-container h3 {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-dark);
   margin-bottom: 1.5rem;
 }
-
 .cta-buttons {
   display: flex;
   justify-content: center;
@@ -191,7 +164,6 @@
   max-width: 1100px;
   margin: 0 auto;
 }
-
 .category-card {
   background-color: var(--color-light);
   border-radius: var(--border-radius-lg);
@@ -202,98 +174,53 @@
   border: 1px solid #f0f0f0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .category-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-card-hover);
 }
-
 .category-card-icon {
   height: 80px;
   margin-bottom: 1rem;
 }
-
 .category-card-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-dark);
   margin-bottom: 0.75rem;
 }
-
 .category-card-description {
   font-size: 1rem;
   color: var(--color-text-subtle);
   line-height: 1.5;
 }
 
-/* 8. Offers Section */
-.offers-section {
-    display: flex;
-    align-items: center;
-    gap: 50px;
-}
-.offers-content {
-    flex-basis: 50%;
-}
-.offers-cards {
-    flex-basis: 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.offer-card {
-    display: flex;
-    align-items: center;
-    background-color: var(--color-background-light);
-    padding: 15px;
-    border-radius: var(--border-radius-sm);
-}
-.offer-card-img-placeholder {
-    width: 80px;
-    height: 80px;
-    background-color: #e9e9e9;
-    border-radius: var(--border-radius-sm);
-    flex-shrink: 0;
-}
-.offer-card-text {
-    margin-left: 20px;
-}
-.offer-card-text h4 {
-    margin: 0 0 5px 0;
-    font-size: 1.5rem;
-}
-
-/* 9. Footer */
+/* 8. Footer (Updated) */
 .footer {
   background-color: var(--color-background-dark);
   color: #ccc;
-  padding: 60px 5%;
+  padding: 40px 5% 20px 5%;
 }
-
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 2fr 1fr 1fr; /* Adjusted for 3 columns */
   gap: 40px;
+  margin-bottom: 40px;
 }
-
 .footer-column {
   display: flex;
   flex-direction: column;
 }
-
 .footer-logo-img {
     height: 50px;
     width: auto;
     margin-bottom: 1rem;
-    filter: brightness(0) invert(1); /* Makes the logo white */
+    filter: brightness(0) invert(1);
 }
-
 .footer-column h4 {
   font-size: 1.1rem;
   margin-bottom: 15px;
   color: var(--color-light);
 }
-
 .footer-column a,
 .footer-column p {
   color: #ccc;
@@ -301,56 +228,42 @@
   margin-bottom: 10px;
   font-size: 0.95rem;
 }
-
 .footer-column a:hover {
   color: var(--color-light);
 }
-
-.newsletter-form {
+.social-icons {
   display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 }
-
-.newsletter-form input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #555;
-  background-color: #444;
-  border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+.social-icon {
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+.social-icon:hover {
   color: var(--color-light);
 }
-
-.newsletter-form button {
-  padding: 10px 15px;
-  background-color: #555;
-  color: var(--color-light);
-  border: none;
-  cursor: pointer;
-  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 20px;
+    font-size: 0.9rem;
+    color: #999;
 }
+
 
 /* 10. Responsive Media Queries */
 @media (max-width: 768px) {
-  .engagement-grid {
-    grid-template-columns: 1fr; /* Stack cards on mobile */
+  .engagement-grid, .footer-grid {
+    grid-template-columns: 1fr;
   }
-
-  .header {
+  .landing-page-header {
     flex-direction: column;
     height: auto;
     padding: 20px;
     gap: 20px;
   }
-
-  .header-nav {
-    order: 3;
-  }
-
   .header-actions {
     order: 2;
-  }
-
-  .offers-section {
-      flex-direction: column;
-      text-align: center;
   }
 }

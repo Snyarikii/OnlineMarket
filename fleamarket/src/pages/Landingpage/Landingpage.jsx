@@ -34,8 +34,6 @@ const CATEGORIES = [
 ];
 
 // --- Sub-components for better organization ---
-
-// A reusable card for the "Shop for best products" section
 const CategoryCard = ({ icon, title, description }) => (
   <div className="category-card">
     <img src={icon} alt={title} className="category-card-icon" />
@@ -44,7 +42,6 @@ const CategoryCard = ({ icon, title, description }) => (
   </div>
 );
 
-// A reusable card for the "User Engagement" section
 const EngagementCard = ({ title, children }) => (
     <div className="engagement-card">
         <h3>{title}</h3>
@@ -54,7 +51,6 @@ const EngagementCard = ({ title, children }) => (
 
 
 // --- Main Page Component ---
-
 const LandingPage = () => {
   return (
     <div className="landing-page">
@@ -115,42 +111,20 @@ const LandingPage = () => {
           </div>
         </section>
 
-        <section className="section offers-section">
-            <div className="offers-content">
-                <h2>Offers</h2>
-                <p>Check out our latest deals and discounts!</p>
-            </div>
-            <div className="offers-cards">
-                <div className="offer-card">
-                    <div className="offer-card-img-placeholder"></div>
-                    <div className="offer-card-text">
-                        <h4>$9</h4>
-                        <p>Special Item</p>
-                    </div>
-                </div>
-                <div className="offer-card">
-                    <div className="offer-card-img-placeholder"></div>
-                    <div className="offer-card-text">
-                        <h4>$9</h4>
-                        <p>Another Deal</p>
-                    </div>
-                </div>
-            </div>
-        </section>
       </main>
 
       <footer className="footer">
         <div className="footer-grid">
           <div className="footer-column">
-            <img src={logo} alt="Flea Market Logo" className="footer-logo-img" />
-            <p>Let's stay in touch! Sign up to our newsletter for exclusive updates.</p>
-          </div>
-          <div className="footer-column">
-            <p>Insert your email address here</p>
-            <form className="newsletter-form">
-              <input type="email" placeholder="Email address" />
-              <button type="submit">Subscribe</button>
-            </form>
+            <p>Your go-to marketplace for quality second-hand goods on campus.</p>
+            <div className="social-icons">
+                <Link to="/" className="social-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069s-3.584-.011-4.85-.069c-3.225-.148-4.771-1.664-4.919-4.919-.058-1.265-.069-1.644-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.2 0-3.556.012-4.786.069-2.913.132-4.225 1.433-4.356 4.356-.057 1.23-.068 1.585-.068 4.786s.011 3.556.068 4.786c.132 2.913 1.442 4.225 4.356 4.356 1.23.057 1.585.068 4.786.068s3.556-.011 4.786-.068c2.913-.132 4.225-1.442 4.356-4.356.057-1.23.068-1.585.068-4.786s-.011-3.556-.068-4.786c-.132-2.913-1.442-4.225-4.356-4.356C15.556 3.614 15.2 3.604 12 3.604zm0 4.865a3.532 3.532 0 100 7.064 3.532 3.532 0 000-7.064zm0 5.622a2.088 2.088 0 110-4.176 2.088 2.088 0 010 4.176zm4.965-7.854a.825.825 0 100 1.65.825.825 0 000-1.65z"/></svg>
+                </Link>
+                <Link to="/" className="social-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0015.103 3c-2.422 0-4.085 1.47-4.085 4.179v2.37h-2.769v3.209h2.769v8.196h3.425z"/></svg>
+                </Link>
+            </div>
           </div>
           <div className="footer-column">
             <h4>Help</h4>
@@ -164,6 +138,9 @@ const LandingPage = () => {
             <Link to="#">Terms of Service</Link>
             <Link to="#">Subscriptions</Link>
           </div>
+        </div>
+        <div className="footer-bottom">
+            <p>&copy; {new Date().getFullYear()} Flea Market. All Rights Reserved.</p>
         </div>
       </footer>
     </div>
