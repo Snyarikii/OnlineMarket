@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './AddProduct.css'; // Import the stylesheet
+import './AddProduct.css'; 
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -102,8 +102,8 @@ const AddProduct = () => {
 
     return (
         <div className="add-product-page">
-            <header className="page-header">
-                <h1 onClick={() => navigate('/Dashboard')}>Flea Market</h1>
+            <header className="addProduct-page-header">
+                <h1>Flea Market</h1>
                 <nav>
                     <Link to="/Dashboard">My Dashboard</Link>
                 </nav>

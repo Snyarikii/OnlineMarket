@@ -28,55 +28,53 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 5%;
-  background-color: var(--color-light);
+  background-color: var(--color-primary);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 15vh;
 }
-.header-logo {
+.index-header-logo {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-light);
   cursor: pointer;
 }
-.header-search-bar {
+.index-header-search-bar {
   flex-grow: 1;
   margin: 0 2rem;
   display: flex;
 }
-.header-search-bar input {
+.index-header-search-bar input {
   width: 100%;
   padding: 10px 15px;
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  border-radius: 4px;
   font-size: 1rem;
 }
-.header-search-bar button {
-  padding: 10px 20px;
-  border: 1px solid var(--color-primary);
-  background-color: var(--color-primary);
-  color: var(--color-light);
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  cursor: pointer;
-}
-.header-nav-links {
+
+.index-header-nav-links {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
-.header-nav-links a, .btn-logout {
+.index-header-nav-links a, .btn-logout {
   text-decoration: none;
-  color: var(--color-text-subtle);
-  font-weight: 500;
+  color: var(--color-light);
+  font-weight: 400;
+  font-family: Inter;
   background: none;
   border: none;
   font-size: 1rem;
   cursor: pointer;
   transition: color 0.2s;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
-.header-nav-links a:hover, .btn-logout:hover {
-  color: var(--color-primary);
+.index-header-nav-links a:hover, .btn-logout:hover {
+   background-color: rgb(159, 159, 255);
+    color: black;
 }
 
 /* --- Main Content Layout --- */

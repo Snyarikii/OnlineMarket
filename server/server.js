@@ -202,6 +202,19 @@ app.post('/api/products', authenticateToken, upload.single('productImage'), asyn
     }
 });
 
+//Seller Get my products endpoint
+app.get('/api/products/myProducts', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    const sql = "SELECT * FROM products WHERE seller_id = ?";
+    try {
+        const [rows] = await con.promise().query(sql, [userId]);
+        res.json(rows);
+    } catch (error) {
+        console.error("Error fetching seller products:", error);
+        res.status(500).json({ error: "Failed to fetch seller products"});
+    }
+});
+
 //Buyer view product endpoint
 app.get('/api/products/approved', async (req, res) => {
     try {

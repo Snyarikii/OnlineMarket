@@ -3,24 +3,24 @@
   min-height: 100vh;
 }
 
-.page-header {
+.addProduct-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 5%;
-  background-color: #ffffff;
+  background-color: #2563eb;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  height: 80px;
+  height: 15vh;
 }
 
-.page-header h1 {
-  color: #2563eb;
+.addProduct-page-header h1 {
+  color: #f9f9f9;
   font-size: 1.8rem;
   cursor: pointer;
 }
 
-.page-header nav a {
-  color: #2563eb;
+.addProduct-page-header nav a {
+  color: #f9f9f9;
   text-decoration: none;
   font-weight: 500;
   padding: 8px 16px;
@@ -28,8 +28,9 @@
   transition: background-color 0.2s;
 }
 
-.page-header nav a:hover {
-  background-color: #EFF6FF;
+.addProduct-page-header nav a:hover {
+   background-color: rgb(159, 159, 255);
+    color: black;
 }
 
 .page-main {

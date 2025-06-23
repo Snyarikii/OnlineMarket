@@ -83,7 +83,7 @@ const Index = ({ setUser, setLoggingOut }) => {
 
     const filterProducts = () => {
         let filtered = [...products];
-        console.log('Products:', products);
+        // console.log('Products:', products);
 
         if (searchQuery.trim() !== '') {
             filtered = filtered.filter(product => 
@@ -118,8 +118,8 @@ const Index = ({ setUser, setLoggingOut }) => {
     return (
         <div className="marketplace-body">
             <header className="marketplace-header">
-                <div className="header-logo" onClick={() => navigate('/Index')}>FleaMarket</div>
-                <div className="header-search-bar">
+                <div className="index-header-logo" onClick={() => navigate('/Index')}>FleaMarket</div>
+                <div className="index-header-search-bar">
                     <input 
                         type="text" 
                         placeholder="Search for products..."
@@ -127,7 +127,7 @@ const Index = ({ setUser, setLoggingOut }) => {
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <nav className="header-nav-links">
+                <nav className="index-header-nav-links">
                     <Link to="/orders">My Orders</Link>
                     <Link to="/Cart">Cart</Link>
                     <a onClick={LogOut}>Log out</a>
