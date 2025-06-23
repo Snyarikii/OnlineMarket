@@ -16,7 +16,7 @@ import ManageProducts from './pages/Admin/ManageProducts';
 import ProductDetails from './pages/buying/ProductDetails'; // <-- IMPORT FROM THE NEW PATH
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Cart from './pages/Cart/Cart';
-
+import BuyerOrders from './pages/buying/BuyerOrders';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,6 +60,7 @@ function App() {
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
+        <Route path="/orders" element={<BuyerOrders />} />
       </Routes>
     </BrowserRouter>
   );

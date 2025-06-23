@@ -464,3 +464,34 @@ app.get('/api/sellers/:sellerId/products', async (req, res) => {
         res.status(500).json({ error: "Failed to fetch seller's products." });
     }
 });
+
+// --- NEW ENDPOINT: Get a logged-in user's order history ---
+app.get('/api/orders', authenticateToken, async (req, res) => {
+    try {
+        const buyerId = req.user.id; // Get the user's ID from the JWT token
+
+        // This single query joins orders with products to get all info at once.
+        const sql = `
+            SELECT 
+                o.id, 
+                o.quantity, 
+                o.total_price, 
+                o.order_status, 
+                o.order_date, 
+                p.id as product_id, 
+                p.title, 
+                p.image_url 
+            FROM orders o
+            JOIN products p ON o.item_id = p.id
+            WHERE o.buyer_id = ? 
+            ORDER BY o.order_date DESC
+        `;
+        const [orders] = await con.promise().query(sql, [buyerId]);
+
+        res.json(orders);
+
+    } catch (error) {
+        console.error("Error fetching user orders:", error);
+        res.status(500).json({ error: "Failed to fetch order history." });
+    }
+});
