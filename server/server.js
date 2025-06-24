@@ -337,8 +337,56 @@ app.post('/api/orders', authenticateToken, async(req, res) => {
             console.error(err);
             return res.status(500).send("Error placing order.");
         }
-        res.status(201).json({ message: "Order placed successfully!"});
+        
+        res.status(201).json({
+            message: "Order placed successfully!",
+            order_id: result.insertId
+        });
+        console.log(result.insertId);
     });
+});
+//Buyer get shipping info
+app.get('/api/shipping/user/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    const [rows] = await con.promise().query("SELECT * FROM shipping WHERE user_id = ?", [userId]);
+
+    if(rows.length > 0) {
+        return res.json(rows[0]);
+    } else {
+        return res.status(404).json({ message: "No shipping information found."});
+    }
+});
+
+//Buyer place shipping info
+app.post('/api/shipping', authenticateToken, async (req, res) => {
+    const {
+        order_id,
+        recipient_name,
+        address_line1,
+        city,
+        postal_code,
+        country,
+        phone_number,
+        shipping_method,
+    } = req.body;
+
+    const user_id = req.user.id;
+    
+    try {
+        const estimatedDeliveryDays = shipping_method === 'Delivery' ? 2 : 5;
+        const [result] = await con.promise().execute(
+            `INSERT INTO shipping 
+            (user_id, order_id, recipient_name, address_line1, city, postal_code, country, phone_number, shipping_method, estimated_delivery_date, status)
+            VALUES (?,?,?,?,?,?,?,?,?,DATE_ADD(NOW(), INTERVAL ? DAY),'Processing')
+            `,
+            [user_id, order_id, recipient_name, address_line1, city, postal_code, country, phone_number, shipping_method, estimatedDeliveryDays]
+
+        );
+        res.status(201).json({ message: "Shipping info added successfully.", shipping_id: result.insertId});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to add shipping info."});
+    }
 });
 
 // Admin APIs
