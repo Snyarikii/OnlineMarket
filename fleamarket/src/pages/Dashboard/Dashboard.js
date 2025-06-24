@@ -12,6 +12,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedPriceRange, setSelectedPriceRange] = useState('');
+    const [selectedCondition, setSelectedCondition] = useState('');
     
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -55,7 +57,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
 
     useEffect(() => {
         filterMyProducts();
-    }, [searchQuery, myProducts, selectedCategory]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange]);
 
     const filterMyProducts = () => {
         let filtered = [...myProducts];
@@ -69,6 +72,21 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             filtered = filtered.filter(product =>
                 product.category_id === Number(selectedCategory)
             );
+        }
+        if(selectedCondition.trim() !== '') {
+            filtered = filtered.filter(product => 
+                product.product_condition === selectedCondition
+            );
+        }
+        if(selectedPriceRange.trim() !== '') {
+            const [minStr, maxStr] = selectedPriceRange.split('-');
+            const min = Number(minStr);
+            const max = maxStr ? Number(maxStr) : Infinity;
+
+            filtered = filtered.filter(product => {
+                const price = Number(product.price);
+                return price >= min && price <= max;
+            })
         }
         setFilteredProducts(filtered);
     };
@@ -122,6 +140,26 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                             ))}
                         </select>
                     </div>
+                    <div className="dashboard-filter-group">
+                        <label>Price Range</label>
+                        <select value={selectedPriceRange} onChange={(e) => setSelectedPriceRange(e.target.value)}>
+                            <option value="">Any Price</option>
+                            <option value="0-1000">Below Ksh 1,000</option>
+                            <option value="1000-5000">Ksh 1,000 - Ksh 5,000</option>
+                            <option value="5000-10000">Ksh 5,000 - Ksh 10,000</option>
+                            <option value="10000-"> Above Ksh 10,000</option>
+                        </select>
+                    </div>
+                    <div className="dashboard-filter-group">
+                        <label>Condition</label>
+                        <select  onChange={(e) => setSelectedCondition(e.target.value)}>
+                            <option value="">Any Condition</option>
+                            <option value="New">New</option>
+                            <option value="Used - Like New">Used - Like New</option>
+                            <option value="Used - Good">Used - Good</option>
+                            <option value="Used - Fair">Used - Fair</option>
+                        </select>
+                    </div>
                 </aside>
                 
                 <div className="dashboard-grid-container">
@@ -155,7 +193,9 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                 </div>
             </div>
             <h4 className="status-information">Note: <p>Check your product status. If not approved, wait for admin approval. Approved products will be visible to buyers.</p></h4>
-
+             <footer className="dashboard-footer">
+                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+            </footer>
         </div>
     );
 };

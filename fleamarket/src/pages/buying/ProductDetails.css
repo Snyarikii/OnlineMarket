@@ -32,26 +32,38 @@
     color: #4B5563;
 }
 .header-main {
-    display: flex;
-    align-items: center;
+    position: fixed;
+    background-color: #2563eb;
+    width: 100%;
     justify-content: space-between;
-    padding: 1rem 5%;
-    background-color: #fff;
-}
-.header-logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-    color: #1F2937;
-}
-.header-nav {
+    left: 0;
+    top: 0;
     display: flex;
-    gap: 2rem;
+    z-index: 1000;
+    height: 15vh;
 }
-.header-nav a {
+.header-main h1 {
+    font-family: Epilogue;
+    margin-left: 30px;
+    color: white;
+}
+.details-header-nav {
+    padding-top: 30px;
+    justify-content: space-around;
+    margin-right: 30px;
+}
+.details-header-nav a {
+    font-family: Inter;
+    color: white;
     text-decoration: none;
-    color: #374151;
-    font-weight: 500;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.details-header-nav a:hover{
+    background-color: rgb(159, 159, 255);
+    color: black;
 }
 .header-search input {
     padding: 0.75rem 1rem;
@@ -63,7 +75,8 @@
 /* Main Content Styles */
 .details-main-content {
     max-width: 1200px;
-    margin: 0 auto;
+    /* margin: 0 auto; */
+    margin-top: 90px;
     padding: 2rem 5%;
 }
 
@@ -84,9 +97,9 @@
     gap: 3rem;
 }
 .product-image-gallery img {
-    width: 100%;
+    width: 400px;
     height: auto;
-    aspect-ratio: 1 / 1;
+    /* aspect-ratio: 3/3; */
     object-fit: cover;
     border-radius: 8px;
     background-color: #F3F4F6;
@@ -169,11 +182,14 @@
     padding: 1rem;
     font-size: 1.2rem;
     font-weight: 600;
-    background-color: #111827;
+    background-color: #2563eb;
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+}
+.add-to-bag-btn:hover{
+    background-color: #1D4ED8;
 }
 
 /* More From Seller Section */

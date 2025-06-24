@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SellerOrder.css';
 
@@ -60,64 +60,75 @@ const SellerOrder = () => {
     };
 
     return (
-        <div className="seller-orders-container">
-            <div className="seller-orders-header">
-                <h2>Incoming Orders</h2>
-                <p>Review and manage all orders for your products.</p>
+        <div className='seller-order-body'>
+            <div className='seller-order-header'>
+                <h1>Flea Market</h1>
+                <nav className='seller-order-nav'>
+                    <Link to='/Dashboard' className='seller-order-back-link'>Back</Link>
+                </nav>
             </div>
+            <div className="seller-orders-container">
+                <div className="seller-orders-header">
+                    <h2>Incoming Orders</h2>
+                    <p>Review and manage all orders for your products.</p>
+                </div>
 
-            {loading ? (
-                <p>Loading your orders...</p>
-            ) : error ? (
-                <p className="error-message">{error}</p>
-            ) : (
-                <div className="orders-table-container">
-                    <table className="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Date</th>
-                                <th>Product</th>
-                                <th>Buyer</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.length > 0 ? (
-                                orders.map(order => (
-                                    <tr key={order.order_id}>
-                                        <td>#{order.order_id}</td>
-                                        <td>{new Date(order.order_date).toLocaleDateString()}</td>
-                                        <td>{order.product_title}</td>
-                                        <td>{order.buyer_name}</td>
-                                        <td>{order.quantity}</td>
-                                        <td>Ksh {Number(order.total_price).toLocaleString()}</td>
-                                        <td>
-                                            <span className={`status-badge status-${order.order_status.toLowerCase()}`}>
-                                                {order.order_status}
-                                            </span>
-                                            {order.order_status === 'pending' && (
-                                                <div className='order-actions'>
-                                                    <button onClick={() => handleUpdateStatus(order.order_id, 'approved')} className='sellerOrder-approve-btn'>Approve</button>
-                                                    <button onClick={() => handleUpdateStatus(order.order_id, 'rejected')} className='sellerOrder-reject-btn'>Reject</button>
-                                                </div>
-                                            )}
+                {loading ? (
+                    <p>Loading your orders...</p>
+                ) : error ? (
+                    <p className="error-message">{error}</p>
+                ) : (
+                    <div className="orders-table-container">
+                        <table className="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Buyer</th>
+                                    <th>Quantity</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orders.length > 0 ? (
+                                    orders.map(order => (
+                                        <tr key={order.order_id}>
+                                            <td>#{order.order_id}</td>
+                                            <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                                            <td>{order.product_title}</td>
+                                            <td>{order.buyer_name}</td>
+                                            <td>{order.quantity}</td>
+                                            <td>Ksh {Number(order.total_price).toLocaleString()}</td>
+                                            <td>
+                                                <span className={`status-badge status-${order.order_status.toLowerCase()}`}>
+                                                    {order.order_status}
+                                                </span>
+                                                {order.order_status === 'pending' && (
+                                                    <div className='order-actions'>
+                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'approved')} className='sellerOrder-approve-btn'>Approve</button>
+                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'rejected')} className='sellerOrder-reject-btn'>Reject</button>
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" className="no-orders-cell">
+                                            You have no incoming orders yet.
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="7" className="no-orders-cell">
-                                        You have no incoming orders yet.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+             <footer className="seller-order-footer">
+                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+            </footer>
         </div>
     );
 };

@@ -9,15 +9,13 @@ import './ProductDetails.css';
 const ProductHeader = () => (
     <header className="details-header">
         <div className="header-main">
-            <Link to="/Index" className="header-logo">Logo</Link>
-            <nav className="header-nav">
+            <h1>Flea Market</h1>
+            <nav className="details-header-nav">
                 <Link to="#">Account</Link>
-                <Link to="#">Orders</Link>
-                <Link to="#">Cart</Link>
+                <Link to="/orders">Orders</Link>
+                <Link to="/Cart">Cart</Link>
+                <Link to='/Index'>Back</Link>
             </nav>
-            <div className="header-search">
-                <input type="text" placeholder="Search product" />
-            </div>
         </div>
     </header>
 );
@@ -42,13 +40,6 @@ const MiniProductCard = ({ product }) => {
 // A detailed footer
 const ProductFooter = () => (
     <footer className="details-footer">
-        <div className="footer-newsletter">
-            <p>Let's stay in touch! Sign up to our newsletter and get the best deals!</p>
-            <form className="newsletter-form">
-                <input type="email" placeholder="Insert your email address here" />
-                <button type="submit">Subscribe now</button>
-            </form>
-        </div>
         <div className="footer-main">
             <div className="footer-column-logo">
                 <div className="footer-logo">Logo</div>
@@ -58,14 +49,11 @@ const ProductFooter = () => (
                 <h4>Help</h4>
                 <Link to="#">FAQ</Link>
                 <Link to="#">Customer service</Link>
-                <Link to="#">How to guides</Link>
                 <Link to="#">Contact us</Link>
             </div>
             <div className="footer-column">
-                <h4>Other</h4>
-                <Link to="#">Privacy Policy</Link>
+                <h4>Other</h4>                
                 <Link to="#">Sitemap</Link>
-                <Link to="#">Subscriptions</Link>
             </div>
         </div>
     </footer>

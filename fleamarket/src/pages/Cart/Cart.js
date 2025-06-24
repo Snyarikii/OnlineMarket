@@ -131,7 +131,7 @@ const Cart = () => {
                                     </div>
                                     <div className="cart-buttons">
                                         <div className="quantity-controls">
-                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)}>-</button>
+                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)} className="subtract-btn">-</button>
                                             <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}>+</button>
                                         </div>
                                         <button className="cart-placeOrder-btn" onClick={() => handlePlaceOrder(item)}>Place order</button>
@@ -145,6 +145,9 @@ const Cart = () => {
                         </div>
                     </>
                 )}
+            </div>
+            <div className="cart-footer">
+                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
             </div>
         </div> 
     );

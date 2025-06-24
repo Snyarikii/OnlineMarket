@@ -115,9 +115,10 @@ const UpdateProduct = () => {
 
                     <label>Condition</label>
                     <select value={condition} onChange={(e) => setCondition(e.target.value)} required>
-                        <option value="">Select Condition</option>
                         <option value="New">New</option>
-                        <option value="Used">Used</option>
+                        <option value="Used - Like New">Used - Like New</option>
+                        <option value="Used - Good">Used - Good</option>
+                        <option value="Used - Fair">Used - Fair</option>
                     </select>
 
                     <label>Update Image (optional)</label>

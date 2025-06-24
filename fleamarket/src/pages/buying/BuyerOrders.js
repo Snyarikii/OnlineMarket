@@ -40,7 +40,7 @@ const BuyerOrders = () => {
     return (
         <div className="orders-page">
             <header className="orders-header">
-                <h1 onClick={() => navigate('/Index')}>FleaMarket</h1>
+                <h1>FleaMarket</h1>
                 <nav className="orders-nav">
                     <Link to="/Index">Continue Shopping</Link>
                 </nav>
@@ -88,6 +88,9 @@ const BuyerOrders = () => {
                     </div>
                 )}
             </main>
+            <div className='buyer-order-footer'>
+                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+            </div>
         </div>
     );
 };

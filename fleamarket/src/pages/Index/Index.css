@@ -27,7 +27,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
+  padding: 1rem;
   background-color: var(--color-primary);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
@@ -42,7 +42,7 @@
   cursor: pointer; */
 
   font-family: Epilogue;
-  margin-left: 30px;
+  margin-left: 10px;  
   color: white;
   margin-top: 25px;
   
@@ -63,7 +63,7 @@
 .index-header-nav-links {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  
 }
 .index-header-nav-links a, .btn-logout {
   text-decoration: none;
