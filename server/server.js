@@ -236,7 +236,7 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
 });
 
 //Buyer view product endpoint
-app.get('/api/products/approved', async (req, res) => {
+app.get('/api/products/approved',authenticateToken, async (req, res) => {
     try {
         const [rows] = await con.promise().query(
             "SELECT id, category_id, seller_id, title, price, product_condition, image_url FROM products WHERE status = 'approved'"

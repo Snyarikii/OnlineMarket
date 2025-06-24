@@ -52,11 +52,19 @@ const Index = ({ setUser, setLoggingOut }) => {
         const fetchApprovedProducts = async () => {
             try {
                 // Fetching from the correct buyer-facing endpoint
-                const response = await axios.get('http://localhost:3001/api/products/approved');
+                const response = await axios.get('http://localhost:3001/api/products/approved', {
+                    headers: {'Authorization' : `Bearer ${token}`}
+                });
                 setProducts(response.data);
             } catch (err) {
-                console.error("Error fetching products:", err);
-                setError("Failed to load products. The server might be down.");
+                if(err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    alert("Session expired. Please log in again");
+                    localStorage.removeItem('token');
+                    navigate("/Login");
+                } else {
+                    console.error(err);
+                    alert("An error occurred. Please try again.");
+                }
             } finally {
                 setLoading(false);
             }
