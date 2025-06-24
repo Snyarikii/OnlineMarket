@@ -102,9 +102,9 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                     />
                 </div>
                 <nav className="dashboard-nav">
-                    <a onClick={LogOut} className="dashboard-logout-link">Log Out</a>
                     <Link to='/add-product' className="dashboard-addProduct-link">Add product</Link>
                     <Link to='/dashboard/orders' className="dashboard-orders-link">View Orders</Link>
+                    <a onClick={LogOut} className="dashboard-logout-link">Log Out</a>
                 </nav>
             </header>
             <h1 className="dashboard-h1">My Products</h1>
@@ -146,7 +146,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                                         <p>Price: Ksh {Number(item.price).toLocaleString()}</p>
                                         <p>Condition: {item.product_condition}</p>
                                         <p>Status: {item.status}</p>
-                                        <button className="dashboard-update-btn">Update Product</button>
+                                        <button className="dashboard-update-btn" onClick={() => navigate(`/updateProduct/${item.id}`)}>Update Product</button>
                                     </div>
                                 </div>
                             ))}

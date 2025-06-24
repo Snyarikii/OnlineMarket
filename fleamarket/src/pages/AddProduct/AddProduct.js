@@ -122,7 +122,7 @@ const AddProduct = () => {
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <label htmlFor="price">Price ($)</label>
+                                <label htmlFor="price">Price (Ksh)</label>
                                 <input type="number" id="price" name="price" value={product.price} onChange={handleInputChange} min="0.01" step="0.01" required />
                             </div>
                             <div className="form-group">

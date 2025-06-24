@@ -158,13 +158,13 @@ const Index = ({ setUser, setLoggingOut }) => {
                     </div>
                 </aside>
 
-                <section className="products-grid-container">
+                <section className="index-products-grid-container">
                     {loading ? (
                         <p className="loading-text">Loading products...</p>
                     ) : error ? (
                         <p className="error-message">{error}</p>
                     ) : (
-                        <div className="products-grid">
+                        <div className="index-products-grid">
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map(product => (
                                     <ProductCard key={product.id} product={product} />

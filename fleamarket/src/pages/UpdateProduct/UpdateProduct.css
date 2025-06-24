@@ -1,0 +1,78 @@
+.update-product-header {
+    position: fixed;
+    background-color: #2563eb;
+    width: 100%;
+    justify-content: space-between;
+    left: 0;
+    top: 0;
+    display: flex;
+    z-index: 1000;
+    height: 15vh;
+}
+.update-product-header h1{
+    font-family: Epilogue;
+    margin-left: 30px;
+    color: white;
+    margin-top: 25px;
+    font-size: 25px;
+}
+.update-product-link {
+    padding-top: 30px;
+    justify-content: space-around;
+    margin-right: 30px;
+}
+.update-product-back-link {
+    font-family: Inter;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.update-product-back-link:hover{
+    background-color: rgb(159, 159, 255);
+    color: black;
+}
+
+.edit-product-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 3rem;
+    margin-top: 70px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.edit-product-container h2 {
+    font-family: Epilogue;
+}
+.edit-product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.edit-product-form label {
+    font-family: Inter;
+}
+.edit-product-form input, .edit-product-form textarea, .edit-product-form select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid black;
+}
+
+.update-product-btn {
+    width: 300px;
+    height: 7vh;
+    margin-top: 10px;
+    border: none;
+    background-color: #2563eb;
+    color: #f9f9f9;
+    border-radius: 8px;
+    padding: 5px;
+    align-self: center;
+    font-family: Inter;
+}
+.update-product-btn:hover {
+    background-color: #0056b3;
+}

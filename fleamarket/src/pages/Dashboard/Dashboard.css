@@ -110,12 +110,16 @@
     border: 1px solid var(--color-border);
     background-color: var(--color-light);
 }
+.dashboard-grid-container {
+    flex-grow: 1;
+}
 
 .dashboard-items {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* flex-direction: row; */
     gap: 3rem;
-    margin-left: 30px;
+    margin-left: 2px;
 }
 
 .dashboard-item {

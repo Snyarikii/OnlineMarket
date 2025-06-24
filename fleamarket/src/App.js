@@ -18,6 +18,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Cart from './pages/Cart/Cart';
 import BuyerOrders from './pages/buying/BuyerOrders';
 import SellerOrder from './pages/Dashboard/SellerOrder';
+import UpdateProduct from './pages/UpdateProduct/UpdateProduct';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -52,8 +53,12 @@ function App() {
 
         <Route path='/Index' element={<ProtectedRoute allowedRoles={['buyer']} user={user} loggingOut={loggingOut}> <Index setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
         <Route path='/Cart' element={<Cart />} />
+
         <Route path='/Dashboard' element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><Dashboard setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
-        <Route path="/add-product" element={<ProtectedRoute allowedRoles={['seller']} user={user} loggingOut={loggingOut}><AddProduct setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/UpdateProduct/:productId" element={<UpdateProduct />} />
+        <Route path="/dashboard/orders" element={<SellerOrder />} />
+
         <Route path='/Admin' element={<ProtectedRoute allowedRoles={['admin']} user={user} loggingOut={loggingOut}><AdminLayout setUser={setUser} setLoggingOut={setLoggingOut}/> </ProtectedRoute>}>
           <Route index element={<AdminIndex />} />
           <Route path='ManageCategories' element={<ManageCategories />} />
@@ -61,7 +66,6 @@ function App() {
           <Route path='ManageProducts' element={<ManageProducts />} />
         </Route>
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
-        <Route path="/dashboard/orders" element={<SellerOrder />} />
         <Route path="/orders" element={<BuyerOrders />} />
       </Routes>
     </BrowserRouter>

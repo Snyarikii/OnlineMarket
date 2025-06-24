@@ -483,6 +483,32 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
+//Seller update product endpoint
+app.put('/api/products/:productId', authenticateToken, upload.single('image'), async (req, res) => {
+    const { productId } = req.params;
+    const { title, description, category_id, price, condition } = req.body;
+    const imageFile = req.file;
+
+    const updates = [category_id, title, description, price, condition];
+    let sql = `UPDATE products SET category_id = ?, title = ?, description = ?, price = ?, product_condition = ?`;
+
+    if(imageFile) {
+        sql += `, image_url = ?`;
+        updates.push(imageFile.filename);
+    }
+
+    sql += `WHERE id = ?`;
+    updates.push(productId);
+
+    try {
+        await con.promise().query(sql, updates);
+        res.send({ message: "Product updated successfully"});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Failed to update product");
+    }
+});
+
 
 // --- endpoint To get other products from the same seller ---
 app.get('/api/sellers/:sellerId/products', async (req, res) => {

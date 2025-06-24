@@ -86,13 +86,13 @@
 /* --- Main Content Layout --- */
 .marketplace-main {
   display: flex;
-  padding: 2rem 5%;
+  padding: 1rem;
   gap: 2rem;
 }
 
 /* --- Filters Sidebar --- */
 .filters-sidebar {
-  width: 250px;
+  width: 200px;
   flex-shrink: 0;
   background-color: var(--color-light);
   padding: 1.5rem;
@@ -125,13 +125,19 @@
 }
 
 /* --- Products Grid --- */
-.products-grid-container {
-  flex-grow: 1;
+.index-products-grid-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
 }
-.products-grid {
+.index-products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 2px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  width: 100%;
+  /* max-width: 1200px; */
 }
 
 /* --- Product Card Styling --- */
@@ -157,9 +163,9 @@
 }
 .product-card-image {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 250px;
+  top: 20px;
+  left: 20px;
+  width: 200px;
   /* height: 100%; */
   object-fit: cover;
   margin-left: 30px;
