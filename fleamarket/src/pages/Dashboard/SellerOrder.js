@@ -94,24 +94,41 @@ const SellerOrder = () => {
                             <tbody>
                                 {orders.length > 0 ? (
                                     orders.map(order => (
-                                        <tr key={order.order_id}>
-                                            <td>#{order.order_id}</td>
-                                            <td>{new Date(order.order_date).toLocaleDateString()}</td>
-                                            <td>{order.product_title}</td>
-                                            <td>{order.buyer_name}</td>
-                                            <td>{order.quantity}</td>
-                                            <td>Ksh {Number(order.total_price).toLocaleString()}</td>
-                                            <td>
-                                                <span className={`status-badge status-${order.order_status.toLowerCase()}`}>
-                                                    {order.order_status}
-                                                </span>
-                                                {order.order_status === 'pending' && (
-                                                    <div className='order-actions'>
-                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'delivered')} className='sellerOrder-approve-btn'>Mark as delivered</button>
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
+                                        <>
+                                            <tr key={order.order_id}>
+                                                <td>#{order.order_id}</td>
+                                                <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                                                <td>{order.product_title}</td>
+                                                <td>{order.buyer_name}</td>
+                                                <td>{order.quantity}</td>
+                                                <td>Ksh {Number(order.total_price).toLocaleString()}</td>
+                                                <td>
+                                                    <span className={`status-badge status-${order.order_status.toLowerCase()}`}>
+                                                        {order.order_status}
+                                                    </span>
+                                                    {order.order_status === 'pending' && (
+                                                        <div className='order-actions'>
+                                                            <button onClick={() => handleUpdateStatus(order.order_id, 'delivered')} className='sellerOrder-approve-btn'>Mark as delivered</button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                            <tr className="shipping-row">
+                                                <td colSpan="7">
+                                                    <strong>Shipping Info:</strong><br />
+                                                    {order.shipping ? (
+                                                    <>
+                                                        <div>Recipient: {order.shipping.recipient_name}</div>
+                                                        <div>Phone: {order.shipping.phone_number}</div>
+                                                        <div>Address: {order.shipping.address_line1}, {order.shipping.city}, {order.shipping.postal_code}, {order.shipping.country}</div>
+                                                        <div>Method: {order.shipping.shipping_method}</div>
+                                                    </>
+                                                    ) : (
+                                                    <em>No shipping info available.</em>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        </>
                                     ))
                                 ) : (
                                     <tr>

@@ -28,11 +28,11 @@ const PORT = 3001;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use((req, res, next) => {
-    // console.log(`📩 Incoming request: ${req.method} ${req.url}`);
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-});
+// app.use((req, res, next) => {
+//     // console.log(`📩 Incoming request: ${req.method} ${req.url}`);
+//     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+//     next();
+// });
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -647,34 +647,62 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
 // --- NEW ENDPOINT: Get all orders for a logged-in seller's products ---
 app.get('/api/seller/orders', authenticateToken, async (req, res) => {
     try {
-        const sellerId = req.user.id; // Get the seller's ID from the JWT token
+        const sellerId = req.user.id;
 
-        // This query joins the orders and products tables, filtering by the seller's ID
-        // and retrieving the buyer's name from the users table.
         const sql = `
             SELECT 
-                o.id as order_id, 
-                o.quantity, 
-                o.total_price, 
-                o.order_status, 
-                o.order_date, 
-                p.title as product_title,
-                u.name as buyer_name
+                o.id AS order_id,
+                o.quantity,
+                o.total_price,
+                o.order_status,
+                o.order_date,
+                p.title AS product_title,
+                u.name AS buyer_name,
+                s.recipient_name,
+                s.address_line1,
+                s.city,
+                s.postal_code,
+                s.country,
+                s.phone_number,
+                s.shipping_method
             FROM orders o
             JOIN products p ON o.item_id = p.id
             JOIN users u ON o.buyer_id = u.id
+            LEFT JOIN shipping s ON o.id = s.order_id
             WHERE p.seller_id = ?
             ORDER BY o.order_date DESC
         `;
+
         const [orders] = await con.promise().query(sql, [sellerId]);
 
-        res.json(orders);
+        // Nest the shipping info in its own object for cleaner frontend use
+        const formattedOrders = orders.map(order => ({
+            order_id: order.order_id,
+            quantity: order.quantity,
+            total_price: order.total_price,
+            order_status: order.order_status,
+            order_date: order.order_date,
+            product_title: order.product_title,
+            buyer_name: order.buyer_name,
+            shipping: {
+                recipient_name: order.recipient_name,
+                address_line1: order.address_line1,
+                city: order.city,
+                postal_code: order.postal_code,
+                country: order.country,
+                phone_number: order.phone_number,
+                shipping_method: order.shipping_method
+            }
+        }));
+
+        res.json(formattedOrders);
 
     } catch (error) {
         console.error("Error fetching seller orders:", error);
         res.status(500).json({ error: "Failed to fetch your orders." });
     }
 });
+
 
 //Mpesa enpoints
 app.post('/api/stk-push', async (req, res) => {
