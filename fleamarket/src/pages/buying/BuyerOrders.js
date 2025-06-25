@@ -83,7 +83,7 @@ const BuyerOrders = () => {
                                 <div className="order-status">
                                     <p className={`status-badge status-${order.order_status.toLowerCase()}`}>{order.order_status}</p>
                                 </div>
-                                {order.order_status.toLowerCase() === "approved" && (
+                                {order.order_status.toLowerCase() === "pending" && (
                                     <button 
                                         className='mpesa-pay-btn'
                                         onClick={() => 

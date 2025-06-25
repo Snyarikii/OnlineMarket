@@ -107,8 +107,7 @@ const SellerOrder = () => {
                                                 </span>
                                                 {order.order_status === 'pending' && (
                                                     <div className='order-actions'>
-                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'approved')} className='sellerOrder-approve-btn'>Approve</button>
-                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'rejected')} className='sellerOrder-reject-btn'>Reject</button>
+                                                        <button onClick={() => handleUpdateStatus(order.order_id, 'delivered')} className='sellerOrder-approve-btn'>Mark as delivered</button>
                                                     </div>
                                                 )}
                                             </td>

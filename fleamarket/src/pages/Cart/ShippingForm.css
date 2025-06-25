@@ -62,3 +62,8 @@
 .shipping-form-buttons button.cancel-btn:hover {
     background-color: #bbb;
 }
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}

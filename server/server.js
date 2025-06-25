@@ -29,7 +29,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use((req, res, next) => {
-    console.log(`📩 Incoming request: ${req.method} ${req.url}`);
+    // console.log(`📩 Incoming request: ${req.method} ${req.url}`);
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
@@ -226,7 +226,7 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    if(!['approved', 'rejected'].includes(status)) {
+    if(!['delivered'].includes(status)) {
         return res.status(400).send("Invalid status");
     }
 

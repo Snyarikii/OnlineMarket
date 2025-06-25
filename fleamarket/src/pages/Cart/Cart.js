@@ -112,39 +112,24 @@ const Cart = () => {
                 console.log("Shipping info found:", prevShipping);
             } catch (err) {
                 if(err.response && err.response.status === 404) {
-                    console.log("No previous shipping info found, showing form...");
-                    setItemToOrder({ ...item, order_id: newOrderId, cartId: item.cartId});
-                    setShowShippingForm(true);
-                    return;
+                    console.log("No previous shipping info found.");
                 } else {
-                    throw err;
+                    console.error("Error fetching shipping info", err);
                 }
             }
             
-
-
-            console.log("saving new shipping info...");
-            await axios.post('http://localhost:3001/api/shipping', {
+            setItemToOrder({
+                ...item, 
                 order_id: newOrderId,
-                recipient_name: prevShipping.recipient_name,
-                address_line1: prevShipping.address_line1,
-                city: prevShipping.city,
-                postal_code: prevShipping.postal_code,
-                country: prevShipping.country,
-                phone_number: prevShipping.phone_number,
-                shipping_method: prevShipping.shipping_method,
-             }, {
-                headers: { Authorization: `Bearer ${token}`}
+                cartId: item.cartId,
+                shippingPrefill: prevShipping
             });
+            setShowShippingForm(true);
 
             console.log("Deleting item from cart...");
             await axios.delete(`http://localhost:3001/api/cart/${item.cartId}`, {
                 headers: { Authorization: `Bearer ${token}`}
             });
-
-            setCartItems(prev => prev.filter(cartItem => cartItem.cartId !== item.cartId));
-            alert("Order placed successfully! Shipping info used from your previous order.");
-
         } catch (err) {
             console.error("Error placing order:", err);
             alert("could not place order. Please try again.");
@@ -204,14 +189,25 @@ const Cart = () => {
                 <div ref={shippingFormRef}>
                     <ShippingForm
                         itemToOrder={itemToOrder}
-                        onSubmit={async () => {
+                        prefillData={itemToOrder?.shippingPrefill || null}
+                        onSubmit={async (filledShippingData) => {
                             const token = localStorage.getItem('token');
                             try {
+
+                                await axios.post('http://localhost:3001/api/shipping', {
+                                    order_id: itemToOrder.order_id,
+                                    ...filledShippingData
+                                }, {
+                                    headers: {Authorization: `Bearer ${token}`}
+                                });
+
                                 await axios.delete(`http://localhost:3001/api/cart/${itemToOrder.cartId}`, {
                                     headers: {Authorization: `Bearer ${token}`}
                                 });
+                                
                                 setCartItems(prev => prev.filter(cartItem => cartItem.cartId !== itemToOrder.cartId));
                                 alert("Order placed successfully! Shipping details saved.");
+                                navigate('/orders');
                             } catch (error) {
                                 console.error("Error deleting cart item:", error);
                                 alert("Order placed, but failed to remove item from cart. Please refresh manually.");
