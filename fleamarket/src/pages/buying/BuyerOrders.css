@@ -182,3 +182,16 @@
     background-color: var(--color-light);
     border-top: 1px solid var(--color-border);
 }
+.mpesa-pay-btn {
+    background-color: #1a8f1a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+.mpesa-pay-btn:hover {
+    background-color: #157d15;
+}

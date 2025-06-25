@@ -19,6 +19,7 @@ import Cart from './pages/Cart/Cart';
 import BuyerOrders from './pages/buying/BuyerOrders';
 import SellerOrder from './pages/Dashboard/SellerOrder';
 import UpdateProduct from './pages/UpdateProduct/UpdateProduct';
+import MpesaPayment from './components/MpesaPayment/MpesaPayment';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -67,6 +68,7 @@ function App() {
         </Route>
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
         <Route path="/orders" element={<BuyerOrders />} />
+        <Route path="/MpesaPayment" element={<MpesaPayment />} />
       </Routes>
     </BrowserRouter>
   );

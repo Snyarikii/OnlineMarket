@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const formatPhoneNumberServer = require('./utils/FormatPhoneNumber');
+const stkPush = require('./functions/stkpush');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -26,6 +28,11 @@ const PORT = 3001;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use((req, res, next) => {
+    console.log(`📩 Incoming request: ${req.method} ${req.url}`);
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -388,6 +395,34 @@ app.post('/api/shipping', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Failed to add shipping info."});
     }
 });
+//Buyer get orders with shipping
+app.get('/api/orders/with-shipping', authenticateToken, async (req, res) => {
+    const buyerId = req.user.id;
+
+    try {
+        const [rows] = await con.promise().query(`
+            SELECT 
+                o.id AS order_id,
+                o.total_price,
+                o.order_status,
+                o.quantity,
+                o.order_date,
+                p.title,
+                p.image_url,
+                s.phone_number
+            FROM orders o
+            JOIN shipping s ON o.id = s.order_id
+            JOIN products p on o.item_id = p.id
+            WHERE o.buyer_id = ?
+            `, [buyerId]);
+
+            res.json(rows);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching orders with shipping data"});
+    }
+});
 
 // Admin APIs
 // Get all categories
@@ -638,5 +673,94 @@ app.get('/api/seller/orders', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error("Error fetching seller orders:", error);
         res.status(500).json({ error: "Failed to fetch your orders." });
+    }
+});
+
+//Mpesa enpoints
+app.post('/api/stk-push', async (req, res) => {
+    const { phone, amount } = req.body;
+
+    const formattedNumber = formatPhoneNumberServer(phone);
+    try {
+        const response = await stkPush(formattedNumber, amount);
+        return res.json(response);
+    } catch (error) {
+        return res.status(500).json({ message: "Error processing STK push", error});
+    }
+});
+
+app.post('/api/query-transaction', async (req, res) => {
+    const {checkoutRequestID} = req.body;
+
+    try{
+        const response = await queryTransaction(checkoutRequestID);
+        res.json(response);
+    }catch(error){
+        res.status(500).json({ message: 'Error querying transaction', error});
+    }
+});
+
+//Mpesa Callback endpoint
+app.post('/api/mpesa-callback', async (req, res) => {
+    console.log("✅ Callback received:", req.body);
+
+    const stkCallback = req.body?.Body?.stkCallback;
+
+    if (!stkCallback) {
+        console.error("❌ Invalid callback format.");
+        return res.status(400).send("Invalid callback format.");
+    }
+
+    // Only process successful transactions
+    if (stkCallback.ResultCode === 0) {
+        const metadata = stkCallback.CallbackMetadata?.Item;
+
+        const amount = metadata.find(item => item.Name === 'Amount')?.Value;
+        const phoneNumber = String(metadata.find(item => item.Name === 'PhoneNumber')?.Value);
+
+        if (!phoneNumber || !amount) {
+            console.error("❌ Missing phone number or amount in callback.");
+            return res.status(400).send("Missing required transaction data.");
+        }
+
+        console.log("📞 Phone:", phoneNumber, "| 💰 Amount:", amount);
+
+        try {
+            // Find order and user info by phone number
+            const [shippingRow] = await con.promise().query(
+                `SELECT s.user_id AS buyer_id, o.item_id, o.buyer_id, i.seller_id
+                 FROM shipping s
+                 JOIN orders o ON s.order_id = o.id
+                 JOIN products i ON o.item_id = i.id
+                 WHERE s.phone_number = ?
+                 ORDER BY s.shipping_id DESC LIMIT 1`,
+                [phoneNumber]
+            );
+
+            if (!shippingRow.length) {
+                console.warn("⚠️ No matching shipping/order data for phone:", phoneNumber);
+                return res.status(404).send("Matching order not found.");
+            }
+
+            const { item_id, buyer_id, seller_id } = shippingRow[0];
+
+            // Insert transaction into DB
+            await con.promise().execute(`
+                INSERT INTO transactions 
+                    (item_id, buyer_id, seller_id, amount, transaction_date, payment_method, status)
+                VALUES (?, ?, ?, ?, NOW(), ?, ?)`,
+                [item_id, buyer_id, seller_id, amount, 'Mpesa', 'Completed']
+            );
+
+            console.log(`✅ Transaction recorded for buyer ID: ${buyer_id}`);
+            res.status(200).json({ message: 'Transaction saved successfully.' });
+
+        } catch (err) {
+            console.error("❌ Error saving transaction:", err);
+            res.status(500).json({ error: "Failed to save transaction." });
+        }
+    } else {
+        console.log("❌ Payment failed or cancelled");
+        res.status(200).send("Transaction not successful.");
     }
 });

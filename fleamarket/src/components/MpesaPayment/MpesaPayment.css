@@ -1,0 +1,33 @@
+.mpesa-form-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.mpesa-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 0.75rem 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.mpesa-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.mpesa-form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

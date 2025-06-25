@@ -22,7 +22,7 @@ const BuyerOrders = () => {
         const fetchOrders = async () => {
             try {
                 // The endpoint remains the same, but the data it returns is different.
-                const response = await axios.get('http://localhost:3001/api/orders', {
+                const response = await axios.get('http://localhost:3001/api/orders/with-shipping', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setOrders(response.data);
@@ -83,6 +83,22 @@ const BuyerOrders = () => {
                                 <div className="order-status">
                                     <p className={`status-badge status-${order.order_status.toLowerCase()}`}>{order.order_status}</p>
                                 </div>
+                                {order.order_status.toLowerCase() === "approved" && (
+                                    <button 
+                                        className='mpesa-pay-btn'
+                                        onClick={() => 
+                                            navigate('/MpesaPayment', {
+                                                state: {
+                                                    phoneNumber: order.phone_number,
+                                                    amount: order.total_price,
+                                                    title: order.title
+                                                }
+                                            })
+                                        }
+                                    >
+                                        Pay with Mpesa
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
