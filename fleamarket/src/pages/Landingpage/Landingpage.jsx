@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 // Import assets
@@ -52,6 +52,7 @@ const EngagementCard = ({ title, children }) => (
 
 // --- Main Page Component ---
 const LandingPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="landing-page">
       <header className="landing-page-header">
@@ -68,7 +69,7 @@ const LandingPage = () => {
         <section className="section hero-section">
           <h1 className="hero-title">Flea Market</h1>
           <p className="hero-subtitle">Where you trade smarter</p>
-          <button className="btn btn-primary">Shop now</button>
+          <button className="btn btn-primary" onClick={() => navigate('/Login')}>Shop now</button>
         </section>
 
         <section className="section engagement-section">

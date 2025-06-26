@@ -35,7 +35,7 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
 
     return (
         <div className="shipping-form-modal">
-            <h3>Enter Shipping Information</h3>
+            <h3>Enter Delivery Information</h3>
             <form onSubmit={handleSubmit} className="shipping-form">
                 <input type="text" name="recipient_name" placeholder="Recipient Name" value={formData.recipient_name} onChange={handleChange} required />
                 <input type="text" name="address_line1" placeholder="Address Line 1" value={formData.address_line1} onChange={handleChange} required />

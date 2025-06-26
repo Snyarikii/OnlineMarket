@@ -115,7 +115,7 @@ const SellerOrder = () => {
                                             </tr>
                                             <tr className="shipping-row">
                                                 <td colSpan="7">
-                                                    <strong>Shipping Info:</strong><br />
+                                                    <strong>Delivery Info:</strong><br />
                                                     {order.shipping ? (
                                                     <>
                                                         <div>Recipient: {order.shipping.recipient_name}</div>
