@@ -14,6 +14,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedPriceRange, setSelectedPriceRange] = useState('');
     const [selectedCondition, setSelectedCondition] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+
     
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -32,7 +34,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             } catch (err) {
                 console.error("Error fetching products", err);
                 setMyProducts([]);
-                alert("Could not fetch your products. Please try again.");
+                alert("Your token has expired please log in again to continue.");
+                navigate('/Login');
             } finally {
                 setLoading(false);
             }
@@ -58,7 +61,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
     useEffect(() => {
         filterMyProducts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange]);
+    }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange, selectedStatus]);
 
     const filterMyProducts = () => {
         let filtered = [...myProducts];
@@ -86,7 +89,12 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             filtered = filtered.filter(product => {
                 const price = Number(product.price);
                 return price >= min && price <= max;
-            })
+            });
+        }
+        if(selectedStatus.trim() !== '') {
+            filtered = filtered.filter(product => 
+                product.status === selectedStatus
+            );
         }
         setFilteredProducts(filtered);
     };
@@ -129,6 +137,15 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             <div className="dashboard-container">
                 <aside className="dashboard-filters-sidebar">
                     <h3>Filters</h3>
+                    <div className="dashboard-filter-group">
+                        <label>Product status</label>
+                        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                            <option value="">Any status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>                            
+                        </select>
+                    </div>
+                    
                     <div className="dashboard-filter-group">
                         <label>Category</label>
                         <select onChange={(e) => setSelectedCategory(e.target.value)}>

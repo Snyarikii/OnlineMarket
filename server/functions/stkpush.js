@@ -1,4 +1,4 @@
-require('dotenv').config({ path:__dirname + '/.env'});
+require('dotenv').config({ path: __dirname + '/.env'});
 const getFormattedTimestamp = require('../utils/TimeStamp');
 const generateToken = require('../utils/GenerateToken');
 
@@ -11,7 +11,6 @@ const stkPush = async (phone, amount) => {
     const callBackUrl = process.env.CALLBACK_URL;
     const url = process.env.STK_URL;
 
-
     try{
         const body = {
         "BusinessShortCode": shortcode,    
@@ -22,11 +21,11 @@ const stkPush = async (phone, amount) => {
         "PartyA":phone,    
         "PartyB":shortcode,    
         "PhoneNumber":phone,
-        "CallBackURL": callBackUrl,    
+        "CallBackURL": callBackUrl,
         "AccountReference":"Nyarikii",
         "TransactionDesc":"Test"
         };
-
+        
         const response =  await fetch (url,{
             method: 'POST',
             headers: {

@@ -12,48 +12,54 @@ const Login = ({ setUser }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setMessage(""); 
 
-        try{
+        try {
             const res = await axios.post("http://localhost:3001/api/login", {
                 email,
                 password,
             });
 
-            if(res.data.success){
+            if (res.data.success) {
                 localStorage.setItem('token', res.data.token);
                 localStorage.setItem('user', JSON.stringify(res.data.user));
                 setUser(res.data.user);
                 setMessage(res.data.message);
 
                 const userRole = res.data.user.role;
-                if(userRole === 'buyer') {
-                    setTimeout(() => {
+                setTimeout(() => {
+                    if (userRole === 'buyer') {
                         navigate('/Index');
-                    }, 1500);
-                } else if(userRole === 'seller') {
-                    setTimeout(() => {
+                    } else if (userRole === 'seller') {
                         navigate('/Dashboard');
-                    }, 1500);
-                } else if (userRole === 'admin') {
-                    setTimeout(() => {
+                    } else if (userRole === 'admin') {
                         navigate('/Admin');
-                    }, 1500);
-                } else {
-                    navigate('/');
-                }
-                
-            }else{
-                setMessage(res.data.error || "Login failed");
-                
-            }
-        }catch (err)  {
-            if(err.response && err.response.data && err.response.data.error) {
-                setMessage(err.response.data.error);
+                    } else {
+                        navigate('/');
+                    }
+                }, 1500);
+
             } else {
-                setMessage("Error logging in.");
+                setMessage(res.data.error || "Login failed");
+            }
+
+        } catch (err) {
+            if (err.response) {
+                const status = err.response.status;
+
+                if (status === 403) {
+                    setMessage("⚠️ Your account is deactivated. Please contact support.");
+                } else if (err.response.data && err.response.data.error) {
+                    setMessage(err.response.data.error);
+                } else {
+                    setMessage("Login failed. Please try again.");
+                }
+            } else {
+                setMessage("Error connecting to server.");
             }
         }
     };
+
 
     return (
 

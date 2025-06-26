@@ -29,7 +29,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // app.use((req, res, next) => {
-//     // console.log(`📩 Incoming request: ${req.method} ${req.url}`);
+//     console.log(`📩 Incoming request: ${req.method} ${req.url}`);
 //     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
 //     next();
 // });
@@ -37,7 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "Stevey-boy12$",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -81,39 +81,45 @@ function authenticateToken(req, res, next){
 
 // Login API
 app.post("/api/login", (req, res) => {
-    const {email, password } = req.body;
+    const { email, password } = req.body;
 
     const query = "SELECT * FROM users WHERE email = ?";
     con.query(query, [email], async (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error'});
-        if(results.length === 0) return res.status(401).json({ error: 'Invalid email or password'});
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (results.length === 0) return res.status(401).json({ error: 'Invalid email or password' });
 
         const user = results[0];
-        const match = await bcrypt.compare( password, user.password_hash);
+        const match = await bcrypt.compare(password, user.password_hash);
 
-        if(match) {
-           const payload = {
-            id: user.id,
-            email: user.email,
-            role: user.role
-           };
-           const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h'});
+        // ✅ FIRST check if account is active
+        if (!user.is_active) {
+            return res.status(403).json({ message: "This account is deactivated." });
+        }
 
-           res.json({
-            success: true,
-            message: 'Login successful!',
-            token: accessToken,
-            user: {
+        if (match) {
+            const payload = {
                 id: user.id,
                 email: user.email,
-                role:user.role
-            }
-           });
+                role: user.role
+            };
+            const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+
+            return res.json({
+                success: true,
+                message: 'Login successful!',
+                token: accessToken,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role
+                }
+            });
         } else {
-            res.status(401).json({ error: 'Invalid email or password'});
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
     });
 });
+
 
 // Logout
 app.post('/logout', (req, res) => {
@@ -469,14 +475,28 @@ app.put('/api/admin/categories/:id', authenticateToken, (req, res) => {
     });
 });
 
-//Get all users
+//Admin get active users
 app.get('/api/admin/users', (req, res) => {
-    const sql = 'SELECT id, name, email, role FROM users';
+    const sql = 'SELECT id, name, email, role FROM users WHERE is_active = true';
     con.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err});
         res.json(results);
     });
 });
+
+//Admin fetch deactivated accounts
+app.get('/api/admin/deactivated', async (req, res) => {
+    try {
+        const [results] = await con.promise().query(
+            'SELECT id, name, email, role FROM users WHERE is_active = false'
+        );
+        res.json(results);
+    } catch (err) {
+        console.error("Error fetching deactivated users:", err);
+        res.status(500).json({ error: "Failed to fetch deactivated users." });
+    }
+});
+
 
 //Delete user by ID
 app.delete('/api/admin/users/:id', (req, res) => {
@@ -538,6 +558,38 @@ app.put('/api/admin/products/:productId/reject', authenticateToken, async (req, 
         res.status(500).json({ message: "Failed to reject product"});
     }
 });
+//Admin deactivate user account
+app.put('/api/users/:id/deactivate', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        await con.promise().execute(
+            'UPDATE users SET is_active = ? WHERE id = ?',
+            [false, userId]
+        );
+        res.json({ message: "User deactivated successfully" });
+    } catch (error) {
+        console.error("Error deactivating user:", error);
+        res.status(500).json({ error: "Failed to deactivate user" });
+    }
+});
+
+//Admin reactivate user account
+app.put('/api/users/:id/activate', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        await con.promise().execute(
+            'UPDATE users SET is_active = ? WHERE id = ?',
+            [true, userId]
+        );
+        res.json({ message: "User reactivated successfully" });
+    } catch (error) {
+        console.error("Error reactivating user:", error);
+        res.status(500).json({ error: "Failed to reactivate user" });
+    }
+});
+
 
 
 // ENDPOINT: To get a single product's details ---
@@ -551,7 +603,7 @@ app.get('/api/products/:id', async (req, res) => {
             FROM products p
             LEFT JOIN users u ON p.seller_id = u.id
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.id = ? AND p.status = 'approved'
+            WHERE p.id = ? AND p.status = 'approved' || p.status = 'pending'
         `;
         const [rows] = await con.promise().query(sql, [id]);
 
@@ -744,11 +796,15 @@ app.post('/api/mpesa-callback', async (req, res) => {
         const metadata = stkCallback.CallbackMetadata?.Item;
 
         const amount = metadata.find(item => item.Name === 'Amount')?.Value;
-        const phoneNumber = String(metadata.find(item => item.Name === 'PhoneNumber')?.Value);
+        let phoneNumber = String(metadata.find(item => item.Name === 'PhoneNumber')?.Value);
 
         if (!phoneNumber || !amount) {
             console.error("❌ Missing phone number or amount in callback.");
             return res.status(400).send("Missing required transaction data.");
+        }
+
+        if (phoneNumber.startsWith('2547')) {
+            phoneNumber = phoneNumber.replace(/^254/, '0');
         }
 
         console.log("📞 Phone:", phoneNumber, "| 💰 Amount:", amount);
