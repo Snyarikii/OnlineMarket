@@ -1,0 +1,32 @@
+.shipping-info-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+.shipping-info-form input {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 0.6rem;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+.shipping-info-form button {
+    padding: 0.6rem 1.2rem;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.info-message {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: green;
+}

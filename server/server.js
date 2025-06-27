@@ -248,18 +248,24 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
     }
 });
 
-//Buyer view product endpoint
-app.get('/api/products/approved',authenticateToken, async (req, res) => {
+// Buyer view product endpoint (only approved + seller is active)
+app.get('/api/products/approved', authenticateToken, async (req, res) => {
     try {
         const [rows] = await con.promise().query(
-            "SELECT id, category_id, seller_id, title, price, product_condition, image_url FROM products WHERE status = 'approved'"
+            `SELECT 
+                p.id, p.category_id, p.seller_id, p.title, 
+                p.price, p.product_condition, p.image_url
+            FROM products p
+            JOIN users u ON p.seller_id = u.id
+            WHERE p.status = 'approved' AND u.is_active = true`
         );
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching approved products:",error );
-        res.status(500).json({ error: "Failed to fetch products"});
+        console.error("Error fetching approved products:", error);
+        res.status(500).json({ error: "Failed to fetch products" });
     }
 });
+
 //Buyer Add to card endpoint
 app.post('/api/products/addToCart', authenticateToken, (req, res) => {
     const {productId, quantity} = req.body;
@@ -334,41 +340,109 @@ app.put('/api/cart/:cartId', authenticateToken, async (req, res) => {
     }
 });
 
-//Buyer place order endpoint
-app.post('/api/orders', authenticateToken, async(req, res) => {
+// Buyer place order (creates order header only)
+app.post('/api/orders', authenticateToken, async (req, res) => {
     const buyerId = req.user.id;
-    const { item_id, quantity, total_price } = req.body;
-    // console.log(req.body);
+    const {
+        total_price,
+        shipping_name,
+        shipping_phone,
+        shipping_address,
+        shipping_city,
+        shipping_postal_code,
+        shipping_country
+    } = req.body;
 
     const sql = `
-        INSERT INTO orders (buyer_id, item_id, quantity, total_price, order_status, order_date) 
-        VALUES (?,?,?,?, 'pending', NOW())
+        INSERT INTO orders 
+        (buyer_id, total_price, order_status, order_date, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code, shipping_country)
+        VALUES (?, ?, 'pending', NOW(), ?, ?, ?, ?, ?, ?)
     `;
 
-    con.query(sql, [buyerId, item_id, quantity, total_price], (err, result) => {
-        if(err) {
-            console.error(err);
-            return res.status(500).send("Error placing order.");
-        }
-        
+    const values = [
+        buyerId,
+        total_price,
+        shipping_name,
+        shipping_phone,
+        shipping_address,
+        shipping_city,
+        shipping_postal_code,
+        shipping_country
+    ];
+
+    try {
+        const [result] = await con.promise().query(sql, values);
+
         res.status(201).json({
-            message: "Order placed successfully!",
+            message: "Order created successfully",
             order_id: result.insertId
         });
-        console.log(result.insertId);
-    });
-});
-//Buyer get shipping info
-app.get('/api/shipping/user/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    const [rows] = await con.promise().query("SELECT * FROM shipping WHERE user_id = ?", [userId]);
-
-    if(rows.length > 0) {
-        return res.json(rows[0]);
-    } else {
-        return res.status(404).json({ message: "No shipping information found."});
+    } catch (err) {
+        console.error("Error placing order:", err);
+        res.status(500).json({ error: "Failed to create order" });
     }
 });
+// Buyer Add order items to order_items table
+app.post('/api/order-items', authenticateToken, async (req, res) => {
+    const { order_id, items } = req.body;
+    console.log("Items in order_items:", req.body);
+
+    if (!order_id || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: "Invalid request. Must provide order_id and items array." });
+    }
+
+    const values = items.map(item => [
+        order_id,
+        item.product_id,
+        item.seller_id,
+        item.quantity,
+        item.price,
+        item.quantity * item.price,
+        'pending'  // default status
+    ]);
+
+    console.log("Order ID:", order_id);
+    console.log("Items:", items);
+    console.log("Prepared Values:", values);
+
+
+    const sql = `
+        INSERT INTO order_items (order_id, product_id, seller_id, quantity, price, total_price, status)
+        VALUES ?
+    `;
+
+    try {
+        const [result] = await con.promise().query(sql, [values]);
+        res.status(201).json({ message: "Order items added successfully", inserted: result.affectedRows });
+    } catch (error) {
+        console.error("Error inserting order items:", error);
+        res.status(500).json({ error: "Failed to add order items" });
+    }
+});
+
+//Buyer get shipping info
+app.get('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
+    const userId = req.params.userId;
+
+    // Only allow users to access their own shipping info
+    if (parseInt(userId) !== req.user.id) {
+        return res.status(403).json({ message: "Unauthorized access to shipping info." });
+    }
+
+    try {
+        const [rows] = await con.promise().query("SELECT * FROM shipping WHERE user_id = ? LIMIT 1", [userId]);
+
+        if (rows.length > 0) {
+            return res.json(rows[0]);
+        } else {
+            return res.status(404).json({ message: "No shipping information found." });
+        }
+    } catch (err) {
+        console.error("Error fetching shipping info:", err);
+        return res.status(500).json({ message: "Server error while retrieving shipping info." });
+    }
+});
+
 
 //Buyer place shipping info
 app.post('/api/shipping', authenticateToken, async (req, res) => {
@@ -401,34 +475,82 @@ app.post('/api/shipping', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Failed to add shipping info."});
     }
 });
-//Buyer get orders with shipping
-app.get('/api/orders/with-shipping', authenticateToken, async (req, res) => {
+// Get all orders for buyer, with products and shipping info
+app.get('/api/orders/with-products', authenticateToken, async (req, res) => {
     const buyerId = req.user.id;
 
     try {
         const [rows] = await con.promise().query(`
             SELECT 
                 o.id AS order_id,
-                o.total_price,
-                o.order_status,
-                o.quantity,
+                oi.product_id,
+                oi.quantity,
+                oi.price AS item_price,
+                oi.total_price,
+                oi.status AS order_status,
                 o.order_date,
                 p.title,
                 p.image_url,
                 s.phone_number
             FROM orders o
-            JOIN shipping s ON o.id = s.order_id
-            JOIN products p on o.item_id = p.id
+            JOIN order_items oi ON o.id = oi.order_id
+            JOIN products p ON oi.product_id = p.id
+            JOIN shipping s ON o.buyer_id = s.user_id
             WHERE o.buyer_id = ?
-            `, [buyerId]);
+        `, [buyerId]);
 
-            res.json(rows);
-
+        res.json(rows);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error fetching orders with shipping data"});
+        console.error("Error fetching order history:", error);
+        res.status(500).json({ message: "Error fetching order history with products." });
     }
 });
+
+
+//Buyer update shipping info
+app.put('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
+    const userId = parseInt(req.params.userId);
+
+    
+    if (userId !== req.user.id) {
+        return res.status(403).json({ message: "Unauthorized access to update shipping info." });
+    }
+
+    const {
+        recipient_name,
+        address_line1,
+        city,
+        postal_code,
+        country,
+        phone_number
+    } = req.body;
+
+    try {
+        // Check if a shipping record already exists for the user
+        const [rows] = await con.promise().query("SELECT * FROM shipping WHERE user_id = ?", [userId]);
+
+        if (rows.length > 0) {
+            // Update existing record
+            await con.promise().query(
+                `UPDATE shipping SET recipient_name = ?, address_line1 = ?, city = ?, postal_code = ?, country = ?, phone_number = ? WHERE user_id = ?`,
+                [recipient_name, address_line1, city, postal_code, country, phone_number, userId]
+            );
+        } else {
+            // Insert new shipping info if it doesn't exist
+            await con.promise().query(
+                `INSERT INTO shipping (user_id, recipient_name, address_line1, city, postal_code, country, phone_number)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [userId, recipient_name, address_line1, city, postal_code, country, phone_number]
+            );
+        }
+
+        res.json({ message: "Shipping information updated successfully." });
+    } catch (err) {
+        console.error("Error updating shipping info:", err);
+        res.status(500).json({ message: "Server error while updating shipping info." });
+    }
+});
+
 
 // Admin APIs
 // Get all categories
@@ -495,17 +617,6 @@ app.get('/api/admin/deactivated', async (req, res) => {
         console.error("Error fetching deactivated users:", err);
         res.status(500).json({ error: "Failed to fetch deactivated users." });
     }
-});
-
-
-//Delete user by ID
-app.delete('/api/admin/users/:id', (req, res) => {
-    const userId = req.params.id;
-    const sql = "DELETE FROM users WHERE id = ?";
-    con.query(sql, [userId], (err, result) => {
-        if (err) return res.status(500).json({ error: err});
-        res.json({ message: "User deleted successfully."});
-    });
 });
 
 //Update user role

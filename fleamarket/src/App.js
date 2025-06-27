@@ -20,6 +20,7 @@ import BuyerOrders from './pages/buying/BuyerOrders';
 import SellerOrder from './pages/Dashboard/SellerOrder';
 import UpdateProduct from './pages/UpdateProduct/UpdateProduct';
 import MpesaPayment from './components/MpesaPayment/MpesaPayment';
+import BuyerShippingInfo from './pages/BuyerShippingInfo/BuyerShippingInfo';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -69,6 +70,8 @@ function App() {
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
         <Route path="/orders" element={<BuyerOrders />} />
         <Route path="/MpesaPayment" element={<MpesaPayment />} />
+        <Route path="/MyShippingInfo" element={<BuyerShippingInfo />} />
+
       </Routes>
     </BrowserRouter>
   );

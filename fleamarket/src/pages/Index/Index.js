@@ -153,7 +153,9 @@ const Index = ({ setUser, setLoggingOut }) => {
                     />
                 </div>
                 <nav className="index-header-nav-links">
+
                     <Link to="/orders">My Orders</Link>
+                    <Link to="/MyShippingInfo">Account</Link>
                     <Link to="/Cart">Cart</Link>
                     <a onClick={LogOut}>Log out</a>
                 </nav>

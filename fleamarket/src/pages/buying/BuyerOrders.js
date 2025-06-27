@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BuyerOrders.css';
 
-// --- Main Buyer Orders Page Component (Updated for new schema) ---
-
 const BuyerOrders = () => {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
@@ -21,8 +19,7 @@ const BuyerOrders = () => {
 
         const fetchOrders = async () => {
             try {
-                // The endpoint remains the same, but the data it returns is different.
-                const response = await axios.get('http://localhost:3001/api/orders/with-shipping', {
+                const response = await axios.get('http://localhost:3001/api/orders/with-products', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setOrders(response.data);
@@ -36,6 +33,23 @@ const BuyerOrders = () => {
 
         fetchOrders();
     }, [navigate]);
+    // Group orders by order_id
+    const groupedOrders = orders.reduce((acc, item) => {
+        if (!acc[item.order_id]) {
+            acc[item.order_id] = {
+                order_id: item.order_id,
+                order_date: item.order_date,
+                order_status: item.order_status,
+                phone_number: item.phone_number,
+                items: [],
+                total_price: 0
+            };
+        }
+        acc[item.order_id].items.push(item);
+        acc[item.order_id].total_price += Number(item.total_price); // Sum total for grouped items
+        return acc;
+    }, {});
+
 
     return (
         <div className="orders-page">
@@ -64,49 +78,61 @@ const BuyerOrders = () => {
                     </div>
                 ) : (
                     <div className="orders-list">
-                        {/* Each "order" is now a single purchased item */}
-                        {orders.map(order => (
-                            <div key={order.id} className="order-item-card">
-                                <img 
-                                    src={order.image_url ? `http://localhost:3001/uploads/${order.image_url}` : 'https://via.placeholder.com/100'} 
-                                    alt={order.title} 
-                                    className="item-image"
-                                />
-                                <div className="item-details">
-                                    <Link to={`/product/${order.product_id}`} className="item-title">{order.title}</Link>
-                                    <p className="item-info">Order Date: {new Date(order.order_date).toLocaleDateString()}</p>
-                                    <p className="item-info">Quantity: {order.quantity}</p>
-                                </div>
-                                <div className="order-price">
-                                    <p>Ksh {Number(order.total_price).toLocaleString()}</p>
-                                </div>
-                                <div className="order-status">
-                                    <p className={`status-badge status-${order.order_status.toLowerCase()}`}>{order.order_status}</p>
-                                </div>
-                                {order.order_status.toLowerCase() === "pending" && (
-                                    <button 
-                                        className='mpesa-pay-btn'
-                                        onClick={() => 
-                                            navigate('/MpesaPayment', {
-                                                state: {
-                                                    phoneNumber: order.phone_number,
-                                                    amount: order.total_price,
-                                                    title: order.title
-                                                }
-                                            })
-                                        }
-                                    >
-                                        Pay with Mpesa
-                                    </button>
-                                )}
+                    {Object.values(groupedOrders).map(orderGroup => (
+                    <div key={orderGroup.order_id} className="order-group">
+                        <h3>Order #{orderGroup.order_id}</h3>
+                        <p>Order Date: {new Date(orderGroup.order_date).toLocaleDateString()}</p>
+
+                        <div className="group-items">
+                        {orderGroup.items.map(item => (
+                            <div key={`${orderGroup.order_id}_${item.product_id}`} className="order-item-card">
+                            <img
+                                src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
+                                alt={item.title}
+                                className="item-image"
+                            />
+                            <div className="item-details">
+                                <Link to={`/product/${item.product_id}`} className="item-title">{item.title}</Link>
+                                <p className="item-info">Quantity: {item.quantity}</p>
+                                <p className="item-info">Price: Ksh {Number(item.total_price).toLocaleString()}</p>
+                            </div>
                             </div>
                         ))}
+                        </div>
+
+                        <div className="group-summary">
+                        <p><strong>Total:</strong> Ksh {Number(orderGroup.total_price).toLocaleString()}</p>
+                        <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
+                            {orderGroup.order_status}
+                        </p>
+                        {orderGroup.order_status.toLowerCase() === "pending" && (
+                            <button
+                            className="mpesa-pay-btn"
+                            onClick={() =>
+                                navigate('/MpesaPayment', {
+                                state: {
+                                    phoneNumber: orderGroup.phone_number,
+                                    amount: orderGroup.total_price,
+                                    title: `Order #${orderGroup.order_id}`
+                                }
+                                })
+                            }
+                            >
+                            Pay for Order #{orderGroup.order_id}
+                            </button>
+                        )}
+                        </div>
                     </div>
+                    ))}
+
+                    </div>
+
                 )}
             </main>
-            <div className='buyer-order-footer'>
+
+            <footer className='buyer-order-footer'>
                 <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
-            </div>
+            </footer>
         </div>
     );
 };

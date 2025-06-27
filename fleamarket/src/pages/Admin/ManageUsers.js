@@ -55,20 +55,6 @@ const ManageUsers = () => {
         setFilteredActiveUsers(activeFiltered);
         setFilteredDeactivatedUsers(deactivatedFiltered);
     }
-  
-    const handleDelete = async (userId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delte this user");
-        if(!confirmDelete) return;
-
-        try {
-            await axios.delete(`http://localhost:3001/api/admin/users/${userId}`);
-            setUsers(users.filter(user => user.id !== userId));
-            setMessage('User deleted successfully.');
-        } catch (error) {
-            console.error("Error deleting user:" , error);
-            setMessage("Failed to delete user.");
-        }
-    };
 
 const handleDeactivation = async (userId) => {
     const confirmDeactivation = window.confirm("Are you sure you want to deactivate this user?");
@@ -206,12 +192,6 @@ const handleActivation = async (userId) => {
                                                     onClick={() => handleActivation(user.id)}
                                                 >
                                                     Activate
-                                                </button>
-                                                <button
-                                                    className='delete-btn'
-                                                    onClick={() => handleDelete(user.id)}
-                                                >
-                                                    Delete
                                                 </button>
                                             </div>
                                         </td>

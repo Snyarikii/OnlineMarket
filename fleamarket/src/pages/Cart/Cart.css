@@ -130,6 +130,9 @@
 }
 
 .cart-placeOrder-btn {
+    width:200px;
+    height: 7vh;
+    font-size: 19px;
     background-color: #007bff;
     color: #fff;
     border: none;

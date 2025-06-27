@@ -1,12 +1,12 @@
-import React, { useEffect, useState , useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import './Cart.css';
 import ShippingForm from "./ShippingForm";
 
 const Cart = () => {
-    const [ cartItems, setCartItems ] = useState([]);
-    const [loading, setLoading ]= useState(true);
+    const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const [showShippingForm, setShowShippingForm] = useState(false);
@@ -14,15 +14,15 @@ const Cart = () => {
     const shippingFormRef = useRef(null);
 
     useEffect(() => {
-        if(showShippingForm && shippingFormRef.current) {
-            shippingFormRef.current.scrollIntoView({ behavior: "smooth"});
+        if (showShippingForm && shippingFormRef.current) {
+            shippingFormRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [showShippingForm]);
 
     useEffect(() => {
         const fetchCart = async () => {
             const token = localStorage.getItem('token');
-            if(!token) {
+            if (!token) {
                 alert("Please log in to view your cart.");
                 navigate('/Login');
                 return;
@@ -38,7 +38,6 @@ const Cart = () => {
                 console.error("Error fetching cart:", err);
                 setCartItems([]);
                 alert("Could not fetch your cart. Please try again.");
-
             } finally {
                 setLoading(false);
             }
@@ -48,7 +47,7 @@ const Cart = () => {
 
     const removeItem = async (cartId) => {
         const confirmDelete = window.confirm("Remove this item from your cart?");
-        if(!confirmDelete) return;
+        if (!confirmDelete) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -64,16 +63,16 @@ const Cart = () => {
     };
 
     const handleUpdateQuantity = async (cartId, newQuantity) => {
-        if(newQuantity < 1) return;
+        if (newQuantity < 1) return;
 
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:3001/api/cart/${cartId}`, 
+            await axios.put(`http://localhost:3001/api/cart/${cartId}`,
                 { quantity: newQuantity },
-                { headers: {Authorization: `Bearer ${token}`}}
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            setCartItems(prevItems => prevItems.map(item => 
+            setCartItems(prevItems => prevItems.map(item =>
                 item.cartId === cartId ? { ...item, quantity: newQuantity } : item
             ));
         } catch (err) {
@@ -82,63 +81,37 @@ const Cart = () => {
         }
     };
 
-    const handlePlaceOrder = async (item) => {
-        const confirmOrder = window.confirm(`Place order for ${item.title}?`);
-        if(!confirmOrder) return;
+    const handlePlaceOrder = async () => {
+        if (cartItems.length === 0) return alert("Your cart is empty.");
 
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
-        
+        const confirm = window.confirm("Place order for all items in your cart?");
+        if (!confirm) return;
+
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+
         try {
-            console.log("Placing order...");
-            const orderRes = await axios.post('http://localhost:3001/api/orders', {
-                item_id: item.id,
-                quantity:item.quantity,
-                total_price: item.price * item.quantity,
-            }, {
-                headers: { Authorization: `Bearer ${token}`}
+            const shippingRes = await axios.get(`http://localhost:3001/api/shipping/user/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("Order placed:", orderRes.data);
 
-            const newOrderId = orderRes.data.order_id;
-
-            console.log("Fetching shipping info...");
-            let prevShipping = null;
-            try {
-                const shippingRes = await axios.get(`http://localhost:3001/api/shipping/user/${user.id}`, {
-                    headers: { Authorization: `Bearer ${token}`}
-                });
-                prevShipping = shippingRes.data;
-                console.log("Shipping info found:", prevShipping);
-            } catch (err) {
-                if(err.response && err.response.status === 404) {
-                    console.log("No previous shipping info found.");
-                } else {
-                    console.error("Error fetching shipping info", err);
-                }
-            }
-            
-            setItemToOrder({
-                ...item, 
-                order_id: newOrderId,
-                cartId: item.cartId,
-                shippingPrefill: prevShipping
-            });
+            const shippingData = shippingRes.data;
+            setItemToOrder({ cartItems, shippingPrefill: shippingData });
             setShowShippingForm(true);
-
-            console.log("Deleting item from cart...");
-            await axios.delete(`http://localhost:3001/api/cart/${item.cartId}`, {
-                headers: { Authorization: `Bearer ${token}`}
-            });
         } catch (err) {
-            console.error("Error placing order:", err);
-            alert("could not place order. Please try again.");
+            if (err.response?.status === 404) {
+                setItemToOrder({ cartItems, shippingPrefill: null });
+                setShowShippingForm(true);
+            } else {
+                console.error("Error getting shipping info:", err);
+                alert("Failed to fetch shipping info.");
+            }
         }
     };
 
     const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    if(loading) return <p>Loading cart...</p>;
+    if (loading) return <p>Loading cart...</p>;
 
     return (
         <div className="cart-body">
@@ -173,7 +146,6 @@ const Cart = () => {
                                             <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)} className="subtract-btn">-</button>
                                             <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}>+</button>
                                         </div>
-                                        <button className="cart-placeOrder-btn" onClick={() => handlePlaceOrder(item)}>Place order</button>
                                     </div>
                                 </div>
                             ))}
@@ -181,6 +153,7 @@ const Cart = () => {
 
                         <div className="cart-summary">
                             <h2>Total: Ksh {Number(totalPrice).toLocaleString()}</h2>
+                            <button className="cart-placeOrder-btn" onClick={handlePlaceOrder}>Place Order</button>
                         </div>
                     </>
                 )}
@@ -193,24 +166,42 @@ const Cart = () => {
                         onSubmit={async (filledShippingData) => {
                             const token = localStorage.getItem('token');
                             try {
-
-                                await axios.post('http://localhost:3001/api/shipping', {
-                                    order_id: itemToOrder.order_id,
+                                console.log(filledShippingData);
+                                // 1. Create order
+                                const orderRes = await axios.post('http://localhost:3001/api/orders', {
+                                    total_price: totalPrice,
                                     ...filledShippingData
                                 }, {
-                                    headers: {Authorization: `Bearer ${token}`}
+                                    headers: { Authorization: `Bearer ${token}` }
                                 });
 
-                                await axios.delete(`http://localhost:3001/api/cart/${itemToOrder.cartId}`, {
-                                    headers: {Authorization: `Bearer ${token}`}
+                                const orderId = orderRes.data.order_id;
+
+                               await axios.post('http://localhost:3001/api/order-items', {
+                                    order_id: orderId,
+                                    items: itemToOrder.cartItems.map(item => ({
+                                        product_id: item.id,
+                                        seller_id: item.seller_id, // make sure seller_id is present
+                                        quantity: item.quantity,
+                                        price: item.price,
+                                        total_price: (item.price * item.quantity).toFixed(2)
+                                    }))
+                                }, {
+                                    headers: { Authorization: `Bearer ${token}` }
                                 });
-                                
-                                setCartItems(prev => prev.filter(cartItem => cartItem.cartId !== itemToOrder.cartId));
-                                alert("Order placed successfully! Shipping details saved.");
+
+                                for (const item of itemToOrder.cartItems) {
+                                    await axios.delete(`http://localhost:3001/api/cart/${item.cartId}`, {
+                                        headers: { Authorization: `Bearer ${token}` }
+                                    });
+                                }
+
+                                setCartItems([]);
+                                alert("Order placed successfully!");
                                 navigate('/orders');
                             } catch (error) {
-                                console.error("Error deleting cart item:", error);
-                                alert("Order placed, but failed to remove item from cart. Please refresh manually.");
+                                console.error("Order failed:", error);
+                                alert("Order failed. Please try again.");
                             } finally {
                                 setShowShippingForm(false);
                                 setItemToOrder(null);
@@ -226,7 +217,7 @@ const Cart = () => {
             <div className="cart-footer">
                 <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
             </div>
-        </div> 
+        </div>
     );
 };
 
