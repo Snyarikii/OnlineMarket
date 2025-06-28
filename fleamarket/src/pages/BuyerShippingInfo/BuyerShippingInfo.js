@@ -13,6 +13,7 @@ const BuyerShippingInfo = () => {
     });
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isNewUser, setIsNewUser]  = useState(false);
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem('token');
@@ -24,8 +25,23 @@ const BuyerShippingInfo = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setShippingInfo(response.data);
+                setIsNewUser(false);
             } catch (err) {
-                console.error("Error fetching shipping info:", err);
+                if (err.response && err.response.status === 404) {
+                console.log("No shipping info yet — user is new.");
+                setShippingInfo({
+                    recipient_name: '',
+                    address_line1: '',
+                    city: '',
+                    postal_code: '',
+                    country: '',
+                    phone_number: ''
+                    });
+                    setIsNewUser(true);
+
+                } else {
+                    console.error("Error fetching shipping info:", err);
+                }
             } finally {
                 setLoading(false);
             }
@@ -60,15 +76,23 @@ const BuyerShippingInfo = () => {
         <div className="shipping-info-container">
             <h2>Your Shipping Information</h2>
             <form onSubmit={handleSubmit} className="shipping-info-form">
+                <label>Recipeint Name:</label>
                 <input type="text" name="recipient_name" placeholder="Recipient Name" value={shippingInfo.recipient_name} onChange={handleChange} required />
+                <label>Address Line 1</label>
                 <input type="text" name="address_line1" placeholder="Address Line 1" value={shippingInfo.address_line1} onChange={handleChange} required />
+                <label>City</label>
                 <input type="text" name="city" placeholder="City" value={shippingInfo.city} onChange={handleChange} required />
+                <label>Postal Code</label>
                 <input type="text" name="postal_code" placeholder="Postal Code" value={shippingInfo.postal_code} onChange={handleChange} required />
+                <label>Country</label>
                 <input type="text" name="country" placeholder="Country" value={shippingInfo.country} onChange={handleChange} required />
+                <label>Phone Number</label>
                 <input type="text" name="phone_number" placeholder="Phone Number" value={shippingInfo.phone_number} onChange={handleChange} required />
-                <button type="submit">Update Info</button>
+                {message && <p className="info-message">{message}</p>}
+                <button type="submit">
+                    {isNewUser ? "Enter shipping info" : "Update info"}
+                </button>
             </form>
-            {message && <p className="info-message">{message}</p>}
         </div>
     );
 };

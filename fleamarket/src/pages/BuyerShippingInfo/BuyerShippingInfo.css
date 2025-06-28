@@ -1,15 +1,22 @@
 .shipping-info-container {
-    max-width: 600px;
+    /* max-width: 600px; */
+    width: 530px;
     margin: auto;
     padding: 1.5rem;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px #ccc;
 }
+.shipping-info-form label {
+    font-family: Inter;
+    font-size: 14px;
+    margin-left: 3px;
+    font-weight: bold;
+}
 
 .shipping-info-form input {
     display: block;
-    width: 100%;
+    width: 500px;
     margin: 10px 0;
     padding: 0.6rem;
     border: 1px solid #aaa;
@@ -17,6 +24,7 @@
 }
 
 .shipping-info-form button {
+    margin-left: 200px;
     padding: 0.6rem 1.2rem;
     background-color: #2196F3;
     color: white;
@@ -26,7 +34,8 @@
 }
 
 .info-message {
-    margin-top: 1rem;
+    padding: 2px;
+    font-size: 20px;
     font-weight: bold;
     color: green;
 }

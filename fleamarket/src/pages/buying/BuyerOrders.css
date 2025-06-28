@@ -193,7 +193,19 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-
+.mark-delivered-btn {
+    background-color: #1a8f1a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;   
+}
+.mark-delivered-btn:hover {
+    background-color: #157d15;
+}
 .mpesa-pay-btn:hover {
     background-color: #157d15;
 }

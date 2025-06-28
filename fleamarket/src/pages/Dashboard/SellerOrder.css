@@ -1,28 +1,32 @@
-.seller-order-header{
+/* ---------- HEADER ---------- */
+.seller-order-header {
     position: fixed;
-    background-color: #2563eb;
-    width: 100%;
-    justify-content: space-between;
-    left: 0;
     top: 0;
-    display: flex;
-    z-index: 1000;
+    left: 0;
+    width: 100%;
     height: 15vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2563eb;
+    z-index: 1000;
+    padding: 0 30px;
 }
+
 .seller-order-header h1 {
-    font-family: Epilogue;
-    margin-left: 30px;
-    color: white;
-    margin-top: 25px;
+    font-family: 'Epilogue', sans-serif;
     font-size: 25px;
+    color: white;
+    margin: 0;
 }
+
 .seller-order-nav {
-    padding-top: 30px;
-    justify-content: space-around;
-    margin-right: 30px;
+    padding-top: 10px;
+    margin-right: 50px;
 }
-.seller-order-back-link{
-    font-family: Inter;
+
+.seller-order-back-link {
+    font-family: 'Inter', sans-serif;
     color: white;
     text-decoration: none;
     font-size: 16px;
@@ -30,15 +34,18 @@
     border-radius: 4px;
     transition: background-color 0.3s;
 }
+
 .seller-order-back-link:hover {
     background-color: rgb(159, 159, 255);
     color: black;
 }
+
+/* ---------- MAIN CONTAINER ---------- */
 .seller-orders-container {
-    margin-top: 70px;
+    margin-top: 17vh;
     padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #F9FAFB;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .seller-orders-header {
@@ -47,26 +54,60 @@
 
 .seller-orders-header h2 {
     font-size: 2rem;
-    margin: 0 0 0.5rem 0;
     color: #111827;
+    margin-bottom: 0.5rem;
 }
 
 .seller-orders-header p {
     font-size: 1rem;
     color: #6B7280;
-    margin: 0;
 }
 
+/* ---------- GROUPED ORDER BOX ---------- */
+.order-group-box {
+    background-color: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.order-group-box h3 {
+    font-size: 1.2rem;
+    color: #1F2937;
+    margin-bottom: 0.25rem;
+}
+
+.order-group-box p {
+    font-size: 0.95rem;
+    color: #4B5563;
+    margin-bottom: 1rem;
+}
+
+/* ---------- SHIPPING INFO ---------- */
+.shipping-info {
+    font-size: 0.95rem;
+    color: #374151;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+
+/* ---------- TABLE STYLING ---------- */
 .orders-table-container {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* This is important for the border-radius to work on tables */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .orders-table {
     width: 100%;
-    border-collapse: collapse; /* Removes space between cells */
+    border-collapse: collapse;
+}
+
+.orders-table thead {
+    background-color: #F3F4F6;
 }
 
 .orders-table th,
@@ -74,10 +115,7 @@
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid #E5E7EB;
-}
-
-.orders-table thead {
-    background-color: #F9FAFB;
+    font-size: 0.95rem;
 }
 
 .orders-table th {
@@ -89,36 +127,10 @@
 }
 
 .orders-table tbody tr:last-child td {
-    border-bottom: none; /* Removes bottom border from the last row */
+    border-bottom: none;
 }
 
-.order-actions {
-    margin-top: 5px;
-}
-.sellerOrder-approve-btn {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    margin-right: 5px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-.sellerOrder-reject-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-.no-orders-cell {
-    text-align: center;
-    padding: 3rem;
-    color: #6B7280;
-}
-
+/* ---------- STATUS BADGES ---------- */
 .status-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
@@ -127,30 +139,55 @@
     font-size: 0.8rem;
     text-transform: capitalize;
 }
+
 .status-pending, .status-processing {
     background-color: #FEF3C7;
     color: #92400E;
 }
+
 .status-shipped {
     background-color: #DBEAFE;
     color: #1E40AF;
 }
+
 .status-approved, .status-delivered {
     background-color: #D1FAE5;
     color: #065F46;
 }
+
 .status-rejected, .status-cancelled {
     background-color: #FEE2E2;
     color: #991B1B;
 }
 
+/* ---------- PRODUCT IMAGE ---------- */
+.sellers-product-image {
+    width: 80px;
+    /* height: 60px; */
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+/* ---------- UTILITY STYLES ---------- */
+.no-orders-cell {
+    text-align: center;
+    padding: 3rem;
+    color: #6B7280;
+}
+
 .error-message {
     color: #DC2626;
+    font-weight: 500;
 }
+
+/* ---------- FOOTER ---------- */
 .seller-order-footer {
     text-align: center;
     padding: 2rem;
     margin-top: 2rem;
-    background-color: var(--color-light);
-    border-top: 1px solid var(--color-border);
+    background-color: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
+    font-size: 0.9rem;
+    color: #6B7280;
 }

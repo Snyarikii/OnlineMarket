@@ -9,8 +9,9 @@ const BuyerOrders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const token = localStorage.getItem('token');
+
     useEffect(() => {
-        const token = localStorage.getItem('token');
         if (!token) {
             alert("Please log in to view your orders.");
             navigate('/Login');
@@ -32,8 +33,27 @@ const BuyerOrders = () => {
         };
 
         fetchOrders();
-    }, [navigate]);
-    // Group orders by order_id
+    }, [navigate, token]);
+
+    const handleMarkAsDelivered = async (orderId, productId) => {
+        try {
+            await axios.put(
+                `http://localhost:3001/api/orders/${orderId}/products/${productId}/deliver`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Refresh orders
+            const response = await axios.get('http://localhost:3001/api/orders/with-products', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            setOrders(response.data);
+        } catch (err) {
+            console.error("Error marking as delivered:", err);
+            alert("Failed to update product status.");
+        }
+    };
+
     const groupedOrders = orders.reduce((acc, item) => {
         if (!acc[item.order_id]) {
             acc[item.order_id] = {
@@ -46,10 +66,17 @@ const BuyerOrders = () => {
             };
         }
         acc[item.order_id].items.push(item);
-        acc[item.order_id].total_price += Number(item.total_price); // Sum total for grouped items
+        acc[item.order_id].total_price += Number(item.total_price);
         return acc;
     }, {});
 
+    const sortedOrders = Object.values(groupedOrders).sort(
+        (a, b) => new Date(a.order_date) - new Date(b.order_date))
+        .map((order, index) => ({
+            ...order,
+            displayId: `FM-${String(index + 1).padStart(3, '0')}`
+        }))
+        .reverse();
 
     return (
         <div className="orders-page">
@@ -70,7 +97,7 @@ const BuyerOrders = () => {
                     <p className="loading-text">Loading your orders...</p>
                 ) : error ? (
                     <p className="error-message">{error}</p>
-                ) : orders.length === 0 ? (
+                ) : sortedOrders.length === 0 ? (
                     <div className="no-orders-card">
                         <h3>You have no orders yet.</h3>
                         <p>All your purchased items will appear here.</p>
@@ -78,55 +105,65 @@ const BuyerOrders = () => {
                     </div>
                 ) : (
                     <div className="orders-list">
-                    {Object.values(groupedOrders).map(orderGroup => (
-                    <div key={orderGroup.order_id} className="order-group">
-                        <h3>Order #{orderGroup.order_id}</h3>
-                        <p>Order Date: {new Date(orderGroup.order_date).toLocaleDateString()}</p>
+                        {sortedOrders.map(orderGroup => {
+                            return (
+                                <div key={orderGroup.order_id} className="order-group">
+                                    <h3>Order {orderGroup.displayId}</h3>
+                                    <p>Order Date: {new Date(orderGroup.order_date).toLocaleDateString()}</p>
 
-                        <div className="group-items">
-                        {orderGroup.items.map(item => (
-                            <div key={`${orderGroup.order_id}_${item.product_id}`} className="order-item-card">
-                            <img
-                                src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
-                                alt={item.title}
-                                className="item-image"
-                            />
-                            <div className="item-details">
-                                <Link to={`/product/${item.product_id}`} className="item-title">{item.title}</Link>
-                                <p className="item-info">Quantity: {item.quantity}</p>
-                                <p className="item-info">Price: Ksh {Number(item.total_price).toLocaleString()}</p>
-                            </div>
-                            </div>
-                        ))}
-                        </div>
+                                    <div className="group-items">
+                                        {orderGroup.items.map(item => (
+                                            <div key={`${orderGroup.order_id}_${item.product_id}`} className="order-item-card">
+                                                <img
+                                                    src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
+                                                    alt={item.title}
+                                                    className="item-image"
+                                                />
+                                                <div className="item-details">
+                                                    <Link to={`/product/${item.product_id}`} className="item-title">{item.title}</Link>
+                                                    <p className="item-info">Quantity: {item.quantity}</p>
+                                                    <p className="item-info">Price: Ksh {Number(item.total_price).toLocaleString()}</p>
+                                                    <p className="item-info">Status: {item.item_status}</p>
+                                                    {item.item_status !== 'delivered' && (
+                                                        <button
+                                                            className="mark-delivered-btn"
+                                                            onClick={() => handleMarkAsDelivered(orderGroup.order_id, item.product_id)}
+                                                        >
+                                                            Mark as Delivered
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                        <div className="group-summary">
-                        <p><strong>Total:</strong> Ksh {Number(orderGroup.total_price).toLocaleString()}</p>
-                        <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
-                            {orderGroup.order_status}
-                        </p>
-                        {orderGroup.order_status.toLowerCase() === "pending" && (
-                            <button
-                            className="mpesa-pay-btn"
-                            onClick={() =>
-                                navigate('/MpesaPayment', {
-                                state: {
-                                    phoneNumber: orderGroup.phone_number,
-                                    amount: orderGroup.total_price,
-                                    title: `Order #${orderGroup.order_id}`
-                                }
-                                })
-                            }
-                            >
-                            Pay for Order #{orderGroup.order_id}
-                            </button>
-                        )}
-                        </div>
+                                    <div className="group-summary">
+                                        <p><strong>Total:</strong> Ksh {Number(orderGroup.total_price).toLocaleString()}</p>
+                                        <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
+                                            {orderGroup.order_status}
+                                        </p>
+                                        {orderGroup.order_status.toLowerCase() === "pending" && (
+                                            <button
+                                                className="mpesa-pay-btn"
+                                                onClick={() =>
+                                                    navigate('/MpesaPayment', {
+                                                        state: {
+                                                            phoneNumber: orderGroup.phone_number,
+                                                            amount: orderGroup.total_price,
+                                                            title: `Order ${orderGroup.displayId}`
+                                                        }
+                                                    })
+                                                }
+                                            >
+                                                Pay for Order {orderGroup.displayId}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                            
+                        })}
                     </div>
-                    ))}
-
-                    </div>
-
                 )}
             </main>
 

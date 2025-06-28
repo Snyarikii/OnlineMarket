@@ -129,7 +129,6 @@ app.post('/logout', (req, res) => {
 // Sign Up API
 app.post('/register', async (req, res) => {
     const { fullName, Email, Password, role } = req.body;
-    console.log('Received Information', req.body);
 
     try{
         const saltRounds = 10;
@@ -154,7 +153,6 @@ app.post('/register', async (req, res) => {
 // Reset Password API
 app.post('/reset-password', async (req, res) => {
     const { email, newPassword } = req.body;   
-    console.log('New password request:', req.body);
 
     try {
         const saltRounds = 10;
@@ -345,6 +343,7 @@ app.post('/api/orders', authenticateToken, async (req, res) => {
     const buyerId = req.user.id;
     const {
         total_price,
+        delivery_method,
         shipping_name,
         shipping_phone,
         shipping_address,
@@ -355,19 +354,20 @@ app.post('/api/orders', authenticateToken, async (req, res) => {
 
     const sql = `
         INSERT INTO orders 
-        (buyer_id, total_price, order_status, order_date, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code, shipping_country)
-        VALUES (?, ?, 'pending', NOW(), ?, ?, ?, ?, ?, ?)
+        (buyer_id, total_price, order_status, order_date, delivery_method, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code, shipping_country)
+        VALUES (?, ?, 'pending', NOW(), ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
         buyerId,
         total_price,
+        delivery_method || 'delivery',
         shipping_name,
         shipping_phone,
-        shipping_address,
-        shipping_city,
-        shipping_postal_code,
-        shipping_country
+        delivery_method === 'pickup' ? null : shipping_address,
+        delivery_method === 'pickup' ? null : shipping_city,
+        delivery_method === 'pickup' ? null : shipping_postal_code,
+        delivery_method === 'pickup' ? null : shipping_country
     ];
 
     try {
@@ -385,7 +385,6 @@ app.post('/api/orders', authenticateToken, async (req, res) => {
 // Buyer Add order items to order_items table
 app.post('/api/order-items', authenticateToken, async (req, res) => {
     const { order_id, items } = req.body;
-    console.log("Items in order_items:", req.body);
 
     if (!order_id || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: "Invalid request. Must provide order_id and items array." });
@@ -400,11 +399,6 @@ app.post('/api/order-items', authenticateToken, async (req, res) => {
         item.quantity * item.price,
         'pending'  // default status
     ]);
-
-    console.log("Order ID:", order_id);
-    console.log("Items:", items);
-    console.log("Prepared Values:", values);
-
 
     const sql = `
         INSERT INTO order_items (order_id, product_id, seller_id, quantity, price, total_price, status)
@@ -429,8 +423,13 @@ app.get('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
         return res.status(403).json({ message: "Unauthorized access to shipping info." });
     }
 
+
     try {
         const [rows] = await con.promise().query("SELECT * FROM shipping WHERE user_id = ? LIMIT 1", [userId]);
+
+        if(rows.length === 0) {
+            return res.status(400).json({ message: ""})
+        }
 
         if (rows.length > 0) {
             return res.json(rows[0]);
@@ -481,22 +480,23 @@ app.get('/api/orders/with-products', authenticateToken, async (req, res) => {
 
     try {
         const [rows] = await con.promise().query(`
-            SELECT 
+             SELECT
                 o.id AS order_id,
+                o.order_date,
+                o.order_status,
+                s.phone_number,
                 oi.product_id,
                 oi.quantity,
-                oi.price AS item_price,
                 oi.total_price,
-                oi.status AS order_status,
-                o.order_date,
+                oi.status AS item_status,
                 p.title,
-                p.image_url,
-                s.phone_number
+                p.image_url
             FROM orders o
             JOIN order_items oi ON o.id = oi.order_id
             JOIN products p ON oi.product_id = p.id
-            JOIN shipping s ON o.buyer_id = s.user_id
+            LEFT JOIN shipping s ON o.buyer_id = s.user_id
             WHERE o.buyer_id = ?
+            ORDER BY o.order_date DESC;
         `, [buyerId]);
 
         res.json(rows);
@@ -551,6 +551,43 @@ app.put('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+//Buyer update item status
+app.put('/api/orders/:orderId/products/:productId/deliver', authenticateToken, async (req, res) => {
+    const { orderId, productId } = req.params;
+
+    try {
+        // 1. Update the item status to 'Delivered'
+        const [updateResult] = await con.promise().query(
+            `UPDATE order_items
+             SET status = 'Delivered'
+             WHERE order_id = ? AND product_id = ?`,
+            [orderId, productId]
+        );
+
+        if (updateResult.affectedRows === 0) {
+            return res.status(404).json({ message: "Order item not found." });
+        }
+
+        // 2. Check if all items in the order are now delivered
+        const [undeliveredItems] = await con.promise().query(
+            `SELECT * FROM order_items WHERE order_id = ? AND status != 'Delivered'`,
+            [orderId]
+        );
+
+        // 3. If none left, update the order_status
+        if (undeliveredItems.length === 0) {
+            await con.promise().query(
+                `UPDATE orders SET order_status = 'Delivered' WHERE id = ?`,
+                [orderId]
+            );
+        }
+
+        res.json({ message: "Product marked as delivered." });
+    } catch (error) {
+        console.error("Error updating delivery status:", error);
+        res.status(500).json({ message: "Failed to mark product as delivered." });
+    }
+});
 
 // Admin APIs
 // Get all categories
@@ -809,62 +846,45 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
 
 // --- NEW ENDPOINT: Get all orders for a logged-in seller's products ---
 app.get('/api/seller/orders', authenticateToken, async (req, res) => {
+    const sellerId = req.user.id;
+
     try {
-        const sellerId = req.user.id;
-
-        const sql = `
-            SELECT 
+        const [rows] = await con.promise().query(`
+            SELECT
+                oi.id AS order_item_id,
                 o.id AS order_id,
-                o.quantity,
-                o.total_price,
-                o.order_status,
                 o.order_date,
+                o.order_status,
+                o.delivery_method,
+                o.buyer_id,
+                o.shipping_name,
+                o.shipping_phone,
+                o.shipping_address,
+                o.shipping_city,
+                o.shipping_postal_code,
+                o.shipping_country,
+                oi.product_id,
                 p.title AS product_title,
-                u.name AS buyer_name,
-                s.recipient_name,
-                s.address_line1,
-                s.city,
-                s.postal_code,
-                s.country,
-                s.phone_number,
-                s.shipping_method
-            FROM orders o
-            JOIN products p ON o.item_id = p.id
-            JOIN users u ON o.buyer_id = u.id
-            LEFT JOIN shipping s ON o.id = s.order_id
-            WHERE p.seller_id = ?
-            ORDER BY o.order_date DESC
-        `;
+                p.image_url,
+                oi.quantity,
+                oi.price,
+                oi.total_price,
+                oi.status AS item_status
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            JOIN products p ON oi.product_id = p.id
+            WHERE oi.seller_id = ?
+            ORDER BY o.order_date DESC;
 
-        const [orders] = await con.promise().query(sql, [sellerId]);
+        `, [sellerId]);
 
-        // Nest the shipping info in its own object for cleaner frontend use
-        const formattedOrders = orders.map(order => ({
-            order_id: order.order_id,
-            quantity: order.quantity,
-            total_price: order.total_price,
-            order_status: order.order_status,
-            order_date: order.order_date,
-            product_title: order.product_title,
-            buyer_name: order.buyer_name,
-            shipping: {
-                recipient_name: order.recipient_name,
-                address_line1: order.address_line1,
-                city: order.city,
-                postal_code: order.postal_code,
-                country: order.country,
-                phone_number: order.phone_number,
-                shipping_method: order.shipping_method
-            }
-        }));
-
-        res.json(formattedOrders);
-
+        res.json(rows);
     } catch (error) {
         console.error("Error fetching seller orders:", error);
-        res.status(500).json({ error: "Failed to fetch your orders." });
+        res.status(500).json({ message: "Error fetching seller order items." });
     }
 });
+
 
 
 //Mpesa enpoints

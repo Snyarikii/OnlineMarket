@@ -5,6 +5,7 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
     const [phoneError, setPhoneError] = useState('');
 
     const [formData, setFormData] = useState({
+        delivery_method: 'delivery', // default option
         shipping_name: prefillData?.recipient_name || '',
         shipping_phone: prefillData?.phone_number || '',
         shipping_address: prefillData?.address_line1 || '',
@@ -14,12 +15,14 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
     });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Validate phone number
         const phoneRegex = /^(07|01)\d{8}$/;
         if (!phoneRegex.test(formData.shipping_phone)) {
             setPhoneError("Phone number must start with 07 or 01 and be 10 digits long.");
@@ -28,16 +31,51 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
             setPhoneError('');
         }
 
-        onSubmit(formData);  // Let parent component handle order placement
+        // If delivery method is delivery, ensure all address fields are filled
+        if (formData.delivery_method === 'delivery') {
+            const requiredFields = ['shipping_address', 'shipping_city', 'shipping_postal_code', 'shipping_country'];
+            const missing = requiredFields.find(field => !formData[field]);
+            if (missing) {
+                setPhoneError("Please fill in all delivery address fields.");
+                return;
+            }
+        }
+
+        onSubmit(formData); // Send back to parent for processing
     };
 
     return (
         <div className="shipping-form-modal">
-            <h3>Enter Delivery Information</h3>
+            <h3>{formData.delivery_method === 'pickup' ? 'Pickup Details' : 'Enter Delivery Information'}</h3>
+
             <form onSubmit={handleSubmit} className="shipping-form">
+
+                <div className="form-group">
+                    <label>
+                        <input
+                            type="radio"
+                            name="delivery_method"
+                            value="delivery"
+                            checked={formData.delivery_method === 'delivery'}
+                            onChange={handleChange}
+                        />
+                        Delivery
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="delivery_method"
+                            value="pickup"
+                            checked={formData.delivery_method === 'pickup'}
+                            onChange={handleChange}
+                        />
+                        Pickup
+                    </label>
+                </div>
+
                 <input
                     type="text"
-                    name="recipient_name"
+                    name="shipping_name"
                     placeholder="Recipient Name"
                     value={formData.shipping_name}
                     onChange={handleChange}
@@ -45,44 +83,50 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
                 />
                 <input
                     type="text"
-                    name="address_line1"
-                    placeholder="Address Line 1"
-                    value={formData.shipping_address}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formData.shipping_city}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="postal_code"
-                    placeholder="Postal Code"
-                    value={formData.shipping_postal_code}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="country"
-                    placeholder="Country"
-                    value={formData.shipping_country}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="phone_number"
+                    name="shipping_phone"
                     placeholder="Phone Number"
                     value={formData.shipping_phone}
                     onChange={handleChange}
                     required
                 />
+
+                {formData.delivery_method === 'delivery' && (
+                    <>
+                        <input
+                            type="text"
+                            name="shipping_address"
+                            placeholder="Address Line 1"
+                            value={formData.shipping_address}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="shipping_city"
+                            placeholder="City"
+                            value={formData.shipping_city}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="shipping_postal_code"
+                            placeholder="Postal Code"
+                            value={formData.shipping_postal_code}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="shipping_country"
+                            placeholder="Country"
+                            value={formData.shipping_country}
+                            onChange={handleChange}
+                            required
+                        />
+                    </>
+                )}
+
                 {phoneError && <p className="error-text">{phoneError}</p>}
 
                 <div className="shipping-form-buttons">
