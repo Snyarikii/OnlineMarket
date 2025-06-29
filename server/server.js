@@ -1,5 +1,4 @@
 require('dotenv').config({ path:__dirname + '/.env'});
-//console.log("ACCESS_TOKEN_SECRET: ", process.env.ACCESS_TOKEN_SECRET);
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -21,7 +20,6 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage});
-
 const app = express()
 const PORT = 3001;
 
@@ -118,6 +116,21 @@ app.post("/api/login", (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
     });
+});
+// User my account
+app.get('/api/user/me', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const [rows] = await con.promise().query('SELECT name, email FROM users WHERE id = ?', [userId]);
+        if(rows.length === 0) {
+            return res.status(404).json({ error: "User not found"});
+        }
+        res.json(rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error"});
+    }
 });
 
 
@@ -245,6 +258,35 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
         res.status(500).send("Failed to update order status");
     }
 });
+
+//Seller statistics endpoint
+app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
+    const sellerId = req.user.id;
+
+    const sql = `
+        SELECT 
+            SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
+            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+            COUNT(*) AS total
+        FROM products
+        WHERE seller_id = ?
+    `;
+
+    try {
+        const [rows] = await con.promise().query(sql, [sellerId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "No products found for seller." });
+        }
+
+        res.json(rows[0]); // return the statistics
+    } catch (err) {
+        console.error("Error fetching seller statistics:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 // Buyer view product endpoint (only approved + seller is active)
 app.get('/api/products/approved', authenticateToken, async (req, res) => {
@@ -738,7 +780,43 @@ app.put('/api/users/:id/activate', async (req, res) => {
     }
 });
 
+//User self reactivation
+app.put('/api/users/reactivate', async (req, res) => {
+    const { email } = req.body;
 
+    if (!email) {
+        return res.status(400).json({ error: "Email is required." });
+    }
+
+    try {
+        // Check if user exists and is deactivated
+        const [users] = await con.promise().query(
+            'SELECT id, is_active FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        const user = users[0];
+
+        if (user.is_active === 1) {
+            return res.status(400).json({ error: "Account is already active." });
+        }
+
+        // Reactivate account
+        await con.promise().query(
+            'UPDATE users SET is_active = 1 WHERE email = ?',
+            [email]
+        );
+
+        res.status(200).json({ message: "Account reactivated successfully." });
+    } catch (err) {
+        console.error("Error reactivating account:", err);
+        res.status(500).json({ error: "Failed to reactivate account. Try again later." });
+    }
+});
 
 // ENDPOINT: To get a single product's details ---
 app.get('/api/products/:id', async (req, res) => {
@@ -885,8 +963,6 @@ app.get('/api/seller/orders', authenticateToken, async (req, res) => {
     }
 });
 
-
-
 //Mpesa enpoints
 app.post('/api/stk-push', async (req, res) => {
     const { phone, amount } = req.body;
@@ -913,7 +989,7 @@ app.post('/api/query-transaction', async (req, res) => {
 
 //Mpesa Callback endpoint
 app.post('/api/mpesa-callback', async (req, res) => {
-    console.log("✅ Callback received:", req.body);
+    //console.log("✅ Callback received:", req.body);
 
     const stkCallback = req.body?.Body?.stkCallback;
 

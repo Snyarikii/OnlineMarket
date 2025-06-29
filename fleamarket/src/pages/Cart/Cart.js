@@ -166,22 +166,38 @@ const Cart = () => {
                         onSubmit={async (filledShippingData) => {
                             const token = localStorage.getItem('token');
                             try {
-                                console.log(filledShippingData);
-                                // 1. Create order
-                                const orderRes = await axios.post('http://localhost:3001/api/orders', {
-                                    total_price: totalPrice,
-                                    ...filledShippingData
-                                }, {
-                                    headers: { Authorization: `Bearer ${token}` }
-                                });
+                                const {
+                                    delivery_method,
+                                    shipping_name,
+                                    shipping_phone,
+                                    shipping_address,
+                                    shipping_city,
+                                    shipping_postal_code,
+                                    shipping_country,
+                                } = filledShippingData;
 
+                                //Step 1: Place the order
+                                const orderPayload = {
+                                    total_price: totalPrice,
+                                    delivery_method,
+                                    shipping_name,
+                                    shipping_phone,
+                                    shipping_address: delivery_method === 'delivery' ? shipping_address : null,
+                                    shipping_city: delivery_method === 'delivery' ? shipping_city : null,
+                                    shipping_postal_code: delivery_method === 'delivery' ? shipping_postal_code : null,
+                                    shipping_country: delivery_method === 'delivery' ? shipping_country : null,
+
+                                };
+                                const orderRes = await axios.post('http://localhost:3001/api/orders', orderPayload, {
+                                    headers: { Authorization: `Bearer  ${token}` }
+                                });
                                 const orderId = orderRes.data.order_id;
 
-                               await axios.post('http://localhost:3001/api/order-items', {
+                                await axios.post('http://localhost:3001/api/order-items', {
                                     order_id: orderId,
                                     items: itemToOrder.cartItems.map(item => ({
                                         product_id: item.id,
-                                        seller_id: item.seller_id, // make sure seller_id is present
+                                        seller_id: item.seller_id,
                                         quantity: item.quantity,
                                         price: item.price,
                                         total_price: (item.price * item.quantity).toFixed(2)

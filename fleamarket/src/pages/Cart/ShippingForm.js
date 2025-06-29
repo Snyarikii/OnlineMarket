@@ -50,8 +50,8 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
 
             <form onSubmit={handleSubmit} className="shipping-form">
 
-                <div className="form-group">
-                    <label>
+                <div className="shipping-form-group">
+                    <label className="shipping-radio-option">
                         <input
                             type="radio"
                             name="delivery_method"
@@ -59,9 +59,10 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
                             checked={formData.delivery_method === 'delivery'}
                             onChange={handleChange}
                         />
+                        <span className="shipping-custom-radio"></span>
                         Delivery
                     </label>
-                    <label>
+                    <label className="shipping-radio-option">
                         <input
                             type="radio"
                             name="delivery_method"
@@ -69,6 +70,7 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
                             checked={formData.delivery_method === 'pickup'}
                             onChange={handleChange}
                         />
+                        <span className="shipping-custom-radio"></span>
                         Pickup
                     </label>
                 </div>

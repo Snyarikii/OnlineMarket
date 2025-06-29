@@ -114,6 +114,23 @@
     font-weight: 400;
     justify-content: center;
 }
+.reactivate-btn {
+    font-family: Inter;
+    font-weight: 500;
+    width: 250px;
+    height: 7vh;
+    border-radius: 8px;
+    background-color: #1db70c;
+    /* border-color: rgb(80, 80, 191); */
+    color: #ffffff;
+    border: none;
+    margin-top: 25px;
+    font-weight: 400;
+    justify-content: center;
+}
+.reactivate-btn:hover{
+    background-color: #178d0a;
+}
 .login-btn:hover{
     background-color: #1D4ED8;
 }

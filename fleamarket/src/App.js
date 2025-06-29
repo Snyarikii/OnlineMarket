@@ -21,6 +21,10 @@ import SellerOrder from './pages/Dashboard/SellerOrder';
 import UpdateProduct from './pages/UpdateProduct/UpdateProduct';
 import MpesaPayment from './components/MpesaPayment/MpesaPayment';
 import BuyerShippingInfo from './pages/BuyerShippingInfo/BuyerShippingInfo';
+import BuyerSettingsLayout from './components/BuyerSettings/BuyerSettingsLayout';
+import MyAccount from './components/BuyerSettings/MyAccount';
+import SellerSettingsLayout from './components/SellerSettings/SellerSettingsLayout';
+import SellerStatistics from './components/SellerSettings/SellerStatistics';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -70,7 +74,17 @@ function App() {
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
         <Route path="/orders" element={<BuyerOrders />} />
         <Route path="/MpesaPayment" element={<MpesaPayment />} />
-        <Route path="/MyShippingInfo" element={<BuyerShippingInfo />} />
+
+        <Route path="/BuyerSettings" element={<BuyerSettingsLayout />}>
+          <Route index element={<MyAccount />} />
+          <Route path='BuyerShippingInfo' element={<BuyerShippingInfo />} />
+        </Route>
+
+        <Route path="/SellerSettings" element={<SellerSettingsLayout />}>
+          <Route index element={<MyAccount />} />
+          <Route path='SellerStatistics' element={<SellerStatistics />} />
+        </Route>
+        
 
       </Routes>
     </BrowserRouter>

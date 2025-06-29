@@ -1,0 +1,52 @@
+.settings-layout {
+    font-family: 'Inter', sans-serif;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2563eb;
+    color: white;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.settings-logo {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.settings-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+.settings-nav li a:hover{
+    background-color: rgb(159, 159, 255);
+    color: black;
+}
+
+.settings-nav li a {
+    font-family: 'Inter', sans-serif;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.settings-nav li.active a {
+    border-bottom: 2px solid white;
+}
+
+.settings-content {
+    padding: 2rem;
+    background-color: #f9fafb;
+    min-height: calc(100vh - 72px); /* Adjust based on header height */
+}

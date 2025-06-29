@@ -9,10 +9,12 @@ const Login = ({ setUser }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [showReactivate, setShowReactivate] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setMessage(""); 
+        setMessage("");
+        setShowReactivate(false);
 
         try {
             const res = await axios.post("http://localhost:3001/api/login", {
@@ -38,7 +40,6 @@ const Login = ({ setUser }) => {
                         navigate('/');
                     }
                 }, 1500);
-
             } else {
                 setMessage(res.data.error || "Login failed");
             }
@@ -48,7 +49,8 @@ const Login = ({ setUser }) => {
                 const status = err.response.status;
 
                 if (status === 403) {
-                    setMessage("⚠️ Your account is deactivated. Please contact support.");
+                    setMessage("⚠️ Your account is deactivated.");
+                    setShowReactivate(true);
                 } else if (err.response.data && err.response.data.error) {
                     setMessage(err.response.data.error);
                 } else {
@@ -60,9 +62,22 @@ const Login = ({ setUser }) => {
         }
     };
 
+    const handleReactivate = async () => {
+        try {
+            const res = await axios.put("http://localhost:3001/api/users/reactivate", {
+                email
+            });
+
+            alert("✅ Account reactivated! You can now log in.");
+            setShowReactivate(false);
+            setMessage("Your account has been reactivated. Please log in.");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to reactivate account. Try again later.");
+        }
+    };
 
     return (
-
         <div className="login-body">
             <header className="login-header">
                 <h1 className="login-h1">Flea Market</h1>
@@ -74,7 +89,7 @@ const Login = ({ setUser }) => {
                 <form onSubmit={handleLogin} className="loginForm">
                     <h2>Welcome Back</h2>
                     <div className="login-input-fields">
-                        <p className="loginMessage"> {message}</p>
+                        <p className="loginMessage">{message}</p>
                         <input
                             className="login-input"
                             type="email"
@@ -93,11 +108,26 @@ const Login = ({ setUser }) => {
                         /><br />
                     </div>
                     <Link to='/ResetPassword' className="reset-forgot-pass">Forgot Password?</Link>
-                    <button type="submit" className="login-btn">Login</button>                    
-                    <p className="dont-have-account">Dont' have an account? <Link to="/SignUp" className="dont-have-account-link" >Sign Up here!</Link></p>
+                    <button type="submit" className="login-btn">Login</button>
+
+                    {showReactivate && (
+                        <div className="reactivate-container">
+                            <button
+                                type="button"
+                                onClick={handleReactivate}
+                                className="reactivate-btn"
+                            >
+                                Reactivate Account
+                            </button>
+                        </div>
+                    )}
+
+                    <p className="dont-have-account">
+                        Don't have an account? <Link to="/SignUp" className="dont-have-account-link">Sign Up here!</Link>
+                    </p>
                 </form>
             </div>
-         </div>
+        </div>
     );
 };
 
