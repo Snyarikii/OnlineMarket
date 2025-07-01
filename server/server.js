@@ -209,14 +209,14 @@ app.get('/api/categories', authenticateToken, async (req, res) => {
 app.post('/api/products', authenticateToken, upload.single('productImage'), async (req, res) => {
   try {
         const sellerId = req.user.id; // from your authentication middleware
-        const { title, description, price, category_id, condition } = req.body;
+        const { title, description, price, stock_quantity, category_id, condition } = req.body;
         const imageUrl = req.file ? req.file.filename : null;
         const status = 'pending'; // New listings start as pending approval
 
         const [result] = await con.promise().query(
-            `INSERT INTO products (seller_id, category_id, title, description, price, product_condition, status, image_url)
+            `INSERT INTO products (seller_id, category_id, title, description, price, product_condition, status, image_url, stock_quantity)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [sellerId, category_id, title, description, price, condition, status, imageUrl]
+            [sellerId, category_id, title, description, price, condition, status, imageUrl, stock_quantity]
         );
 
         res.status(201).json({ message: 'Product created successfully.', productId: result.insertId });
@@ -381,7 +381,7 @@ app.put('/api/cart/:cartId', authenticateToken, async (req, res) => {
 });
 
 // Buyer place order (creates order header only)
-app.post('/api/orders', authenticateToken, async (req, res) => {
+app.post('/api/place-order', authenticateToken, async (req, res) => {
     const buyerId = req.user.id;
     const {
         total_price,
@@ -391,70 +391,87 @@ app.post('/api/orders', authenticateToken, async (req, res) => {
         shipping_address,
         shipping_city,
         shipping_postal_code,
-        shipping_country
+        shipping_country,
+        items
     } = req.body;
 
-    const sql = `
-        INSERT INTO orders 
-        (buyer_id, total_price, order_status, order_date, delivery_method, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code, shipping_country)
-        VALUES (?, ?, 'pending', NOW(), ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const values = [
-        buyerId,
-        total_price,
-        delivery_method || 'delivery',
-        shipping_name,
-        shipping_phone,
-        delivery_method === 'pickup' ? null : shipping_address,
-        delivery_method === 'pickup' ? null : shipping_city,
-        delivery_method === 'pickup' ? null : shipping_postal_code,
-        delivery_method === 'pickup' ? null : shipping_country
-    ];
-
-    try {
-        const [result] = await con.promise().query(sql, values);
-
-        res.status(201).json({
-            message: "Order created successfully",
-            order_id: result.insertId
-        });
-    } catch (err) {
-        console.error("Error placing order:", err);
-        res.status(500).json({ error: "Failed to create order" });
-    }
-});
-// Buyer Add order items to order_items table
-app.post('/api/order-items', authenticateToken, async (req, res) => {
-    const { order_id, items } = req.body;
-
-    if (!order_id || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ error: "Invalid request. Must provide order_id and items array." });
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: "Order must contain at least one item." });
     }
 
-    const values = items.map(item => [
-        order_id,
-        item.product_id,
-        item.seller_id,
-        item.quantity,
-        item.price,
-        item.quantity * item.price,
-        'pending'  // default status
-    ]);
-
-    const sql = `
-        INSERT INTO order_items (order_id, product_id, seller_id, quantity, price, total_price, status)
-        VALUES ?
-    `;
-
     try {
-        const [result] = await con.promise().query(sql, [values]);
-        res.status(201).json({ message: "Order items added successfully", inserted: result.affectedRows });
+        // Validate stock for all products
+        for (const item of items) {
+            const [rows] = await con.promise().query(
+                'SELECT stock_quantity, title FROM products WHERE id = ?',
+                [item.product_id]
+            );
+
+            if (!rows.length || rows[0].stock_quantity < item.quantity) {
+                return res.status(400).json({
+                    error: `Only ${rows[0].stock_quantity} of "${rows[0].title}" available, but you requested ${item.quantity}.`
+                });
+            }
+        }
+
+        // Insert into orders table
+        const orderSql = `
+            INSERT INTO orders
+            (buyer_id, total_price, order_status, order_date, delivery_method,
+             shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code, shipping_country)
+            VALUES (?, ?, 'pending', NOW(), ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        const orderValues = [
+            buyerId,
+            total_price,
+            delivery_method,
+            shipping_name,
+            shipping_phone,
+            delivery_method === 'pickup' ? null : shipping_address,
+            delivery_method === 'pickup' ? null : shipping_city,
+            delivery_method === 'pickup' ? null : shipping_postal_code,
+            delivery_method === 'pickup' ? null : shipping_country,
+        ];
+
+        const [orderResult] = await con.promise().query(orderSql, orderValues);
+        const orderId = orderResult.insertId;
+
+        // Insert into order_items
+        const orderItemsValues = items.map(item => [
+            orderId,
+            item.product_id,
+            item.seller_id,
+            item.quantity,
+            item.price,
+            item.quantity * item.price,
+            'pending'
+        ]);
+
+        const orderItemsSql = `
+            INSERT INTO order_items (order_id, product_id, seller_id, quantity, price, total_price, status)
+            VALUES ?
+        `;
+
+        await con.promise().query(orderItemsSql, [orderItemsValues]);
+
+        // Update stock
+        for (const item of items) {
+            const updateStockSql = `
+                UPDATE products
+                SET stock_quantity = stock_quantity - ?
+                WHERE id = ? AND stock_quantity >= ?
+            `;
+            await con.promise().query(updateStockSql, [item.quantity, item.product_id, item.quantity]);
+        }
+
+        res.status(201).json({ message: "Order placed successfully", order_id: orderId });
     } catch (error) {
-        console.error("Error inserting order items:", error);
-        res.status(500).json({ error: "Failed to add order items" });
+        console.error("Order placement failed", error);
+        res.status(500).json({ error: "Failed to place order" });
     }
 });
+
 
 //Buyer get shipping info
 app.get('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
@@ -847,11 +864,11 @@ app.get('/api/products/:id', async (req, res) => {
 //Seller update product endpoint
 app.put('/api/products/:productId', authenticateToken, upload.single('image'), async (req, res) => {
     const { productId } = req.params;
-    const { title, description, category_id, price, condition } = req.body;
+    const { title, description, category_id, price, condition, stock_quantity } = req.body;
     const imageFile = req.file;
 
-    const updates = [category_id, title, description, price, condition];
-    let sql = `UPDATE products SET category_id = ?, title = ?, description = ?, price = ?, product_condition = ?`;
+    const updates = [category_id, title, description, price, condition, stock_quantity];
+    let sql = `UPDATE products SET category_id = ?, title = ?, description = ?, price = ?, product_condition = ?, stock_quantity = ?`;
 
     if(imageFile) {
         sql += `, image_url = ?`;

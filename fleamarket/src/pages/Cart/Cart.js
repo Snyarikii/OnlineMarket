@@ -186,15 +186,6 @@ const Cart = () => {
                                     shipping_city: delivery_method === 'delivery' ? shipping_city : null,
                                     shipping_postal_code: delivery_method === 'delivery' ? shipping_postal_code : null,
                                     shipping_country: delivery_method === 'delivery' ? shipping_country : null,
-
-                                };
-                                const orderRes = await axios.post('http://localhost:3001/api/orders', orderPayload, {
-                                    headers: { Authorization: `Bearer  ${token}` }
-                                });
-                                const orderId = orderRes.data.order_id;
-
-                                await axios.post('http://localhost:3001/api/order-items', {
-                                    order_id: orderId,
                                     items: itemToOrder.cartItems.map(item => ({
                                         product_id: item.id,
                                         seller_id: item.seller_id,
@@ -202,9 +193,12 @@ const Cart = () => {
                                         price: item.price,
                                         total_price: (item.price * item.quantity).toFixed(2)
                                     }))
-                                }, {
+
+                                };
+                                const orderRes = await axios.post('http://localhost:3001/api/place-order', orderPayload, {
                                     headers: { Authorization: `Bearer ${token}` }
                                 });
+            
 
                                 for (const item of itemToOrder.cartItems) {
                                     await axios.delete(`http://localhost:3001/api/cart/${item.cartId}`, {
@@ -217,7 +211,19 @@ const Cart = () => {
                                 navigate('/orders');
                             } catch (error) {
                                 console.error("Order failed:", error);
-                                alert("Order failed. Please try again.");
+                                if(error.response) {
+                                    console.log("Status", error.response.status);
+                                    console.log("Data:", error.response.data);
+                                    
+                                    if (error.response.status) {
+                                        alert(error.response.data.error);                                        
+                                    } else {
+                                        alert(error.response.data.error || "Order failed. Please try again.");
+                                    }
+                                } else {
+                                    alert("Network error. Please try again");
+                                }
+                                
                             } finally {
                                 setShowShippingForm(false);
                                 setItemToOrder(null);

@@ -202,6 +202,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                                         <p>Price: Ksh {Number(item.price).toLocaleString()}</p>
                                         <p>Condition: {item.product_condition}</p>
                                         <p>Status: {item.status}</p>
+                                        <p>Current Stock: {item.stock_quantity}</p>
                                         <button className="dashboard-update-btn" onClick={() => navigate(`/updateProduct/${item.id}`)}>Update Product</button>
                                     </div>
                                 </div>

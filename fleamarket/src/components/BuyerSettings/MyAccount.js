@@ -73,7 +73,7 @@ const DeactivateAccount = () => {
                 </p>
 
                 {!confirming ? (
-                    <button className="deactivate-btn" onClick={() => setConfirming(true)}>
+                    <button className="my-acc-deactivate-btn" onClick={() => setConfirming(true)}>
                         Deactivate My Account
                     </button>
                 ) : (

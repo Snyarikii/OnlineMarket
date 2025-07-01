@@ -166,8 +166,11 @@ const ProductDetails = () => {
                             </div>
                             <p className="product-price">Ksh {Number(product.price).toLocaleString()}</p>
                         </div>
-
-                        <button className="add-to-bag-btn" onClick={handleAddToCart}>Add to Cart</button>
+                        {product.stock_quantity === 0 ? (
+                            <div className='out-of-stock-overlay'>Out of Stock</div>
+                        ) : (
+                            <button className="add-to-bag-btn" onClick={handleAddToCart}>Add to Cart</button>                            
+                        )}
                     </div>
                 </div>
 

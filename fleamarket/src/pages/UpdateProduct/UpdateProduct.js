@@ -11,6 +11,7 @@ const UpdateProduct = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
+    const [stockQuantity, setStockQuantity] = useState('');
     const [condition, setCondition] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState([]);
@@ -28,6 +29,7 @@ const UpdateProduct = () => {
                 setTitle(response.data.title);
                 setDescription(response.data.description);
                 setPrice(response.data.price);
+                setStockQuantity(response.data.stock_quantity);
                 setCondition(response.data.product_condition);
                 setCategoryId(response.data.category_id);
             } catch (error) {
@@ -61,6 +63,7 @@ const UpdateProduct = () => {
         formData.append('description', description);
         formData.append('category_id', categoryId);
         formData.append('price', price);
+        formData.append('stock_quantity', stockQuantity);
         formData.append('condition', condition);
         if(image) formData.append('image', image);
 
@@ -112,6 +115,9 @@ const UpdateProduct = () => {
 
                     <label>Price</label>
                     <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+
+                    <label>Stock Quantity</label>
+                    <input type="number" value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} required />
 
                     <label>Condition</label>
                     <select value={condition} onChange={(e) => setCondition(e.target.value)} required>

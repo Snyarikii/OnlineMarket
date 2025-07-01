@@ -10,6 +10,7 @@ const AddProduct = () => {
         title: '',
         description: '',
         price: '',
+        stock_quantity: '',
         category_id: '',
         condition: 'New',
     });
@@ -72,6 +73,7 @@ const AddProduct = () => {
         formData.append('title', product.title);
         formData.append('description', product.description);
         formData.append('price', product.price);
+        formData.append('stock_quantity', product.stock_quantity);
         formData.append('category_id', product.category_id);
         formData.append('condition', product.condition);
         formData.append('productImage', imageFile);
@@ -90,7 +92,7 @@ const AddProduct = () => {
 
             setSuccess('Product created successfully!');
             e.target.reset(); // Clear form inputs
-            setProduct({ title: '', description: '', price: '', category_id: categories[0]?.id || '', condition: 'New' });
+            setProduct({ title: '', description: '', price: '', stock_quantity: '', category_id: categories[0]?.id || '', condition: 'New' });
             setImageFile(null);
 
         } catch (err) {
@@ -119,6 +121,10 @@ const AddProduct = () => {
                         <div className="form-group">
                             <label htmlFor="description">Description</label>
                             <textarea id="description" name="description" value={product.description} onChange={handleInputChange} rows="4" required></textarea>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="stock_quantity">Stock Quantity</label>
+                            <textarea id="stock_quantity" name="stock_quantity" value={product.stock_quantity} onChange={handleInputChange} rows="4" required></textarea>
                         </div>
                         <div className="form-row">
                             <div className="form-group">
