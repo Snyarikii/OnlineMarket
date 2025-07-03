@@ -543,6 +543,7 @@ app.get('/api/orders/with-products', authenticateToken, async (req, res) => {
                 o.id AS order_id,
                 o.order_date,
                 o.order_status,
+                o.is_paid,
                 s.phone_number,
                 oi.product_id,
                 oi.quantity,
@@ -982,11 +983,19 @@ app.get('/api/seller/orders', authenticateToken, async (req, res) => {
 
 //Mpesa enpoints
 app.post('/api/stk-push', async (req, res) => {
-    const { phone, amount } = req.body;
+    const { phone, amount, order_id } = req.body;
 
     const formattedNumber = formatPhoneNumberServer(phone);
     try {
         const response = await stkPush(formattedNumber, amount);
+
+        await con.promise().query(
+            `INSERT INTO stk_sessions (order_id, checkout_request_id, phone, amount)
+            VALUES (?, ?, ?, ?)
+            `,
+            [order_id, response.CheckoutRequestID, formattedNumber, amount]
+        );
+
         return res.json(response);
     } catch (error) {
         return res.status(500).json({ message: "Error processing STK push", error});
@@ -1006,8 +1015,6 @@ app.post('/api/query-transaction', async (req, res) => {
 
 //Mpesa Callback endpoint
 app.post('/api/mpesa-callback', async (req, res) => {
-    //console.log("✅ Callback received:", req.body);
-
     const stkCallback = req.body?.Body?.stkCallback;
 
     if (!stkCallback) {
@@ -1015,8 +1022,10 @@ app.post('/api/mpesa-callback', async (req, res) => {
         return res.status(400).send("Invalid callback format.");
     }
 
-    // Only process successful transactions
-    if (stkCallback.ResultCode === 0) {
+    const checkoutRequestId = stkCallback.CheckoutRequestID;
+    const resultCode = stkCallback.ResultCode;
+
+    if (resultCode === 0) {
         const metadata = stkCallback.CallbackMetadata?.Item;
 
         const amount = metadata.find(item => item.Name === 'Amount')?.Value;
@@ -1034,41 +1043,75 @@ app.post('/api/mpesa-callback', async (req, res) => {
         console.log("📞 Phone:", phoneNumber, "| 💰 Amount:", amount);
 
         try {
-            // Find order and user info by phone number
-            const [shippingRow] = await con.promise().query(
-                `SELECT s.user_id AS buyer_id, o.item_id, o.buyer_id, i.seller_id
-                 FROM shipping s
-                 JOIN orders o ON s.order_id = o.id
-                 JOIN products i ON o.item_id = i.id
-                 WHERE s.phone_number = ?
-                 ORDER BY s.shipping_id DESC LIMIT 1`,
-                [phoneNumber]
+            // 🔍 1. Find order ID via the session
+            const [rows] = await con.promise().query(
+                `SELECT order_id FROM stk_sessions WHERE checkout_request_id = ?`,
+                [checkoutRequestId]
             );
 
-            if (!shippingRow.length) {
-                console.warn("⚠️ No matching shipping/order data for phone:", phoneNumber);
-                return res.status(404).send("Matching order not found.");
+            if (!rows.length) { // 🔴 FIXED: typo was `lenth`
+                console.warn("⚠️ No matching STK session found.");
+                return res.status(404).json({ error: "Order not found for this transaction" });
             }
 
-            const { item_id, buyer_id, seller_id } = shippingRow[0];
+            const orderId = rows[0].order_id;
 
-            // Insert transaction into DB
-            await con.promise().execute(`
-                INSERT INTO transactions 
-                    (item_id, buyer_id, seller_id, amount, transaction_date, payment_method, status)
-                VALUES (?, ?, ?, ?, NOW(), ?, ?)`,
-                [item_id, buyer_id, seller_id, amount, 'Mpesa', 'Completed']
+            // 🔍 2. Get items for that order
+            const [items] = await con.promise().query(
+                `SELECT 
+                    oi.product_id,
+                    oi.seller_id, 
+                    oi.quantity,
+                    oi.total_price,
+                    o.buyer_id
+                FROM 
+                    order_items oi
+                JOIN 
+                    orders o ON oi.order_id = o.id
+                WHERE 
+                    oi.order_id = ?`,
+                [orderId]
             );
 
-            console.log(`✅ Transaction recorded for buyer ID: ${buyer_id}`);
-            res.status(200).json({ message: 'Transaction saved successfully.' });
+            // 💾 3. Insert transactions per item
+            for (const item of items) {
+                await con.promise().query(
+                    `INSERT INTO transactions (
+                        order_id, 
+                        item_id, 
+                        buyer_id, 
+                        seller_id, 
+                        quantity, 
+                        amount, 
+                        transaction_date, 
+                        payment_method, 
+                        status
+                    ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'Mpesa', 'Completed')`,
+                    [
+                        orderId,
+                        item.product_id,
+                        item.buyer_id,
+                        item.seller_id,
+                        item.quantity,
+                        item.total_price
+                    ]
+                );
+            }
+
+            await con.promise().query(
+                `UPDATE orders SET is_paid = 1 WHERE id = ?`,
+                [orderId]
+            )
+
+            console.log(`✅ Transactions saved for order ${orderId}`);
+            return res.status(200).json({ message: 'Transaction saved successfully.' });
 
         } catch (err) {
             console.error("❌ Error saving transaction:", err);
-            res.status(500).json({ error: "Failed to save transaction." });
+            return res.status(500).json({ error: "Failed to save transaction." });
         }
     } else {
-        console.log("❌ Payment failed or cancelled");
-        res.status(200).send("Transaction not successful.");
+        console.log("❌ Payment failed or cancelled.");
+        return res.status(200).send("Transaction not successful.");
     }
 });

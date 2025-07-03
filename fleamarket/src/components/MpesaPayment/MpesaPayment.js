@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import './MpesaPayment.css';
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const MpesaPayment = () => {
     const location = useLocation();
-    const { phoneNumber, amount, title } = location.state || {};
+    const navigate = useNavigate();
+    const { orderId, phoneNumber, amount, title } = location.state || {};
     const [phone, setPhone] = useState('');
     const [paymentAmount, setPaymentAmount] = useState('');
     const [loading, setLoading] = useState(false);
@@ -28,11 +29,13 @@ const MpesaPayment = () => {
         try {
             const response = await axios.post('http://localhost:3001/api/stk-push', {
                 phone,
-                amount: paymentAmount
+                amount: paymentAmount,
+                order_id: orderId
             });
 
             console.log(response.data);
             alert("Payment prompt sent to your phone. Please complete the transaction.");
+            navigate("/orders");           
         } catch (error) {
             console.error("Error sending STK push:", error);
             alert("Failed to send payment request. Try again.");

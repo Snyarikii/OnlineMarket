@@ -9,6 +9,7 @@ const stkPush = async (phone, amount) => {
     const timeStamp = getFormattedTimestamp();
     const stkPassword = Buffer.from(`${shortcode}${passkey}${timeStamp}`).toString('base64');
     const callBackUrl = process.env.CALLBACK_URL;
+    console.log("This is the callback url:", callBackUrl);
     const url = process.env.STK_URL;
 
     try{
@@ -25,6 +26,7 @@ const stkPush = async (phone, amount) => {
         "AccountReference":"Nyarikii",
         "TransactionDesc":"Test"
         };
+        console.log("This is the stk push body:", body);
         
         const response =  await fetch (url,{
             method: 'POST',

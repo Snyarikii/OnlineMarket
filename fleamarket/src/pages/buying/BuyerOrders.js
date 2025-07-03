@@ -60,6 +60,7 @@ const BuyerOrders = () => {
                 order_id: item.order_id,
                 order_date: item.order_date,
                 order_status: item.order_status,
+                is_paid: Number(item.is_paid),
                 phone_number: item.phone_number,
                 items: [],
                 total_price: 0
@@ -142,21 +143,24 @@ const BuyerOrders = () => {
                                         <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
                                             {orderGroup.order_status}
                                         </p>
-                                        {orderGroup.order_status.toLowerCase() === "pending" && (
+                                        {Number(orderGroup.is_paid) === 0 ? (
                                             <button
                                                 className="mpesa-pay-btn"
                                                 onClick={() =>
-                                                    navigate('/MpesaPayment', {
-                                                        state: {
-                                                            phoneNumber: orderGroup.phone_number,
-                                                            amount: orderGroup.total_price,
-                                                            title: `Order ${orderGroup.displayId}`
-                                                        }
-                                                    })
+                                                navigate('/MpesaPayment', {
+                                                    state: {
+                                                    orderId: orderGroup.order_id,
+                                                    phoneNumber: orderGroup.phone_number,
+                                                    amount: orderGroup.total_price,
+                                                    title: `Order ${orderGroup.displayId}`,
+                                                    },
+                                                })
                                                 }
                                             >
                                                 Pay for Order {orderGroup.displayId}
                                             </button>
+                                            ) : (
+                                            <p className="paid-message">✅ Paid</p>
                                         )}
                                     </div>
                                 </div>
