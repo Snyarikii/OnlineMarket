@@ -35,7 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Stevey-boy12$",
+    password: "",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -259,35 +259,93 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
     }
 });
 
-//Seller statistics endpoint
+// //Seller statistics endpoint
+// app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
+//     const sellerId = req.user.id;
+
+//     const sql = `
+//         SELECT 
+//             SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
+//             SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+//             SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+//             COUNT(*) AS total
+//         FROM products
+//         WHERE seller_id = ?
+//     `;
+
+//     try {
+//         const [rows] = await con.promise().query(sql, [sellerId]);
+
+//         if (rows.length === 0) {
+//             return res.status(404).json({ error: "No products found for seller." });
+//         }
+
+//         res.json(rows[0]); // return the statistics
+//     } catch (err) {
+//         console.error("Error fetching seller statistics:", err);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// });
+
+// Seller statistics endpoint (Enhanced)
 app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
     const sellerId = req.user.id;
 
-    const sql = `
-        SELECT 
-            SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
-            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
-            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
-            COUNT(*) AS total
-        FROM products
-        WHERE seller_id = ?
-    `;
-
     try {
-        const [rows] = await con.promise().query(sql, [sellerId]);
+        // Query 1: Get product status counts from 'products' table
+        const productStatsSql = `
+            SELECT
+                SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+                SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+                COUNT(id) AS total
+            FROM products
+            WHERE seller_id = ?
+        `;
+        const [productStatsRows] = await con.promise().query(productStatsSql, [sellerId]);
 
-        if (rows.length === 0) {
-            return res.status(404).json({ error: "No products found for seller." });
-        }
+        // Query 2: Get sales stats from 'order_items' table
+        const salesStatsSql = `
+            SELECT
+                SUM(total_price) AS totalRevenue,
+                COUNT(DISTINCT order_id) AS totalOrders
+            FROM order_items
+            WHERE seller_id = ?
+        `;
+        const [salesStatsRows] = await con.promise().query(salesStatsSql, [sellerId]);
 
-        res.json(rows[0]); // return the statistics
+        // Query 3: Get top 5 best-selling products
+        const topProductsSql = `
+            SELECT
+                p.title,
+                SUM(oi.quantity) AS total_sold,
+                SUM(oi.total_price) AS revenue
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.id
+            WHERE oi.seller_id = ?
+            GROUP BY p.title
+            ORDER BY total_sold DESC
+            LIMIT 5;
+        `;
+        const [topProducts] = await con.promise().query(topProductsSql, [sellerId]);
+
+        // Combine all stats into the correct nested response object
+        const response = {
+            products: productStatsRows[0] || { approved: 0, pending: 0, rejected: 0, total: 0 },
+            sales: {
+                totalRevenue: salesStatsRows[0]?.totalRevenue || 0,
+                totalOrders: salesStatsRows[0]?.totalOrders || 0,
+            },
+            topProducts: topProducts
+        };
+
+        res.json(response);
+
     } catch (err) {
         console.error("Error fetching seller statistics:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
 // Buyer view product endpoint (only approved + seller is active)
 app.get('/api/products/approved', authenticateToken, async (req, res) => {
     try {
@@ -1115,3 +1173,4 @@ app.post('/api/mpesa-callback', async (req, res) => {
         return res.status(200).send("Transaction not successful.");
     }
 });
+

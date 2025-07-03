@@ -63,3 +63,28 @@
 .error-text {
     color: #DC2626;
 }
+ /* Add these new styles to your existing SellerStatistics.css file */
+
+.section-title {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #374151;
+    border-bottom: 2px solid #E5E7EB;
+    padding-bottom: 0.5rem;
+}
+
+.stat-revenue {
+    border-left: 5px solid #22C55E; /* Bright Green */
+}
+.stat-orders {
+    border-left: 5px solid #8B5CF6; /* Purple */
+}
+
+.chart-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
