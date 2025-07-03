@@ -128,6 +128,18 @@
 .quantity-controls button:hover {
     background-color: #0057b398;
 }
+.quantity-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stock-left {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 2px;
+}
+
 
 .cart-placeOrder-btn {
     width:200px;

@@ -15,7 +15,7 @@ const BuyerSettingsLayout = () => {
                             <Link to="/BuyerSettings">My Account</Link>
                         </li>
                         <li className={pathname.includes('shipping') ? 'active' : ''}>
-                            <Link to="BuyerShippingInfo" className={pathname === '/BuyerSettings' ? 'active' : ''}>My Shipping Info</Link>
+                            <Link to="BuyerShippingInfo" className={pathname === '/BuyerSettings' ? 'active' : ''}>My Delivery Info</Link>
                         </li>
                         <li>
                             <Link to="/Index">Continue shopping</Link>

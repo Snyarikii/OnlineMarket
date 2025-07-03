@@ -63,23 +63,32 @@ const Cart = () => {
     };
 
     const handleUpdateQuantity = async (cartId, newQuantity) => {
-        if (newQuantity < 1) return;
+        const item = cartItems.find(i => i.cartId === cartId);
+        if (!item) return;
+
+        // clamp 1 … stock
+        const clamped = Math.max(1, Math.min(item.stock_quantity, newQuantity));
+        if (clamped === item.quantity) return;   // nothing to do
 
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:3001/api/cart/${cartId}`,
-                { quantity: newQuantity },
-                { headers: { Authorization: `Bearer ${token}` } }
+            await axios.put(
+            `http://localhost:3001/api/cart/${cartId}`,
+            { quantity: clamped },
+            { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            setCartItems(prevItems => prevItems.map(item =>
-                item.cartId === cartId ? { ...item, quantity: newQuantity } : item
-            ));
+            setCartItems(prev =>
+            prev.map(i =>
+                i.cartId === cartId ? { ...i, quantity: clamped } : i
+            )
+            );
         } catch (err) {
-            console.error("Error updating quantity:", err);
-            alert("Could not update item quantity. Please try again.");
+            console.error('Error updating quantity:', err);
+            alert('Could not update item quantity. Please try again.');
         }
     };
+
 
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) return alert("Your cart is empty.");
@@ -143,8 +152,26 @@ const Cart = () => {
                                     </div>
                                     <div className="cart-buttons">
                                         <div className="quantity-controls">
-                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)} className="subtract-btn">-</button>
-                                            <button onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}>+</button>
+                                            <button 
+                                                onClick={() => 
+                                                    handleUpdateQuantity(item.cartId, item.quantity - 1)
+                                                }
+                                                className="subtract-btn"
+                                                disabled={item.quantity === 1}
+                                                >
+                                                    -
+                                            </button>
+                                            <button 
+                                                onClick={() => 
+                                                    handleUpdateQuantity(item.cartId, item.quantity + 1)
+                                                }
+                                                disabled={item.quantity === item.stock_quantity}
+                                                >
+                                                    +
+                                            </button>
+                                            <small className="stock-left">
+                                                In Stock: {item.stock_quantity}
+                                            </small>
                                         </div>
                                     </div>
                                 </div>

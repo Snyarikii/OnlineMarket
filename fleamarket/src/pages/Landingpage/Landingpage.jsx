@@ -77,14 +77,14 @@ const LandingPage = () => {
             <h2>User Engagement</h2>
           </div>
           <div className="engagement-grid">
-            <EngagementCard title="Rate Products">
-                Give a star rating to the products and help others discover the best products!
-            </EngagementCard>
             <EngagementCard title="Add to Cart">
                 Found something you love? Add it to your cart and check out when you're ready!
             </EngagementCard>
-            <EngagementCard title="Add To Favorites">
-                Keep track of your must-have items with a personalized favorites list.
+            <EngagementCard title="Place Your Orders">
+                Fill your cart with products you would like to purchase and place an order for them.
+            </EngagementCard>
+            <EngagementCard title="More from Seller">
+                View what more sellers have to offer. View details of their product and scroll down to see more from them
             </EngagementCard>
           </div>
           <div className="cta-container">
@@ -115,31 +115,6 @@ const LandingPage = () => {
       </main>
 
       <footer className="footer">
-        <div className="footer-grid">
-          <div className="footer-column">
-            <p>Your go-to marketplace for quality second-hand goods on campus.</p>
-            <div className="social-icons">
-                <Link to="/" className="social-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069s-3.584-.011-4.85-.069c-3.225-.148-4.771-1.664-4.919-4.919-.058-1.265-.069-1.644-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.2 0-3.556.012-4.786.069-2.913.132-4.225 1.433-4.356 4.356-.057 1.23-.068 1.585-.068 4.786s.011 3.556.068 4.786c.132 2.913 1.442 4.225 4.356 4.356 1.23.057 1.585.068 4.786.068s3.556-.011 4.786-.068c2.913-.132 4.225-1.442 4.356-4.356.057-1.23.068-1.585.068-4.786s-.011-3.556-.068-4.786c-.132-2.913-1.442-4.225-4.356-4.356C15.556 3.614 15.2 3.604 12 3.604zm0 4.865a3.532 3.532 0 100 7.064 3.532 3.532 0 000-7.064zm0 5.622a2.088 2.088 0 110-4.176 2.088 2.088 0 010 4.176zm4.965-7.854a.825.825 0 100 1.65.825.825 0 000-1.65z"/></svg>
-                </Link>
-                <Link to="/" className="social-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0015.103 3c-2.422 0-4.085 1.47-4.085 4.179v2.37h-2.769v3.209h2.769v8.196h3.425z"/></svg>
-                </Link>
-            </div>
-          </div>
-          <div className="footer-column">
-            <h4>Help</h4>
-            <Link to="#">FAQ</Link>
-            <Link to="#">Customer Service</Link>
-            <Link to="#">Contact Us</Link>
-          </div>
-          <div className="footer-column">
-            <h4>Other</h4>
-            <Link to="#">Privacy Policy</Link>
-            <Link to="#">Terms of Service</Link>
-            <Link to="#">Subscriptions</Link>
-          </div>
-        </div>
         <div className="footer-bottom">
             <p>&copy; {new Date().getFullYear()} Flea Market. All Rights Reserved.</p>
         </div>

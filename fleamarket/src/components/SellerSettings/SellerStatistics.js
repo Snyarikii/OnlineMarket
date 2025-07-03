@@ -11,7 +11,7 @@ const SellerStatistics = () => {
     // **FIX**: Initialize state with the expected object structure to prevent 'undefined' errors.
     const [stats, setStats] = useState({
         products: { approved: 0, pending: 0, rejected: 0, total: 0 },
-        sales: { totalRevenue: 0, totalOrders: 0 },
+        sales: { totalRevenue: 0, paidOrders: 0 },
         topProducts: [],
     });
 
@@ -83,8 +83,8 @@ const SellerStatistics = () => {
                             <p>Total Revenue</p>
                         </div>
                         <div className="stat-card stat-orders">
-                            <h3>{stats.sales.totalOrders}</h3>
-                            <p>Total Orders</p>
+                            <h3>{stats.sales.paidOrders}</h3>
+                            <p>Total Paid Orders</p>
                         </div>
                     </div>
 

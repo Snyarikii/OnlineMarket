@@ -32,6 +32,7 @@ const AdminLayout = ({ setUser, setLoggingOut }) => {
                         <li><Link to="ManageCategories">Manage Categories</Link></li>
                         <li><Link to="ManageProducts">Manage Products</Link></li>
                         <li><Link to="ManageUsers">Manage Users</Link></li>
+                        <li><Link to="TransactionStats">Statistics</Link></li>
                         <li><a onClick={LogOut}>Log Out</a></li>
                     </ul>
                 </nav>

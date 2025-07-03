@@ -149,20 +149,37 @@ const ProductDetails = () => {
                     <div className="product-info-panel">
                         <h1 className="product-title">{product.title}</h1>
                         <p className="seller-info">Sold by: <strong>{product.seller_name}</strong></p>
-                        <div className="product-reviews-placeholder">
+                        <p className="seller-info">Contact <strong>{product.seller_phone}</strong></p>
+                        {/* <div className="product-reviews-placeholder">
                             <span>★★★★☆</span>
                             <a href="#">481 Reviews</a>
-                        </div>
-                        <p className="product-description">{product.description}</p>
+                        </div> */}
+                        <p className="product-description">Description: {product.description}</p>
                         
                         <div className="purchase-controls">
                              <div className="quantity-selector">
                                 <label>Quantity</label>
                                 <div>
-                                    <button onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
+                                    <button 
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                    >
+                                        -
+                                    </button>
+
                                     <span>{quantity}</span>
-                                    <button onClick={() => setQuantity(q => q + 1)}>+</button>
+
+                                    <button 
+                                        onClick={() => 
+                                            setQuantity(q => Math.min(product.stock_quantity, q + 1))
+                                        }
+                                        disabled={quantity === product.stock_quantity}
+                                    >
+                                        +
+                                    </button>
                                 </div>
+                                <small className='stock-note'>
+                                    In Stock: {product.stock_quantity}
+                                </small>
                             </div>
                             <p className="product-price">Ksh {Number(product.price).toLocaleString()}</p>
                         </div>

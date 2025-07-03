@@ -35,7 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "Stevey-boy12$",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -141,13 +141,13 @@ app.post('/logout', (req, res) => {
 
 // Sign Up API
 app.post('/register', async (req, res) => {
-    const { fullName, Email, Password, role } = req.body;
+    const { fullName, Email, phoneNumber, Password, role } = req.body;
 
     try{
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(Password, saltRounds);
-        const sql = "INSERT INTO users (name, email, password_hash, role) VALUES ( ?, ?, ?, ?)";
-        const values = [ fullName, Email, hashedPassword, role ];
+        const sql = "INSERT INTO users (name, email, phone_number, password_hash, role) VALUES ( ?, ?, ?, ?, ?)";
+        const values = [ fullName, Email, phoneNumber, hashedPassword, role ];
     
         con.query(sql,values, (err, result) => {
             if(err) {
@@ -305,11 +305,12 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         const [productStatsRows] = await con.promise().query(productStatsSql, [sellerId]);
 
         // Query 2: Get sales stats from 'order_items' table
+        //Get sales stats from transactions table
         const salesStatsSql = `
             SELECT
-                SUM(total_price) AS totalRevenue,
-                COUNT(DISTINCT order_id) AS totalOrders
-            FROM order_items
+                SUM(amount)                        AS totalRevenue,
+                COUNT(DISTINCT order_id)           AS paidOrders
+            FROM transactions
             WHERE seller_id = ?
         `;
         const [salesStatsRows] = await con.promise().query(salesStatsSql, [sellerId]);
@@ -318,14 +319,14 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         const topProductsSql = `
             SELECT
                 p.title,
-                SUM(oi.quantity) AS total_sold,
-                SUM(oi.total_price) AS revenue
-            FROM order_items oi
-            JOIN products p ON oi.product_id = p.id
-            WHERE oi.seller_id = ?
+                SUM(t.quantity) AS total_sold,
+                SUM(t.amount)   AS revenue
+            FROM transactions t
+            JOIN products p ON t.item_id = p.id
+            WHERE t.seller_id = ?
             GROUP BY p.title
             ORDER BY total_sold DESC
-            LIMIT 5;
+            LIMIT 5
         `;
         const [topProducts] = await con.promise().query(topProductsSql, [sellerId]);
 
@@ -334,7 +335,7 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
             products: productStatsRows[0] || { approved: 0, pending: 0, rejected: 0, total: 0 },
             sales: {
                 totalRevenue: salesStatsRows[0]?.totalRevenue || 0,
-                totalOrders: salesStatsRows[0]?.totalOrders || 0,
+                paidOrders: salesStatsRows[0]?.paidOrders || 0,
             },
             topProducts: topProducts
         };
@@ -388,7 +389,7 @@ app.get('/api/cart', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     const sql = `
-        SELECT products.*, cart.id AS cartId, cart.quantity
+        SELECT products.*, products.stock_quantity, cart.id AS cartId, cart.quantity
         FROM cart
         INNER JOIN products ON cart.product_id = products.id
         WHERE cart.user_id = ?
@@ -855,6 +856,74 @@ app.put('/api/users/:id/activate', async (req, res) => {
         res.status(500).json({ error: "Failed to reactivate user" });
     }
 });
+//Admin transaction stats
+app.get('/api/admin/transaction-stats', async (req, res) => {
+  try {
+    const [summary] = await con.promise().query(`
+      SELECT 
+        COUNT(*) AS total_transactions,
+        SUM(amount) AS total_revenue,
+        AVG(amount) AS average_transaction_value
+      FROM transactions
+      WHERE status = 'Completed'
+    `);
+
+    const [revenueOverTime] = await con.promise().query(`
+      SELECT 
+        DATE(transaction_date) AS date,
+        SUM(amount) AS revenue
+      FROM transactions
+      WHERE status = 'Completed'
+      GROUP BY DATE(transaction_date)
+      ORDER BY date
+    `);
+
+    const [topSellers] = await con.promise().query(`
+      SELECT 
+        u.name AS seller_name,
+        SUM(t.amount) AS total_earned
+      FROM transactions t
+      JOIN users u ON t.seller_id = u.id
+      WHERE t.status = 'Completed'
+      GROUP BY t.seller_id
+      ORDER BY total_earned DESC
+      LIMIT 5
+    `);
+
+    const [topProducts] = await con.promise().query(`
+      SELECT 
+        p.title,
+        SUM(t.quantity) AS units_sold,
+        SUM(t.amount) AS revenue_generated
+      FROM transactions t
+      JOIN products p ON t.item_id = p.id
+      WHERE t.status = 'Completed'
+      GROUP BY t.item_id
+      ORDER BY revenue_generated DESC
+      LIMIT 5
+    `);
+
+    const [paymentMethods] = await con.promise().query(`
+      SELECT 
+        payment_method,
+        COUNT(*) AS total
+      FROM transactions
+      WHERE status = 'Completed'
+      GROUP BY payment_method
+    `);
+
+    res.json({
+      summary: summary[0],
+      revenue_over_time: revenueOverTime,
+      top_sellers: topSellers,
+      top_products: topProducts,
+      payment_methods: paymentMethods
+    });
+  } catch (error) {
+    console.error("Error fetching admin stats:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 //User self reactivation
 app.put('/api/users/reactivate', async (req, res) => {
@@ -901,7 +970,7 @@ app.get('/api/products/:id', async (req, res) => {
         // This SQL query joins the products, users, and categories tables
         // to get all the info we need for the details page in one call.
         const sql = `
-            SELECT p.*, u.name as seller_name, c.name as category_name 
+            SELECT p.*, u.name as seller_name, u.phone_number as seller_phone, c.name as category_name, p.stock_quantity
             FROM products p
             LEFT JOIN users u ON p.seller_id = u.id
             LEFT JOIN categories c ON p.category_id = c.id

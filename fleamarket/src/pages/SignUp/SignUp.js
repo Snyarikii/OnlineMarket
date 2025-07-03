@@ -4,13 +4,25 @@ import styles from './SignUp.css';
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+    const navigate = useNavigate('');
     const [fullName, setfullName] = useState("");
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [role, setRole] = useState('');
+    const [phoneError, setPhoneError] = useState('');
+
 
     const RegisterUser = async (e) => {
         e.preventDefault();
+
+        const phoneRegex = /^(07|01)\d{8}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+            setPhoneError("Phone number must start with 07 or 01 and be 10 digits long.");
+            return;
+        } else {
+            setPhoneError('');
+        }
 
         try {
             const response = await fetch('http://localhost:3001/register', {
@@ -18,13 +30,14 @@ const SignUp = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ fullName, Email, Password, role }),
+                body: JSON.stringify({ fullName, Email, phoneNumber, Password, role }),
             });
 
             const data = await response.json();
 
             if(response.ok) {
                 alert(data.message);
+                navigate('/Login');
                 console.log(data);
             } else {
                 alert('Signup failed!');
@@ -61,6 +74,15 @@ const SignUp = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         /><br/>
+                        <input
+                            className="signup-input"
+                            type="text"
+                            placeholder="Phone Number"
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                        /><br/>
+                        {phoneError && <p className="error-text">{phoneError}</p>}
+
                         <input
                             className="signup-input"
                             type="password"

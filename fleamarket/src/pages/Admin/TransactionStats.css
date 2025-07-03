@@ -1,0 +1,97 @@
+/* TransactionStats.css  ─────────────────────────────────────────── */
+
+:root {
+  /* change this value to control every chart’s max height */
+  --chart-max-height: 400px;
+  --card-bg: #ffffff;
+  --card-border: #ddd;
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --radius-xl: 10px;
+  --text-dark: #333;
+  --text-green: #4caf50;
+}
+
+.admin-stats-wrapper {
+  padding: 2rem;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.admin-stats-header {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* ── Cards ─────────────────────────────── */
+.stats-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+
+.stats-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+  color: var(--text-dark);
+}
+
+.stats-card p {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-green);
+}
+
+/* ── Chart containers ─────────────────── */
+.chart-box {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  height: 500px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;                 /* stop growth on hover */
+  position: relative;
+}
+
+.chart-box canvas {
+  /* Ensure canvas never exceeds the max height */
+  max-height: var(--chart-max-height) !important;
+  width: 100% !important;
+}
+
+/* ── Lists (Top sellers / products) ───── */
+.list-box {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  box-shadow: var(--card-shadow);
+}
+
+.list-box h2,
+.chart-box h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-dark);
+}
+
+.list-box ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.list-box li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.list-box li:last-child {
+  border-bottom: none;
+}

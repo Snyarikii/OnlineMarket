@@ -25,6 +25,7 @@ import BuyerSettingsLayout from './components/BuyerSettings/BuyerSettingsLayout'
 import MyAccount from './components/BuyerSettings/MyAccount';
 import SellerSettingsLayout from './components/SellerSettings/SellerSettingsLayout';
 import SellerStatistics from './components/SellerSettings/SellerStatistics';
+import TransactionStats from './pages/Admin/TransactionStats';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -70,6 +71,7 @@ function App() {
           <Route path='ManageCategories' element={<ManageCategories />} />
           <Route path='ManageUsers' element={<ManageUsers />} />
           <Route path='ManageProducts' element={<ManageProducts />} />
+          <Route path='TransactionStats' element={<TransactionStats />} />
         </Route>
         <Route path="/product/:productId" element={<ProtectedRoute allowedRoles={['buyer']} user={user}><ProductDetails /> </ProtectedRoute>} />
         <Route path="/orders" element={<BuyerOrders />} />
