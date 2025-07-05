@@ -74,7 +74,7 @@ const BuyerShippingInfo = () => {
 
     return (
         <div className="shipping-info-container">
-            <h2>Your Shipping Information</h2>
+            <h2>Your Delivery Information</h2>
             <form onSubmit={handleSubmit} className="shipping-info-form">
                 <label>Recipeint Name:</label>
                 <input type="text" name="recipient_name" placeholder="Recipient Name" value={shippingInfo.recipient_name} onChange={handleChange} required />
@@ -90,7 +90,7 @@ const BuyerShippingInfo = () => {
                 <input type="text" name="phone_number" placeholder="Phone Number" value={shippingInfo.phone_number} onChange={handleChange} required />
                 {message && <p className="info-message">{message}</p>}
                 <button type="submit">
-                    {isNewUser ? "Enter shipping info" : "Update info"}
+                    {isNewUser ? "Enter delivery info" : "Update info"}
                 </button>
             </form>
         </div>

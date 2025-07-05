@@ -15,7 +15,8 @@ const SignUp = () => {
 
     const RegisterUser = async (e) => {
         e.preventDefault();
-
+        
+        //Check entered phone number if starts with 07, 01 and has 10 digits
         const phoneRegex = /^(07|01)\d{8}$/;
         if (!phoneRegex.test(phoneNumber)) {
             setPhoneError("Phone number must start with 07 or 01 and be 10 digits long.");

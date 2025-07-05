@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios'; // Using axios for consistency
+import axios from 'axios'; 
 import './AddProduct.css'; 
-import logo from '../../assets/logo2.png'; // Import the logo
+import logo from '../../assets/logo2.png'; 
 
 const AddProduct = ({ setUser, setLoggingOut }) => {
     const navigate = useNavigate();
@@ -18,9 +18,8 @@ const AddProduct = ({ setUser, setLoggingOut }) => {
     });
     const [imageFile, setImageFile] = useState(null);
     const [categories, setCategories] = useState([]);
-    const [userName, setUserName] = useState(''); // State for user's name
-
-    // State for UI feedback
+    const [userName, setUserName] = useState('');
+    
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -71,7 +70,6 @@ const AddProduct = ({ setUser, setLoggingOut }) => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if (!confirmLogout) return;
 
-        // This function will work even if props are not passed from App.js
         if (setLoggingOut && setUser) {
             setLoggingOut(true);
             localStorage.removeItem('token');
@@ -116,10 +114,10 @@ const AddProduct = ({ setUser, setLoggingOut }) => {
             });
 
             setSuccess('Product created successfully! It is now pending admin approval.');
-            e.target.reset(); // Clear form inputs
+            e.target.reset();
             setProduct({ title: '', description: '', price: '', stock_quantity: '', category_id: categories[0]?.id || '', condition: 'New' });
             setImageFile(null);
-            // Optionally navigate away after a delay
+           
             setTimeout(() => navigate('/Dashboard'), 2000);
 
         } catch (err) {
@@ -131,7 +129,6 @@ const AddProduct = ({ setUser, setLoggingOut }) => {
 
     return (
         <div className="add-product-page-body">
-            {/* Updated Header */}
             <header className="marketplace-header">
                 <Link to="/Dashboard" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />

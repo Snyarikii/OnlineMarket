@@ -2,12 +2,12 @@ import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import './Dashboard.css';
-import logo from '../../assets/logo2.png'; // Import the logo
+import logo from '../../assets/logo2.png'; 
 
 const Dashboard = ({ setUser, setLoggingOut }) => {
     const [myProducts, setMyProducts] = useState([]);
     const [loading, setLoading ] = useState(true);
-    const [userName, setUserName] = useState(''); // State for the user's name
+    const [userName, setUserName] = useState(''); 
     const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -27,7 +27,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             return;
         }
         
-        // Fetch user's name for the greeting
+        // Fetch user
         const fetchUserData = async () => {
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
@@ -39,6 +39,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             }
         };
 
+        //Fetch seller's own products
         const fetchMyProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/products/myProducts', {
@@ -55,6 +56,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             }
         };
         
+        //Fetch currently available categories in the marketplace
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/categories', {
@@ -71,6 +73,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
         fetchCategories();
     }, [navigate]);
 
+    //Filtering by search, category, condition, Price range, and status
     useEffect(() => {
         let filtered = [...myProducts];
         
@@ -107,6 +110,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
         setFilteredProducts(filtered);
     }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange, selectedStatus]);
 
+    //Logout function
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if(!confirmLogout) return;
@@ -125,8 +129,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
     };
 
     return(
+        // Header
         <div className="dashboard-page-body">
-            {/* Updated Header */}
             <header className="marketplace-header">
                 <Link to="/Dashboard" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
@@ -148,7 +152,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                     <a onClick={LogOut} className="logout-link">Log Out</a>
                 </nav>
             </header>
-            
+
+            {/*Side Bar*/}
             <main className="dashboard-main-content">
                 <aside className="dashboard-filters-sidebar">
                     <h3>Filters</h3>

@@ -41,7 +41,7 @@ const ShippingForm = ({ itemToOrder, prefillData, onSubmit, onClose }) => {
             }
         }
 
-        onSubmit(formData); // Send back to parent for processing
+        onSubmit(formData); 
     };
 
     return (

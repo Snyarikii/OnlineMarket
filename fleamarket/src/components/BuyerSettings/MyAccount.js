@@ -3,7 +3,7 @@ import './MyAccount.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const MyAccount = () => { // Renamed component for clarity
+const MyAccount = () => {
     const [userInfo, setUserInfo] = useState({ name: '', email: '' });
     const [confirming, setConfirming] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -34,6 +34,7 @@ const MyAccount = () => { // Renamed component for clarity
         fetchUserDetails();
     }, [token, navigate]);
 
+    //Deactivate user after clicking confirm
     const handleDeactivate = async () => {
         if (!token) {
             alert("You need to be logged in.");

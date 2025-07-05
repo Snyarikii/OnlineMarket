@@ -8,7 +8,7 @@ import './SellerStatistics.css';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const SellerStatistics = () => {
-    // **FIX**: Initialize state with the expected object structure to prevent 'undefined' errors.
+
     const [stats, setStats] = useState({
         products: { approved: 0, pending: 0, rejected: 0, total: 0 },
         sales: { totalRevenue: 0, paidOrders: 0 },
@@ -27,7 +27,6 @@ const SellerStatistics = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            // ADD THIS LINE TO DEBUG
             console.log('API Response:', res.data); 
             
             setStats(res.data);

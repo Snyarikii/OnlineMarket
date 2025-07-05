@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './SellerSettingsLayout.css'; // We'll create this new CSS file
-import logo from '../../assets/logo2.png'; // Import the logo
+import './SellerSettingsLayout.css'; 
+import logo from '../../assets/logo2.png'; 
 
 const SellerSettingsLayout = ({ setUser, setLoggingOut }) => {
     const { pathname } = useLocation();
@@ -16,7 +16,7 @@ const SellerSettingsLayout = ({ setUser, setLoggingOut }) => {
             return;
         }
 
-        // Fetch user's name for the greeting
+        // Fetch user
         const fetchUserData = async () => {
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
@@ -52,7 +52,6 @@ const SellerSettingsLayout = ({ setUser, setLoggingOut }) => {
 
     return (
         <div className="settings-page-body">
-            {/* Standardized Header */}
             <header className="marketplace-header">
                 <Link to="/Dashboard" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />

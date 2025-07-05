@@ -35,7 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "Stevey-boy12$",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -89,7 +89,7 @@ app.post("/api/login", (req, res) => {
         const user = results[0];
         const match = await bcrypt.compare(password, user.password_hash);
 
-        // ✅ FIRST check if account is active
+        //Check if account is active
         if (!user.is_active) {
             return res.status(403).json({ message: "This account is deactivated." });
         }
@@ -117,6 +117,7 @@ app.post("/api/login", (req, res) => {
         }
     });
 });
+
 // User my account
 app.get('/api/user/me', authenticateToken, async (req, res) => {
     const userId = req.user.id;
@@ -132,7 +133,6 @@ app.get('/api/user/me', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Server error"});
     }
 });
-
 
 // Logout
 app.post('/logout', (req, res) => {
@@ -196,6 +196,7 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
+// SELLER API ENDPOINTS
 //Seller get categories endpoint
 app.get('/api/categories', authenticateToken, async (req, res) => {
     try {
@@ -259,40 +260,79 @@ app.put('/api/orders/:orderId/status', authenticateToken, async (req, res) => {
     }
 });
 
-// //Seller statistics endpoint
-// app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
-//     const sellerId = req.user.id;
+//Seller update product endpoint
+app.put('/api/products/:productId', authenticateToken, upload.single('image'), async (req, res) => {
+    const { productId } = req.params;
+    const { title, description, category_id, price, condition, stock_quantity } = req.body;
+    const imageFile = req.file;
 
-//     const sql = `
-//         SELECT 
-//             SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
-//             SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
-//             SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
-//             COUNT(*) AS total
-//         FROM products
-//         WHERE seller_id = ?
-//     `;
+    const updates = [category_id, title, description, price, condition, stock_quantity];
+    let sql = `UPDATE products SET category_id = ?, title = ?, description = ?, price = ?, product_condition = ?, stock_quantity = ?`;
 
-//     try {
-//         const [rows] = await con.promise().query(sql, [sellerId]);
+    if(imageFile) {
+        sql += `, image_url = ?`;
+        updates.push(imageFile.filename);
+    }
 
-//         if (rows.length === 0) {
-//             return res.status(404).json({ error: "No products found for seller." });
-//         }
+    sql += `WHERE id = ?`;
+    updates.push(productId);
 
-//         res.json(rows[0]); // return the statistics
-//     } catch (err) {
-//         console.error("Error fetching seller statistics:", err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// });
+    try {
+        await con.promise().query(sql, updates);
+        res.send({ message: "Product updated successfully"});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Failed to update product");
+    }
+});
+
+// Seller get orders for my product
+app.get('/api/seller/orders', authenticateToken, async (req, res) => {
+    const sellerId = req.user.id;
+
+    try {
+        const [rows] = await con.promise().query(`
+            SELECT
+                oi.id AS order_item_id,
+                o.id AS order_id,
+                o.order_date,
+                o.order_status,
+                o.delivery_method,
+                o.buyer_id,
+                o.shipping_name,
+                o.shipping_phone,
+                o.shipping_address,
+                o.shipping_city,
+                o.shipping_postal_code,
+                o.shipping_country,
+                oi.product_id,
+                p.title AS product_title,
+                p.image_url,
+                oi.quantity,
+                oi.price,
+                oi.total_price,
+                oi.status AS item_status
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            JOIN products p ON oi.product_id = p.id
+            WHERE oi.seller_id = ?
+            ORDER BY o.order_date DESC;
+
+        `, [sellerId]);
+
+        res.json(rows);
+    } catch (error) {
+        console.error("Error fetching seller orders:", error);
+        res.status(500).json({ message: "Error fetching seller order items." });
+    }
+});
 
 // Seller statistics endpoint (Enhanced)
 app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
     const sellerId = req.user.id;
 
     try {
-        // Query 1: Get product status counts from 'products' table
+        //Get product status counts from 'products' table
         const productStatsSql = `
             SELECT
                 SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
@@ -304,7 +344,6 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         `;
         const [productStatsRows] = await con.promise().query(productStatsSql, [sellerId]);
 
-        // Query 2: Get sales stats from 'order_items' table
         //Get sales stats from transactions table
         const salesStatsSql = `
             SELECT
@@ -315,7 +354,7 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         `;
         const [salesStatsRows] = await con.promise().query(salesStatsSql, [sellerId]);
 
-        // Query 3: Get top 5 best-selling products
+        //Get top 5 best-selling products
         const topProductsSql = `
             SELECT
                 p.title,
@@ -330,7 +369,6 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         `;
         const [topProducts] = await con.promise().query(topProductsSql, [sellerId]);
 
-        // Combine all stats into the correct nested response object
         const response = {
             products: productStatsRows[0] || { approved: 0, pending: 0, rejected: 0, total: 0 },
             sales: {
@@ -347,6 +385,7 @@ app.get('/api/seller/statistics', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
 // Buyer view product endpoint (only approved + seller is active)
 app.get('/api/products/approved', authenticateToken, async (req, res) => {
     try {
@@ -592,7 +631,8 @@ app.post('/api/shipping', authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Failed to add shipping info."});
     }
 });
-// Get all orders for buyer, with products and shipping info
+
+// Get all orders for buyer, with products
 app.get('/api/orders/with-products', authenticateToken, async (req, res) => {
     const buyerId = req.user.id;
 
@@ -659,14 +699,45 @@ app.put('/api/shipping/user/:userId', authenticateToken, async (req, res) => {
             await con.promise().query(
                 `INSERT INTO shipping (user_id, recipient_name, address_line1, city, postal_code, country, phone_number)
                  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [userId, recipient_name, address_line1, city, postal_code, country, phone_number]
+                 [userId, recipient_name, address_line1, city, postal_code, country, phone_number]
             );
         }
-
+            
         res.json({ message: "Shipping information updated successfully." });
     } catch (err) {
         console.error("Error updating shipping info:", err);
         res.status(500).json({ message: "Server error while updating shipping info." });
+    }
+});
+
+// Buyer get order history
+app.get('/api/orders', authenticateToken, async (req, res) => {
+    try {
+        const buyerId = req.user.id; // Get the user's ID from the JWT token
+
+        // This single query joins orders with products to get all info at once.
+        const sql = `
+            SELECT 
+                o.id, 
+                o.quantity, 
+                o.total_price, 
+                o.order_status, 
+                o.order_date, 
+                p.id as product_id, 
+                p.title, 
+                p.image_url 
+            FROM orders o
+            JOIN products p ON o.item_id = p.id
+            WHERE o.buyer_id = ? 
+            ORDER BY o.order_date DESC
+        `;
+        const [orders] = await con.promise().query(sql, [buyerId]);
+
+        res.json(orders);
+
+    } catch (error) {
+        console.error("Error fetching user orders:", error);
+        res.status(500).json({ error: "Failed to fetch order history." });
     }
 });
 
@@ -955,7 +1026,7 @@ app.put('/api/users/reactivate', async (req, res) => {
             'UPDATE users SET is_active = 1 WHERE email = ?',
             [email]
         );
-
+        
         res.status(200).json({ message: "Account reactivated successfully." });
     } catch (err) {
         console.error("Error reactivating account:", err);
@@ -975,9 +1046,9 @@ app.get('/api/products/:id', async (req, res) => {
             LEFT JOIN users u ON p.seller_id = u.id
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE p.id = ? AND p.status = 'approved' || p.status = 'pending'
-        `;
+            `;
         const [rows] = await con.promise().query(sql, [id]);
-
+        
         if (rows.length === 0) {
             // This happens if the product ID doesn't exist or isn't approved
             return res.status(404).json({ message: "Product not found or not available." });
@@ -989,31 +1060,6 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
-//Seller update product endpoint
-app.put('/api/products/:productId', authenticateToken, upload.single('image'), async (req, res) => {
-    const { productId } = req.params;
-    const { title, description, category_id, price, condition, stock_quantity } = req.body;
-    const imageFile = req.file;
-
-    const updates = [category_id, title, description, price, condition, stock_quantity];
-    let sql = `UPDATE products SET category_id = ?, title = ?, description = ?, price = ?, product_condition = ?, stock_quantity = ?`;
-
-    if(imageFile) {
-        sql += `, image_url = ?`;
-        updates.push(imageFile.filename);
-    }
-
-    sql += `WHERE id = ?`;
-    updates.push(productId);
-
-    try {
-        await con.promise().query(sql, updates);
-        res.send({ message: "Product updated successfully"});
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Failed to update product");
-    }
-});
 
 
 // --- endpoint To get other products from the same seller ---
@@ -1036,77 +1082,7 @@ app.get('/api/sellers/:sellerId/products', async (req, res) => {
     }
 });
 
-// --- NEW ENDPOINT: Get a logged-in user's order history ---
-app.get('/api/orders', authenticateToken, async (req, res) => {
-    try {
-        const buyerId = req.user.id; // Get the user's ID from the JWT token
 
-        // This single query joins orders with products to get all info at once.
-        const sql = `
-            SELECT 
-                o.id, 
-                o.quantity, 
-                o.total_price, 
-                o.order_status, 
-                o.order_date, 
-                p.id as product_id, 
-                p.title, 
-                p.image_url 
-            FROM orders o
-            JOIN products p ON o.item_id = p.id
-            WHERE o.buyer_id = ? 
-            ORDER BY o.order_date DESC
-        `;
-        const [orders] = await con.promise().query(sql, [buyerId]);
-
-        res.json(orders);
-
-    } catch (error) {
-        console.error("Error fetching user orders:", error);
-        res.status(500).json({ error: "Failed to fetch order history." });
-    }
-});
-
-// --- NEW ENDPOINT: Get all orders for a logged-in seller's products ---
-app.get('/api/seller/orders', authenticateToken, async (req, res) => {
-    const sellerId = req.user.id;
-
-    try {
-        const [rows] = await con.promise().query(`
-            SELECT
-                oi.id AS order_item_id,
-                o.id AS order_id,
-                o.order_date,
-                o.order_status,
-                o.delivery_method,
-                o.buyer_id,
-                o.shipping_name,
-                o.shipping_phone,
-                o.shipping_address,
-                o.shipping_city,
-                o.shipping_postal_code,
-                o.shipping_country,
-                oi.product_id,
-                p.title AS product_title,
-                p.image_url,
-                oi.quantity,
-                oi.price,
-                oi.total_price,
-                oi.status AS item_status
-            FROM order_items oi
-            JOIN orders o ON oi.order_id = o.id
-            JOIN products p ON oi.product_id = p.id
-            WHERE oi.seller_id = ?
-            ORDER BY o.order_date DESC;
-
-        `, [sellerId]);
-
-        res.json(rows);
-    } catch (error) {
-        console.error("Error fetching seller orders:", error);
-        res.status(500).json({ message: "Error fetching seller order items." });
-    }
-});
 
 //Mpesa enpoints
 app.post('/api/stk-push', async (req, res) => {
@@ -1145,7 +1121,7 @@ app.post('/api/mpesa-callback', async (req, res) => {
     const stkCallback = req.body?.Body?.stkCallback;
 
     if (!stkCallback) {
-        console.error("❌ Invalid callback format.");
+        console.error("Invalid callback format.");
         return res.status(400).send("Invalid callback format.");
     }
 
@@ -1159,31 +1135,32 @@ app.post('/api/mpesa-callback', async (req, res) => {
         let phoneNumber = String(metadata.find(item => item.Name === 'PhoneNumber')?.Value);
 
         if (!phoneNumber || !amount) {
-            console.error("❌ Missing phone number or amount in callback.");
+            console.error("Missing phone number or amount in callback.");
             return res.status(400).send("Missing required transaction data.");
         }
 
+        //Revert the phone number to start with 0
         if (phoneNumber.startsWith('2547')) {
             phoneNumber = phoneNumber.replace(/^254/, '0');
         }
 
-        console.log("📞 Phone:", phoneNumber, "| 💰 Amount:", amount);
+        console.log("Phone:", phoneNumber, "| Amount:", amount);
 
         try {
-            // 🔍 1. Find order ID via the session
+            // Find order ID via the session
             const [rows] = await con.promise().query(
                 `SELECT order_id FROM stk_sessions WHERE checkout_request_id = ?`,
                 [checkoutRequestId]
             );
 
-            if (!rows.length) { // 🔴 FIXED: typo was `lenth`
-                console.warn("⚠️ No matching STK session found.");
+            if (!rows.length) {
+                console.warn("No matching STK session found.");
                 return res.status(404).json({ error: "Order not found for this transaction" });
             }
 
             const orderId = rows[0].order_id;
 
-            // 🔍 2. Get items for that order
+            //Get items for that order
             const [items] = await con.promise().query(
                 `SELECT 
                     oi.product_id,
@@ -1200,7 +1177,7 @@ app.post('/api/mpesa-callback', async (req, res) => {
                 [orderId]
             );
 
-            // 💾 3. Insert transactions per item
+            // Insert transactions per item
             for (const item of items) {
                 await con.promise().query(
                     `INSERT INTO transactions (
@@ -1230,16 +1207,15 @@ app.post('/api/mpesa-callback', async (req, res) => {
                 [orderId]
             )
 
-            console.log(`✅ Transactions saved for order ${orderId}`);
+            console.log(`Transactions saved for order ${orderId}`);
             return res.status(200).json({ message: 'Transaction saved successfully.' });
 
         } catch (err) {
-            console.error("❌ Error saving transaction:", err);
+            console.error("Error saving transaction:", err);
             return res.status(500).json({ error: "Failed to save transaction." });
         }
     } else {
-        console.log("❌ Payment failed or cancelled.");
+        console.log("Payment failed or cancelled.");
         return res.status(200).send("Transaction not successful.");
     }
 });
-

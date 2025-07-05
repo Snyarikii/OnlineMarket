@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetails.css';
-import logo from '../../assets/logo2.png'; // Import the logo
+import logo from '../../assets/logo2.png';
 
-// --- Reusable Sub-Components ---
-
-// A card for the "More from seller" section
+//More from seller 
 const MiniProductCard = ({ product }) => {
     const imageUrl = product.image_url ? `http://localhost:3001/uploads/${product.image_url}` : `https://via.placeholder.com/200?text=${product.title}`;
     return (
@@ -23,33 +21,16 @@ const MiniProductCard = ({ product }) => {
     );
 };
 
-// A detailed footer
+//ProductDetails footer
 const ProductFooter = () => (
     <footer className="details-footer">
         <div className="footer-main">
-            <div className="footer-column-logo">
-                <div className="footer-logo">
-                    <img src={logo} alt="Flea Market" style={{ height: '50px' }} />
-                </div>
-                {/* Add social icons here if needed */}
-            </div>
-            <div className="footer-column">
-                <h4>Help</h4>
-                <Link to="#">FAQ</Link>
-                <Link to="#">Customer service</Link>
-                <Link to="#">Contact us</Link>
-            </div>
-            <div className="footer-column">
-                <h4>Other</h4>
-                <Link to="#">Sitemap</Link>
-            </div>
+             <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>            
         </div>
     </footer>
 );
 
-
-// --- Main Product Details Page Component ---
-
+//Main Product Details Page
 const ProductDetails = ({ setUser, setLoggingOut }) => {
     const { productId } = useParams();
     const navigate = useNavigate();
@@ -59,12 +40,11 @@ const ProductDetails = ({ setUser, setLoggingOut }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const [userName, setUserName] = useState(''); // State for user's name
+    const [userName, setUserName] = useState(''); 
 
     useEffect(() => {
         const token = localStorage.getItem('token');
 
-        // Fetch user's name for the greeting
         const fetchUserData = async () => {
             if (!token) return;
             try {
@@ -123,7 +103,7 @@ const ProductDetails = ({ setUser, setLoggingOut }) => {
         }
     }
 
-
+    //Buyer adding to cart
     const handleAddToCart = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -160,7 +140,6 @@ const ProductDetails = ({ setUser, setLoggingOut }) => {
 
     return (
         <div className="product-details-page">
-            {/* Updated Header */}
             <header className="marketplace-header">
                 <Link to="/Index" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
@@ -177,7 +156,7 @@ const ProductDetails = ({ setUser, setLoggingOut }) => {
             
             <main className="details-main-content">
                 <div className="breadcrumb">
-                    <Link to="/Index">Home</Link> &gt; <Link to="/Index">All products</Link> &gt; {product.title}
+                   <Link to="/Index">All products</Link> &gt; {product.title}
                 </div>
 
                 <div className="product-display-section">
@@ -188,6 +167,7 @@ const ProductDetails = ({ setUser, setLoggingOut }) => {
                         <h1 className="product-title">{product.title}</h1>
                         <p className="seller-info">Sold by: <strong>{product.seller_name}</strong></p>
                         
+                        <p className="product-description">Contact: {product.seller_phone}</p>
                         <p className="product-description">Description: {product.description}</p>
                         
                         <div className="purchase-controls">

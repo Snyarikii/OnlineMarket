@@ -264,54 +264,12 @@
 
 /* Footer Styles */
 .details-footer {
-    background-color: #111827;
-    color: #9CA3AF;
-}
-.footer-newsletter {
-    padding: 2rem 5%;
-    background-color: #F9FAFB;
-    color: #1F2937;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-.newsletter-form {
-    display: flex;
-}
-.newsletter-form input {
-    min-width: 300px;
-    padding: 0.75rem;
-    border: 1px solid #D1D5DB;
-    border-radius: 8px 0 0 8px;
-}
-.newsletter-form button {
-    padding: 0 1.5rem;
-    border: 1px solid #111827;
-    background-color: #111827;
-    color: #fff;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
+    background-color: whitesmoke;
+    color: #000000;
 }
 .footer-main {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 2rem;
-    padding: 3rem 5%;
+  padding: 20px;
+  text-align: center;
 }
-.footer-column-logo .footer-logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-}
-.footer-column h4 {
-    color: #fff;
-    margin-bottom: 1rem;
-}
-.footer-column a {
-    color: #9CA3AF;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 0.5rem;
-}
+
+

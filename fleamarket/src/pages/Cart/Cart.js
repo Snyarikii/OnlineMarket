@@ -3,12 +3,11 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import './Cart.css';
 import ShippingForm from "./ShippingForm";
-import logo from '../../assets/logo2.png'; // Import the logo
-
+import logo from '../../assets/logo2.png'; 
 const Cart = ({ setUser, setLoggingOut }) => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [userName, setUserName] = useState(''); // State for the user's name
+    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
 
     const [showShippingForm, setShowShippingForm] = useState(false);
@@ -29,7 +28,7 @@ const Cart = ({ setUser, setLoggingOut }) => {
             return;
         }
         
-        // Fetch user's name for the greeting
+        // Fetch user
         const fetchUserData = async () => {
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
@@ -41,6 +40,7 @@ const Cart = ({ setUser, setLoggingOut }) => {
             }
         };
 
+        //Fetch the logged in user's cart
         const fetchCart = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/cart', {
@@ -73,12 +73,12 @@ const Cart = ({ setUser, setLoggingOut }) => {
             navigate('/');
             setTimeout(() => setLoggingOut(false), 500);
         } else {
-            // Fallback for safety if props aren't passed
             localStorage.clear();
             navigate('/');
         }
     }
 
+    //Removing product from user's cart
     const removeItem = async (cartId) => {
         const confirmDelete = window.confirm("Remove this item from your cart?");
         if (!confirmDelete) return;
@@ -95,6 +95,7 @@ const Cart = ({ setUser, setLoggingOut }) => {
         }
     };
 
+    //Add or subtract quantity of product
     const handleUpdateQuantity = async (cartId, newQuantity) => {
         const item = cartItems.find(i => i.cartId === cartId);
         if (!item) return;
@@ -120,6 +121,7 @@ const Cart = ({ setUser, setLoggingOut }) => {
         }
     };
 
+    //Places order for all products in user's cart
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) return alert("Your cart is empty.");
 
@@ -153,7 +155,6 @@ const Cart = ({ setUser, setLoggingOut }) => {
 
     return (
         <div className="cart-page-body">
-            {/* Updated Header */}
             <header className="marketplace-header">
                 <Link to="/Index" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />

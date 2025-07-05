@@ -30,16 +30,14 @@ const Index = ({ setUser, setLoggingOut }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [categories, setCategories] = useState([]);
-    const [userName, setUserName] = useState(''); // State for the user's name
-
+    const [userName, setUserName] = useState(''); 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedCondition, setSelectedCondition] = useState('');
     const [selectedPriceRange, setSelectedPriceRange] = useState('');
-    
 
-    // This hook runs once when the component loads
+    
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -48,7 +46,7 @@ const Index = ({ setUser, setLoggingOut }) => {
             return;
         }
 
-        // Fetch user's name for the greeting
+        // Fetch user
         const fetchUserData = async () => {
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
@@ -57,7 +55,6 @@ const Index = ({ setUser, setLoggingOut }) => {
                 setUserName(res.data.name);
             } catch (err) {
                 console.error("Failed to fetch user name", err);
-                // It's not critical if this fails, so we don't show an alert
             }
         };
 
@@ -149,7 +146,6 @@ const Index = ({ setUser, setLoggingOut }) => {
     return (
         <div className="marketplace-body">
             <header className="marketplace-header">
-                {/* Updated Header Logo Section */}
                 <Link to="/Index" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
                     <span className="header-logo-text">Flea Market</span>
@@ -165,7 +161,6 @@ const Index = ({ setUser, setLoggingOut }) => {
                 </div>
 
                 <nav className="index-header-nav-links">
-                    {/* New User Greeting */}
                     {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
                     <Link to="/orders">My Orders</Link>
                     <Link to="/BuyerSettings">Account</Link>

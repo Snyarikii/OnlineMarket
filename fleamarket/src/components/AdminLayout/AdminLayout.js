@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './AdminLayout.css';
-import logo from '../../assets/logo2.png'; // Import the logo
+import logo from '../../assets/logo2.png';
 
 const AdminLayout = ({ setUser, setLoggingOut }) => {
     const navigate = useNavigate();
@@ -29,6 +29,7 @@ const AdminLayout = ({ setUser, setLoggingOut }) => {
         fetchAdminData();
     }, [navigate]);
 
+    //Log out function
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if (!confirmLogout) return;
@@ -49,7 +50,6 @@ const AdminLayout = ({ setUser, setLoggingOut }) => {
 
     return (
         <div className="admin-page-body">
-            {/* Standardized Header */}
             <header className="marketplace-header">
                 <Link to="/Admin" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />

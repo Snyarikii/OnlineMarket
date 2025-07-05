@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BuyerOrders.css';
-import logo from '../../assets/logo2.png'; // Import the logo
+import logo from '../../assets/logo2.png'; 
 
-const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
+const BuyerOrders = ({ setUser, setLoggingOut }) => { 
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [userName, setUserName] = useState(''); // State for the user's name
-
+    const [userName, setUserName] = useState(''); 
     const token = localStorage.getItem('token');
 
     useEffect(() => {
@@ -20,7 +19,7 @@ const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
             return;
         }
 
-        // Fetch user's name for the greeting
+        // Fetch user
         const fetchUserData = async () => {
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
@@ -50,7 +49,7 @@ const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
         fetchOrders();
     }, [navigate, token]);
     
-    // Logout function, consistent with other pages
+    // Logout function
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if (!confirmLogout) return;
@@ -63,7 +62,6 @@ const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
             navigate('/');
             setTimeout(() => setLoggingOut(false), 500);
         } else {
-            // Fallback for safety
             localStorage.clear();
             navigate('/');
         }
@@ -106,7 +104,7 @@ const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
     }, {});
 
     const sortedOrders = Object.values(groupedOrders).sort(
-        (a, b) => new Date(b.order_date) - new Date(a.order_date) // Sort descending
+        (a, b) => new Date(b.order_date) - new Date(a.order_date) 
     ).map((order, index, arr) => ({
         ...order,
         displayId: `FM-${String(arr.length - index).padStart(3, '0')}`
@@ -114,7 +112,6 @@ const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
 
     return (
         <div className="orders-page">
-            {/* This header is now consistent with Index.js */}
             <header className="marketplace-header">
                 <Link to="/Index" className="header-logo-link">
                     <img src={logo} alt="Flea Market Logo" className="header-logo-img" />

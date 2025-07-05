@@ -57,6 +57,7 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        //Check if passwords match
         if(newPassword !== confirmPassword) {
             setMessage('Passwords do not match.');
             return;

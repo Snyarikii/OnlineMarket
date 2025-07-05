@@ -28,6 +28,7 @@ const Login = ({ setUser }) => {
                 setUser(res.data.user);
                 setMessage(res.data.message);
 
+                //Navigate according to user role
                 const userRole = res.data.user.role;
                 setTimeout(() => {
                     if (userRole === 'buyer') {
@@ -62,6 +63,7 @@ const Login = ({ setUser }) => {
         }
     };
 
+    //Reactivate user after they click reactivate button
     const handleReactivate = async () => {
         try {
             const res = await axios.put("http://localhost:3001/api/users/reactivate", {
