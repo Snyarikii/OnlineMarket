@@ -35,7 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Stevey-boy12$",
+    password: "",
     database: "marketplace",
 });
 con.connect((err) =>{

@@ -4,11 +4,11 @@
  * 1. Global & Root Variables
  * 2. General Layout & Typography
  * 3. Buttons
- * 4. Header
+ * 4. Header (Updated)
  * 5. Hero Section
  * 6. Engagement Section
  * 7. Categories Section
- * 8. Footer (Updated)
+ * 8. Footer
  * 9. Responsive Media Queries
 */
 
@@ -85,7 +85,7 @@
   color: var(--color-primary);
 }
 
-/* 4. Header */
+/* 4. Header (Updated) */
 .landing-page-header {
   display: flex;
   justify-content: space-between;
@@ -94,10 +94,28 @@
   background-color: var(--color-primary);
   height: 80px;
 }
+
+/* This is the new style for the link containing the logo and text */
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* Removes the underline from the link */
+}
+
 .header-logo-img {
   height: 60px;
   display: block;
 }
+
+/* This is the new style for the "Flea Market" text */
+.header-logo-text {
+    color: var(--color-light);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-left: 12px; /* Adds space between the logo and the text */
+    letter-spacing: -0.5px;
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -194,7 +212,7 @@
   line-height: 1.5;
 }
 
-/* 8. Footer (Updated) */
+/* 8. Footer */
 .footer {
   background-color: var(--color-background-dark);
   color: #ccc;
@@ -209,7 +227,7 @@
 }
 
 
-/* 10. Responsive Media Queries */
+/* 9. Responsive Media Queries */
 @media (max-width: 768px) {
   .engagement-grid, .footer-grid {
     grid-template-columns: 1fr;

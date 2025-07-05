@@ -56,8 +56,11 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       <header className="landing-page-header">
+        {/* The Link now wraps both the logo and the new title text */}
         <Link to="/" className="header-logo-link">
           <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+          {/* This is the new title text */}
+          <span className="header-logo-text">Flea Market</span>
         </Link>
         <div className="header-actions">
           <Link to="/Login" className="btn btn-login">Log In</Link>
