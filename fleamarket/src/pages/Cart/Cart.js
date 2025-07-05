@@ -3,10 +3,12 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import './Cart.css';
 import ShippingForm from "./ShippingForm";
+import logo from '../../assets/logo2.png'; // Import the logo
 
-const Cart = () => {
+const Cart = ({ setUser, setLoggingOut }) => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [userName, setUserName] = useState(''); // State for the user's name
     const navigate = useNavigate();
 
     const [showShippingForm, setShowShippingForm] = useState(false);
@@ -20,19 +22,30 @@ const Cart = () => {
     }, [showShippingForm]);
 
     useEffect(() => {
-        const fetchCart = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("Please log in to view your cart.");
-                navigate('/Login');
-                return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Please log in to view your cart.");
+            navigate('/Login');
+            return;
+        }
+        
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
             }
+        };
 
+        const fetchCart = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/cart', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
                 setCartItems(response.data);
             } catch (err) {
                 console.error("Error fetching cart:", err);
@@ -42,8 +55,29 @@ const Cart = () => {
                 setLoading(false);
             }
         };
+
+        fetchUserData();
         fetchCart();
     }, [navigate]);
+    
+    // Logout function
+    function LogOut() {
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+        if (!confirmLogout) return;
+
+        if (setLoggingOut && setUser) {
+            setLoggingOut(true);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            navigate('/');
+            setTimeout(() => setLoggingOut(false), 500);
+        } else {
+            // Fallback for safety if props aren't passed
+            localStorage.clear();
+            navigate('/');
+        }
+    }
 
     const removeItem = async (cartId) => {
         const confirmDelete = window.confirm("Remove this item from your cart?");
@@ -54,7 +88,6 @@ const Cart = () => {
             await axios.delete(`http://localhost:3001/api/cart/${cartId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             setCartItems((prev) => prev.filter((item) => item.cartId !== cartId));
         } catch (err) {
             console.error("Error removing item:", err);
@@ -66,22 +99,20 @@ const Cart = () => {
         const item = cartItems.find(i => i.cartId === cartId);
         if (!item) return;
 
-        // clamp 1 … stock
         const clamped = Math.max(1, Math.min(item.stock_quantity, newQuantity));
-        if (clamped === item.quantity) return;   // nothing to do
+        if (clamped === item.quantity) return;
 
         try {
             const token = localStorage.getItem('token');
             await axios.put(
-            `http://localhost:3001/api/cart/${cartId}`,
-            { quantity: clamped },
-            { headers: { Authorization: `Bearer ${token}` } }
+                `http://localhost:3001/api/cart/${cartId}`,
+                { quantity: clamped },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-
             setCartItems(prev =>
-            prev.map(i =>
-                i.cartId === cartId ? { ...i, quantity: clamped } : i
-            )
+                prev.map(i =>
+                    i.cartId === cartId ? { ...i, quantity: clamped } : i
+                )
             );
         } catch (err) {
             console.error('Error updating quantity:', err);
@@ -89,11 +120,10 @@ const Cart = () => {
         }
     };
 
-
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) return alert("Your cart is empty.");
 
-        const confirm = window.confirm("Place order for all items in your cart?");
+        const confirm = window.confirm("Proceed to checkout for all items in your cart?");
         if (!confirm) return;
 
         const token = localStorage.getItem("token");
@@ -103,7 +133,6 @@ const Cart = () => {
             const shippingRes = await axios.get(`http://localhost:3001/api/shipping/user/${user.id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             const shippingData = shippingRes.data;
             setItemToOrder({ cartItems, shippingPrefill: shippingData });
             setShowShippingForm(true);
@@ -123,17 +152,26 @@ const Cart = () => {
     if (loading) return <p>Loading cart...</p>;
 
     return (
-        <div className="cart-body">
-            <div className="cart-header">
-                <h1 className="cart-h1">Flea Market</h1>
-                <nav className="cart-nav">
-                    <Link to='/Index' className="cart-back-link">Back</Link>
+        <div className="cart-page-body">
+            {/* Updated Header */}
+            <header className="marketplace-header">
+                <Link to="/Index" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+                <nav className="header-nav-links">
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
+                    <Link to="/Index">Shop</Link>
+                    <Link to="/orders">My Orders</Link>
+                    <Link to="/BuyerSettings">Account</Link>
+                    <a onClick={LogOut} className="logout-link">Log out</a>
                 </nav>
-            </div>
+            </header>
+
             <div className="cart-container">
                 <h1>Your Cart</h1>
                 {cartItems.length === 0 ? (
-                    <p>Your cart is empty.</p>
+                    <p>Your cart is empty. <Link to="/Index">Continue shopping</Link>.</p>
                 ) : (
                     <>
                         <div className="cart-items">
@@ -147,32 +185,28 @@ const Cart = () => {
                                     <div className="cart-item-info">
                                         <h3>{item.title}</h3>
                                         <p>Price: Ksh {Number(item.price).toLocaleString()}</p>
-                                        <p>Quantity: {item.quantity}</p>
-                                        <button onClick={() => removeItem(item.cartId)}>Remove</button>
-                                    </div>
-                                    <div className="cart-buttons">
                                         <div className="quantity-controls">
                                             <button 
-                                                onClick={() => 
-                                                    handleUpdateQuantity(item.cartId, item.quantity - 1)
-                                                }
-                                                className="subtract-btn"
+                                                onClick={() => handleUpdateQuantity(item.cartId, item.quantity - 1)}
                                                 disabled={item.quantity === 1}
-                                                >
-                                                    -
+                                            >
+                                                -
                                             </button>
+                                            <span>{item.quantity}</span>
                                             <button 
-                                                onClick={() => 
-                                                    handleUpdateQuantity(item.cartId, item.quantity + 1)
-                                                }
-                                                disabled={item.quantity === item.stock_quantity}
-                                                >
-                                                    +
+                                                onClick={() => handleUpdateQuantity(item.cartId, item.quantity + 1)}
+                                                disabled={item.quantity >= item.stock_quantity}
+                                            >
+                                                +
                                             </button>
-                                            <small className="stock-left">
-                                                In Stock: {item.stock_quantity}
-                                            </small>
                                         </div>
+                                        <small className="stock-left">
+                                            In Stock: {item.stock_quantity}
+                                        </small>
+                                    </div>
+                                    <div className="cart-item-actions">
+                                        <p className="item-total">Subtotal: Ksh {(item.price * item.quantity).toLocaleString()}</p>
+                                        <button className="remove-btn" onClick={() => removeItem(item.cartId)}>Remove</button>
                                     </div>
                                 </div>
                             ))}
@@ -180,7 +214,7 @@ const Cart = () => {
 
                         <div className="cart-summary">
                             <h2>Total: Ksh {Number(totalPrice).toLocaleString()}</h2>
-                            <button className="cart-placeOrder-btn" onClick={handlePlaceOrder}>Place Order</button>
+                            <button className="cart-placeOrder-btn" onClick={handlePlaceOrder}>Proceed to Checkout</button>
                         </div>
                     </>
                 )}
@@ -203,7 +237,6 @@ const Cart = () => {
                                     shipping_country,
                                 } = filledShippingData;
 
-                                //Step 1: Place the order
                                 const orderPayload = {
                                     total_price: totalPrice,
                                     delivery_method,
@@ -220,13 +253,11 @@ const Cart = () => {
                                         price: item.price,
                                         total_price: (item.price * item.quantity).toFixed(2)
                                     }))
-
                                 };
-                                const orderRes = await axios.post('http://localhost:3001/api/place-order', orderPayload, {
+                                await axios.post('http://localhost:3001/api/place-order', orderPayload, {
                                     headers: { Authorization: `Bearer ${token}` }
                                 });
-            
-
+                        
                                 for (const item of itemToOrder.cartItems) {
                                     await axios.delete(`http://localhost:3001/api/cart/${item.cartId}`, {
                                         headers: { Authorization: `Bearer ${token}` }
@@ -239,18 +270,10 @@ const Cart = () => {
                             } catch (error) {
                                 console.error("Order failed:", error);
                                 if(error.response) {
-                                    console.log("Status", error.response.status);
-                                    console.log("Data:", error.response.data);
-                                    
-                                    if (error.response.status) {
-                                        alert(error.response.data.error);                                        
-                                    } else {
-                                        alert(error.response.data.error || "Order failed. Please try again.");
-                                    }
+                                    alert(error.response.data.error || "Order failed. Please try again.");
                                 } else {
                                     alert("Network error. Please try again");
                                 }
-                                
                             } finally {
                                 setShowShippingForm(false);
                                 setItemToOrder(null);
@@ -263,9 +286,9 @@ const Cart = () => {
                     />
                 </div>
             )}
-            <div className="cart-footer">
-                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
-            </div>
+            <footer className="cart-footer">
+                <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>
+            </footer>
         </div>
     );
 };
