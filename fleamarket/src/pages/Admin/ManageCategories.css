@@ -1,31 +1,119 @@
-.manage-categories {
-    padding: 20px;
-}
-.manage-categories table{
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.manage-categories-container {
+    font-family: 'Inter', sans-serif;
 }
 
-.manage-categories th,
-.manage-categories td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+.page-header {
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
-.manage-categories th {
-    background-color: #f5f5f5;
+.page-header h1 {
+    font-size: 1.75rem;
+    color: #111827;
+    margin: 0;
 }
 
-.manage-categories input[type="text"] {
-    padding: 5px;
-    margin-right: 10px;
+.page-header p {
+    font-size: 1rem;
+    color: #6B7280;
+    margin-top: 0.25rem;
+}
+
+.add-category-form {
+    background-color: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.add-category-form h3 {
+    font-size: 1.25rem;
+    margin: 0 0 1rem 0;
+}
+
+.add-category-form form {
+    display: flex;
+    gap: 1rem;
+}
+
+.add-category-form input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
     font-size: 1rem;
 }
 
-.manage-categories button {
-    padding: 8px 12px;
-    margin-top: 10px;
+.btn-add {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 0 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
+.categories-table-container h3 {
+    font-size: 1.25rem;
+    margin: 0 0 1rem 0;
+}
+
+.categories-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.categories-table th,
+.categories-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.categories-table th {
+    background-color: #F9FAFB;
+    font-size: 0.8rem;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+.edit-input {
+    padding: 0.5rem;
+    border: 1px solid #9CA3AF;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-edit, .btn-save {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.btn-delete, .btn-cancel {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+.error-message {
+    color: #DC2626;
+    margin-top: 1rem;
+    font-weight: 500;
+}
