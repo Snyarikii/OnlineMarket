@@ -2,23 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetails.css';
+import logo from '../../assets/logo2.png'; // Import the logo
 
 // --- Reusable Sub-Components ---
-
-// A detailed header
-const ProductHeader = () => (
-    <header className="details-header">
-        <div className="header-main">
-            <h1>Flea Market</h1>
-            <nav className="details-header-nav">
-                <Link to="#">Account</Link>
-                <Link to="/orders">Orders</Link>
-                <Link to="/Cart">Cart</Link>
-                <Link to='/Index'>Back</Link>
-            </nav>
-        </div>
-    </header>
-);
 
 // A card for the "More from seller" section
 const MiniProductCard = ({ product }) => {
@@ -42,7 +28,9 @@ const ProductFooter = () => (
     <footer className="details-footer">
         <div className="footer-main">
             <div className="footer-column-logo">
-                <div className="footer-logo">Logo</div>
+                <div className="footer-logo">
+                    <img src={logo} alt="Flea Market" style={{ height: '50px' }} />
+                </div>
                 {/* Add social icons here if needed */}
             </div>
             <div className="footer-column">
@@ -52,7 +40,7 @@ const ProductFooter = () => (
                 <Link to="#">Contact us</Link>
             </div>
             <div className="footer-column">
-                <h4>Other</h4>                
+                <h4>Other</h4>
                 <Link to="#">Sitemap</Link>
             </div>
         </div>
@@ -62,7 +50,7 @@ const ProductFooter = () => (
 
 // --- Main Product Details Page Component ---
 
-const ProductDetails = () => {
+const ProductDetails = ({ setUser, setLoggingOut }) => {
     const { productId } = useParams();
     const navigate = useNavigate();
 
@@ -71,8 +59,24 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [userName, setUserName] = useState(''); // State for user's name
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            if (!token) return;
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
+            }
+        };
+
         const fetchProductDetails = async () => {
             setLoading(true);
             setError('');
@@ -97,8 +101,28 @@ const ProductDetails = () => {
             }
         };
 
+        fetchUserData();
         fetchProductDetails();
     }, [productId]);
+    
+    // Logout function
+    function LogOut() {
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+        if (!confirmLogout) return;
+
+        if (setLoggingOut && setUser) {
+            setLoggingOut(true);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            navigate('/');
+            setTimeout(() => setLoggingOut(false), 500);
+        } else {
+            localStorage.clear();
+            navigate('/');
+        }
+    }
+
 
     const handleAddToCart = async () => {
         try {
@@ -111,7 +135,8 @@ const ProductDetails = () => {
 
             await axios.post(
                 'http://localhost:3001/api/products/addToCart',
-                { productId: product.id,
+                { 
+                    productId: product.id,
                     quantity: quantity,
                 },
                 {
@@ -135,11 +160,24 @@ const ProductDetails = () => {
 
     return (
         <div className="product-details-page">
-            <ProductHeader />
+            {/* Updated Header */}
+            <header className="marketplace-header">
+                <Link to="/Index" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+                <nav className="header-nav-links">
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
+                    <Link to="/orders">My Orders</Link>
+                    <Link to="/BuyerSettings">Account</Link>
+                    <Link to="/Cart">Cart</Link>
+                    <a onClick={LogOut} className="logout-link">Log out</a>
+                </nav>
+            </header>
             
             <main className="details-main-content">
                 <div className="breadcrumb">
-                    <Link to="/Index">Home</Link> &gt; <Link to="#">All products</Link> &gt; {product.title}
+                    <Link to="/Index">Home</Link> &gt; <Link to="/Index">All products</Link> &gt; {product.title}
                 </div>
 
                 <div className="product-display-section">
@@ -149,15 +187,11 @@ const ProductDetails = () => {
                     <div className="product-info-panel">
                         <h1 className="product-title">{product.title}</h1>
                         <p className="seller-info">Sold by: <strong>{product.seller_name}</strong></p>
-                        <p className="seller-info">Contact <strong>{product.seller_phone}</strong></p>
-                        {/* <div className="product-reviews-placeholder">
-                            <span>★★★★☆</span>
-                            <a href="#">481 Reviews</a>
-                        </div> */}
+                        
                         <p className="product-description">Description: {product.description}</p>
                         
                         <div className="purchase-controls">
-                             <div className="quantity-selector">
+                            <div className="quantity-selector">
                                 <label>Quantity</label>
                                 <div>
                                     <button 
@@ -165,14 +199,12 @@ const ProductDetails = () => {
                                     >
                                         -
                                     </button>
-
                                     <span>{quantity}</span>
-
                                     <button 
                                         onClick={() => 
                                             setQuantity(q => Math.min(product.stock_quantity, q + 1))
                                         }
-                                        disabled={quantity === product.stock_quantity}
+                                        disabled={quantity >= product.stock_quantity}
                                     >
                                         +
                                     </button>
@@ -186,7 +218,7 @@ const ProductDetails = () => {
                         {product.stock_quantity === 0 ? (
                             <div className='out-of-stock-overlay'>Out of Stock</div>
                         ) : (
-                            <button className="add-to-bag-btn" onClick={handleAddToCart}>Add to Cart</button>                            
+                            <button className="add-to-bag-btn" onClick={handleAddToCart}>Add to Cart</button>                                    
                         )}
                     </div>
                 </div>
