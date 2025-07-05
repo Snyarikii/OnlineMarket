@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import './Index.css';
 import axios from "axios";
-
+import logo from '../../assets/logo2.png'; // Import the logo
 
 const ProductCard = ({ product }) => {
     // Correctly construct the image URL based on your server setup
@@ -30,7 +30,7 @@ const Index = ({ setUser, setLoggingOut }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [categories, setCategories] = useState([]);
-
+    const [userName, setUserName] = useState(''); // State for the user's name
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -41,7 +41,6 @@ const Index = ({ setUser, setLoggingOut }) => {
 
     // This hook runs once when the component loads
     useEffect(() => {
-        // We still check for a token to ensure only logged-in users can browse
         const token = localStorage.getItem('token');
         if (!token) {
             alert("Please log in to browse the marketplace.");
@@ -49,9 +48,21 @@ const Index = ({ setUser, setLoggingOut }) => {
             return;
         }
 
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
+                // It's not critical if this fails, so we don't show an alert
+            }
+        };
+
         const fetchApprovedProducts = async () => {
             try {
-                // Fetching from the correct buyer-facing endpoint
                 const response = await axios.get('http://localhost:3001/api/products/approved', {
                     headers: {'Authorization' : `Bearer ${token}`}
                 });
@@ -60,10 +71,11 @@ const Index = ({ setUser, setLoggingOut }) => {
                 if(err.response && (err.response.status === 401 || err.response.status === 403)) {
                     alert("Session expired. Please log in again");
                     localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                     navigate("/Login");
                 } else {
                     console.error(err);
-                    alert("An error occurred. Please try again.");
+                    setError("Failed to load products. Please try again.");
                 }
             } finally {
                 setLoading(false);
@@ -73,27 +85,21 @@ const Index = ({ setUser, setLoggingOut }) => {
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/categories', {
-                    headers: {
-                        'Authorization' : `Bearer ${token}`
-                    }
+                    headers: { 'Authorization' : `Bearer ${token}` }
                 });
                 setCategories(response.data);
             } catch (err) {
                 console.error('Error fetching categories', err);
             }
         };
+        
+        fetchUserData();
         fetchApprovedProducts();
         fetchCategories();
-    }, [navigate], []);
+    }, [navigate]);
 
     useEffect(() => {
-        filterProducts();
-    }, [searchQuery, products, selectedCategory, selectedCondition, selectedPriceRange]);
-
-
-    const filterProducts = () => {
         let filtered = [...products];
-        // console.log('Products:', products);
 
         if (searchQuery.trim() !== '') {
             filtered = filtered.filter(product => 
@@ -122,7 +128,7 @@ const Index = ({ setUser, setLoggingOut }) => {
             });
         }
         setFilteredProducts(filtered);
-    };
+    }, [searchQuery, products, selectedCategory, selectedCondition, selectedPriceRange]);
     
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -143,7 +149,12 @@ const Index = ({ setUser, setLoggingOut }) => {
     return (
         <div className="marketplace-body">
             <header className="marketplace-header">
-                <h1 className="index-header-logo">Flea Market</h1>
+                {/* Updated Header Logo Section */}
+                <Link to="/Index" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+
                 <div className="index-header-search-bar">
                     <input 
                         type="text" 
@@ -152,12 +163,14 @@ const Index = ({ setUser, setLoggingOut }) => {
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <nav className="index-header-nav-links">
 
+                <nav className="index-header-nav-links">
+                    {/* New User Greeting */}
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
                     <Link to="/orders">My Orders</Link>
                     <Link to="/BuyerSettings">Account</Link>
                     <Link to="/Cart">Cart</Link>
-                    <a onClick={LogOut}>Log out</a>
+                    <a onClick={LogOut} className="logout-link">Log out</a>
                 </nav>
             </header>
 
@@ -209,7 +222,7 @@ const Index = ({ setUser, setLoggingOut }) => {
                                     <ProductCard key={product.id} product={product} />
                                 ))
                             ) : (
-                                <p>No products are currently available. Check back later!</p>
+                                <p>No products match your criteria. Try adjusting your filters!</p>
                             )}
                         </div>
                     )}
@@ -217,7 +230,7 @@ const Index = ({ setUser, setLoggingOut }) => {
             </main>
             
             <footer className="marketplace-footer">
-                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+                <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>
             </footer>
         </div>
     );
