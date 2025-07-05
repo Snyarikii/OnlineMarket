@@ -1,79 +1,125 @@
-.add-product-page {
-  background-color: #F9FAFB;
-  min-height: 100vh;
+.add-product-page-body {
+    background-color: #F9FAFB;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-.addProduct-page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 5%;
-  background-color: #2563eb;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  height: 15vh;
+/* --- New Consistent Header Styles --- */
+.marketplace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #2563eb;
+    border-bottom: 1px solid #D1D5DB;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 80px;
 }
 
-.addProduct-page-header h1 {
-  color: #f9f9f9;
-  font-size: 1.8rem;
-  cursor: pointer;
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
-.addProduct-page-header nav a {
-  color: #f9f9f9;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+.header-logo-img {
+    height: 50px;
 }
 
-.addProduct-page-header nav a:hover {
-   background-color: rgb(159, 159, 255);
+.header-logo-text {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-left: 12px;
+    letter-spacing: -0.5px;
+}
+
+.header-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-greeting {
     color: black;
+    background-color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
 }
+
+.header-nav-links a, .logout-link {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-family: Inter, sans-serif;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.header-nav-links a:hover, .logout-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+/* --- End of Header Styles --- */
+
 
 .page-main {
-  padding: 40px 5%;
-  margin-top: 1vh; /* <-- ADD THIS LINE */
+    padding: 40px 5%;
 }
 
 .form-container {
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: #ffffff;
-  padding: 2rem 3rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .form-title {
-  text-align: center;
-  color: #1F2937;
-  font-size: 2rem;
-  margin-bottom: 2rem;
+    text-align: center;
+    color: #1F2937;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: #6B7280;
+    margin-bottom: 2rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-group label {
-  display: block;
-  font-weight: 600;
-  color: #1F2937;
-  margin-bottom: 0.5rem;
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #D1D5DB;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus,
@@ -110,20 +156,20 @@
 }
 
 .btn-submit {
-  width: 100%;
-  padding: 15px;
-  background-color: #2563eb;
-  color: #ffffff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    width: 100%;
+    padding: 15px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background-color: #1D4ED8;
+    background-color: #1D4ED8;
 }
 
 .btn-submit:disabled {
