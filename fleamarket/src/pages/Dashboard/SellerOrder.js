@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SellerOrder.css';
+import logo from '../../assets/logo2.png'; // Import the logo
 
-const SellerOrder = () => {
+const SellerOrder = ({ setUser, setLoggingOut }) => {
     const navigate = useNavigate();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [userName, setUserName] = useState(''); // State for the user's name
 
     const token = localStorage.getItem('token');
 
@@ -16,6 +18,18 @@ const SellerOrder = () => {
             navigate('/Login');
             return;
         }
+        
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
+            }
+        };
 
         const fetchSellerOrders = async () => {
             try {
@@ -31,8 +45,27 @@ const SellerOrder = () => {
             }
         };
 
+        fetchUserData();
         fetchSellerOrders();
     }, [navigate, token]);
+    
+    // Logout function
+    function LogOut() {
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+        if (!confirmLogout) return;
+
+        if (setLoggingOut && setUser) {
+            setLoggingOut(true);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            navigate('/');
+            setTimeout(() => setLoggingOut(false), 500);
+        } else {
+            localStorage.clear();
+            navigate('/');
+        }
+    }
 
     // Group items by order_id
     const groupedOrders = items.reduce((acc, item) => {
@@ -55,21 +88,28 @@ const SellerOrder = () => {
     }, {});
 
     const sortedOrders = Object.values(groupedOrders).sort(
-        (a, b) => new Date(a.order_date) - new Date(b.order_date))
-        .map((order, index) => ({
-            ...order,
-            displayId: `FM-ORD-${String(index + 1).padStart(3, '0')}`
-        }))
-        .reverse();
+        (a, b) => new Date(b.order_date) - new Date(a.order_date)
+    ).map((order, index, arr) => ({
+        ...order,
+        displayId: `FM-ORD-${String(arr.length - index).padStart(3, '0')}`
+    }));
 
     return (
-        <div className="seller-order-body">
-            <div className="seller-order-header">
-                <h1>Flea Market</h1>
-                <nav className="seller-order-nav">
-                    <Link to="/Dashboard" className="seller-order-back-link">Back</Link>
+        <div className="seller-order-page-body">
+            {/* Updated Header */}
+            <header className="marketplace-header">
+                <Link to="/Dashboard" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+                <nav className="header-nav-links">
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
+                    <Link to="/Dashboard">My Products</Link>
+                    <Link to="/add-product">Add Product</Link>
+                    <Link to="/SellerSettings">My Account</Link>
+                    <a onClick={LogOut} className="logout-link">Log Out</a>
                 </nav>
-            </div>
+            </header>
 
             <div className="seller-orders-container">
                 <div className="seller-orders-header">
@@ -82,67 +122,67 @@ const SellerOrder = () => {
                 ) : error ? (
                     <p className="error-message">{error}</p>
                 ) : sortedOrders.length === 0 ? (
-                    <p className="no-orders-cell">You have no sold items yet.</p>
+                    <div className="no-orders-box">
+                        <p>You have no customer orders yet.</p>
+                        <Link to="/Dashboard" className="btn-primary">Go to Dashboard</Link>
+                    </div>
                 ) : (
-                    sortedOrders.map(order => {
-                        return (
-                            <div key={order.order_id} className="order-group-box">
+                    sortedOrders.map(order => (
+                        <div key={order.order_id} className="order-group-box">
+                            <div className='order-group-box-header'>
                                 <h3>Order {order.displayId}</h3>
-                                <p>Order Date: {new Date(order.order_date).toLocaleDateString()}</p>
-                                <p><strong>Delivery Method: </strong> {order.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}</p>
-                                
-                                <div className="shipping-info">
-                                    <strong>{order.delivery_method === 'pickup' ? 'Pickup Info' : 'Delivery Info'}</strong><br />
-                                    {order.shipping_name}<br />
-                                    {order.shipping_phone}<br />
-                                    {order.delivery_method ==='delivery' && (
-                                        <>
-                                            {order.shipping_address}, {order.shipping_city}, {order.shipping_postal_code}, {order.shipping_country}                                            
-                                        </>
-                                    )}
-                                </div>
-                                
-
-                                <table className="orders-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th>Image</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {order.items.map(item => (
-                                            <tr key={item.order_item_id}>
-                                                <td>{item.product_title}</td>
-                                                <td>
-                                                    <img
-                                                        src={`http://localhost:3001/uploads/${item.image_url}`}
-                                                        alt={item.product_title}
-                                                        className="sellers-product-image"
-                                                    />
-                                                </td>
-                                                <td>{item.quantity}</td>
-                                                <td>Ksh {Number(item.total_price).toLocaleString()}</td>
-                                                <td>
-                                                    <span className={`status-badge status-${item.item_status.toLowerCase()}`}>
-                                                        {item.item_status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <p><strong>Date:</strong> {new Date(order.order_date).toLocaleDateString()}</p>
                             </div>
-                        );
-                    })
+                            
+                            <div className="shipping-info">
+                                <strong>{order.delivery_method === 'pickup' ? 'Pickup Info' : 'Delivery Info'}</strong>
+                                <p>
+                                    {order.shipping_name}, {order.shipping_phone}
+                                    {order.delivery_method ==='delivery' && (
+                                        <>, {order.shipping_address}, {order.shipping_city}, {order.shipping_postal_code}, {order.shipping_country}</>
+                                    )}
+                                </p>
+                            </div>
+                            
+                            <table className="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Image</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {order.items.map(item => (
+                                        <tr key={item.order_item_id}>
+                                            <td>{item.product_title}</td>
+                                            <td>
+                                                <img
+                                                    src={`http://localhost:3001/uploads/${item.image_url}`}
+                                                    alt={item.product_title}
+                                                    className="sellers-product-image"
+                                                />
+                                            </td>
+                                            <td>{item.quantity}</td>
+                                            <td>Ksh {Number(item.total_price).toLocaleString()}</td>
+                                            <td>
+                                                <span className={`status-badge status-${item.item_status.toLowerCase()}`}>
+                                                    {item.item_status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ))
                 )}
             </div>
 
             <footer className="seller-order-footer">
-                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+                <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>
             </footer>
         </div>
     );
