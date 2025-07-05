@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BuyerOrders.css';
+import logo from '../../assets/logo2.png'; // Import the logo
 
-const BuyerOrders = () => {
+const BuyerOrders = ({ setUser, setLoggingOut }) => { // Accept props for logout
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [userName, setUserName] = useState(''); // State for the user's name
 
     const token = localStorage.getItem('token');
 
@@ -17,6 +19,18 @@ const BuyerOrders = () => {
             navigate('/Login');
             return;
         }
+
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
+            }
+        };
 
         const fetchOrders = async () => {
             try {
@@ -32,8 +46,28 @@ const BuyerOrders = () => {
             }
         };
 
+        fetchUserData();
         fetchOrders();
     }, [navigate, token]);
+    
+    // Logout function, consistent with other pages
+    function LogOut() {
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+        if (!confirmLogout) return;
+
+        if (setLoggingOut && setUser) {
+            setLoggingOut(true);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            navigate('/');
+            setTimeout(() => setLoggingOut(false), 500);
+        } else {
+            // Fallback for safety
+            localStorage.clear();
+            navigate('/');
+        }
+    }
 
     const handleMarkAsDelivered = async (orderId, productId) => {
         try {
@@ -72,19 +106,27 @@ const BuyerOrders = () => {
     }, {});
 
     const sortedOrders = Object.values(groupedOrders).sort(
-        (a, b) => new Date(a.order_date) - new Date(b.order_date))
-        .map((order, index) => ({
-            ...order,
-            displayId: `FM-${String(index + 1).padStart(3, '0')}`
-        }))
-        .reverse();
+        (a, b) => new Date(b.order_date) - new Date(a.order_date) // Sort descending
+    ).map((order, index, arr) => ({
+        ...order,
+        displayId: `FM-${String(arr.length - index).padStart(3, '0')}`
+    }));
 
     return (
         <div className="orders-page">
-            <header className="orders-header">
-                <h1>FleaMarket</h1>
-                <nav className="orders-nav">
-                    <Link to="/Index">Continue Shopping</Link>
+            {/* This header is now consistent with Index.js */}
+            <header className="marketplace-header">
+                <Link to="/Index" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+
+                <nav className="header-nav-links">
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
+                    <Link to="/Index">Shop</Link>
+                    <Link to="/BuyerSettings">Account</Link>
+                    <Link to="/Cart">Cart</Link>
+                    <a onClick={LogOut} className="logout-link">Log out</a>
                 </nav>
             </header>
 
@@ -106,73 +148,72 @@ const BuyerOrders = () => {
                     </div>
                 ) : (
                     <div className="orders-list">
-                        {sortedOrders.map(orderGroup => {
-                            return (
-                                <div key={orderGroup.order_id} className="order-group">
+                        {sortedOrders.map(orderGroup => (
+                            <div key={orderGroup.order_id} className="order-group">
+                                <div className="order-group-header">
                                     <h3>Order {orderGroup.displayId}</h3>
-                                    <p>Order Date: {new Date(orderGroup.order_date).toLocaleDateString()}</p>
-
-                                    <div className="group-items">
-                                        {orderGroup.items.map(item => (
-                                            <div key={`${orderGroup.order_id}_${item.product_id}`} className="order-item-card">
-                                                <img
-                                                    src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
-                                                    alt={item.title}
-                                                    className="item-image"
-                                                />
-                                                <div className="item-details">
-                                                    <Link to={`/product/${item.product_id}`} className="item-title">{item.title}</Link>
-                                                    <p className="item-info">Quantity: {item.quantity}</p>
-                                                    <p className="item-info">Price: Ksh {Number(item.total_price).toLocaleString()}</p>
-                                                    <p className="item-info">Status: {item.item_status}</p>
-                                                    {item.item_status !== 'delivered' && (
-                                                        <button
-                                                            className="mark-delivered-btn"
-                                                            onClick={() => handleMarkAsDelivered(orderGroup.order_id, item.product_id)}
-                                                        >
-                                                            Mark as Delivered
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="group-summary">
-                                        <p><strong>Total:</strong> Ksh {Number(orderGroup.total_price).toLocaleString()}</p>
-                                        <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
-                                            {orderGroup.order_status}
-                                        </p>
-                                        {Number(orderGroup.is_paid) === 0 ? (
-                                            <button
-                                                className="mpesa-pay-btn"
-                                                onClick={() =>
-                                                navigate('/MpesaPayment', {
-                                                    state: {
-                                                    orderId: orderGroup.order_id,
-                                                    phoneNumber: orderGroup.phone_number,
-                                                    amount: orderGroup.total_price,
-                                                    title: `Order ${orderGroup.displayId}`,
-                                                    },
-                                                })
-                                                }
-                                            >
-                                                Pay for Order {orderGroup.displayId}
-                                            </button>
-                                            ) : (
-                                            <p className="paid-message">✅ Paid</p>
-                                        )}
-                                    </div>
+                                    <p>Date: {new Date(orderGroup.order_date).toLocaleDateString()}</p>
+                                    <p className={`status-badge status-${orderGroup.order_status.toLowerCase()}`}>
+                                        {orderGroup.order_status}
+                                    </p>
                                 </div>
-                            )
-                            
-                        })}
+
+                                <div className="group-items">
+                                    {orderGroup.items.map(item => (
+                                        <div key={`${orderGroup.order_id}_${item.product_id}`} className="order-item-card">
+                                            <img
+                                                src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
+                                                alt={item.title}
+                                                className="item-image"
+                                            />
+                                            <div className="item-details">
+                                                <Link to={`/product/${item.product_id}`} className="item-title">{item.title}</Link>
+                                                <p className="item-info">Quantity: {item.quantity}</p>
+                                                <p className="item-info">Price: Ksh {Number(item.total_price).toLocaleString()}</p>
+                                                <p className="item-info">Item Status: <span className='item-status'>{item.item_status}</span></p>
+                                                {item.item_status !== 'delivered' && (
+                                                    <button
+                                                        className="mark-delivered-btn"
+                                                        onClick={() => handleMarkAsDelivered(orderGroup.order_id, item.product_id)}
+                                                    >
+                                                        Mark as Delivered
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="group-summary">
+                                    <p><strong>Order Total:</strong> Ksh {Number(orderGroup.total_price).toLocaleString()}</p>
+                                    {Number(orderGroup.is_paid) === 0 ? (
+                                        <button
+                                            className="mpesa-pay-btn"
+                                            onClick={() =>
+                                            navigate('/MpesaPayment', {
+                                                state: {
+                                                orderId: orderGroup.order_id,
+                                                phoneNumber: orderGroup.phone_number,
+                                                amount: orderGroup.total_price,
+                                                title: `Order ${orderGroup.displayId}`,
+                                                },
+                                            })
+                                            }
+                                        >
+                                            Pay for Order
+                                        </button>
+                                        ) : (
+                                            <p className="paid-message">✅ Paid</p>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
             </main>
 
             <footer className='buyer-order-footer'>
-                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+                <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>
             </footer>
         </div>
     );
