@@ -1,108 +1,127 @@
-.dashboard-body {
-    padding: 10px;
-    max-height: 1200px;
-    
+.dashboard-page-body {
+    background-color: #F3F4F6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
-.dashboard-header{
-    position: fixed;
-    background-color: #2563eb;
-    width: 100%;
+
+/* --- New Consistent Header Styles --- */
+.marketplace-header {
+    display: flex;
     justify-content: space-between;
-    left: 0;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #2563eb;
+    border-bottom: 1px solid #D1D5DB;
+    position: sticky;
     top: 0;
-    display: flex;
     z-index: 1000;
-    height: 15vh;
-}
-.dashboard-header .dashboard-h1{
-    font-family: Epilogue;
-    margin-left: 30px;
-    color: white;
-    margin-top: 25px;
-    font-size: 25px;
+    height: 80px;
 }
 
-.dashboard-header-search-bar {
-  flex-grow: 1;
-  margin: 0 2rem;
-  display: flex;
-  margin-top: 25px;
-}
-.dashboard-header-search-bar input {
-  width: 100%;
-  height: 15px;
-  padding: 10px 15px;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.dashboard-nav{
-    padding-top: 30px;
-    justify-content: space-around;
-    margin-right: 30px;
-}
-.dashboard-logout-link, .dashboard-addProduct-link{
-    font-family: Inter;
-    color: white;
+.header-logo-link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    cursor: pointer;
 }
-.dashboard-orders-link { /* <-- Add the new class here */
+
+.header-logo-img {
+    height: 50px;
+}
+
+.header-logo-text {
     color: white;
-    text-decoration: none;
-    padding: 5px 10px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-left: 12px;
+    letter-spacing: -0.5px;
+}
+
+.header-search-bar {
+    flex-grow: 1;
+    margin: 0 2rem;
+    display: flex;
+    max-width: 400px;
+}
+
+.header-search-bar input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #D1D5DB;
     border-radius: 6px;
-    transition: background-color 0.2s ease;
-}
-.dashboard-logout-link:hover, .dashboard-addProduct-link:hover{
-    background-color: rgb(159, 159, 255);
-    color: black;
-}
-.dashboard-orders-link:hover { /* <-- And also here */
-    background-color: rgb(159, 159, 255);
-    color: black;
+    font-size: 1rem;
 }
 
-.dashboard-container{
+.header-nav-links {
     display: flex;
-    margin-top: 10px;
-}
-.dashboard-h1 {
-    margin-top: 100px;
-    font-family: Epilogue;
-    text-align: center;
+    align-items: center;
+    gap: 1rem;
 }
 
-.dashboard-container {
+.user-greeting {
+    color: #111827; /* Ensuring a solid black color for the text */
+    background-color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.header-nav-links a, .logout-link {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-family: Inter, sans-serif;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.header-nav-links a:hover, .logout-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+/* --- End of Header Styles --- */
+
+.dashboard-main-content {
     display: flex;
-    padding: 1px;
+    padding: 2rem;
     gap: 2rem;
 }
 
-.dashboard-filters-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    background-color: var(--color-light);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    align-self: flex-start; /* Aligns to the top */
+.dashboard-main-title {
+    font-family: Epilogue, sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
+
+.dashboard-filters-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    align-self: flex-start;
+    position: sticky;
+    top: 100px; /* 80px header height + 20px margin */
+}
+
 .dashboard-filters-sidebar h3 {
     font-size: 1.5rem;
     margin-top: 0;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid #E5E7EB;
     padding-bottom: 1rem;
 }
 
 .dashboard-filter-group {
     margin-bottom: 1.5rem;
 }
+
 .dashboard-filter-group label {
     display: block;
     font-weight: 600;
@@ -113,77 +132,102 @@
 .dashboard-filter-group select {
     width: 100%;
     padding: 10px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-light);
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+    background-color: #fff;
 }
+
 .dashboard-grid-container {
     flex-grow: 1;
 }
 
-.dashboard-items {
+.dashboard-items-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    /* flex-direction: row; */
-    gap: 2rem;
-    margin-left: 2px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
 }
 
-.dashboard-item {
-    /* display: flex; */
-    gap: 1rem;
-    padding: 1rem;
-    border: 1px solid #ddd;
+.dashboard-item-card {
+    background-color: #fff;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.dashboard-item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .dashboard-item-image {
-    width: 200px;
-    margin-left: 35px;
-    object-fit: cover;
-    border-radius: 6px;
+    width: 100%;
+    height: 200px;
+    /* Changed from 'cover' to 'contain' to prevent cropping */
+    object-fit: contain; 
+    background-color: #f8f9fa; /* Added a light background for letterboxing */
 }
 
 .dashboard-item-info {
-    flex: 1;
+    padding: 1rem;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
 .dashboard-item-info h3 {
-    margin: 0 0 0.3rem 0;
+    margin: 0 0 0.5rem 0;
     font-size: 1.1rem;
 }
 
 .dashboard-item-info p {
-    margin: 0.2rem 0;
+    margin: 0.25rem 0;
     color: #555;
+    font-size: 0.9rem;
 }
+
+.status-pill {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-approved {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+.status-pending {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+.status-rejected {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
 
 .dashboard-update-btn {
-    margin-top: 10px;
+    margin-top: auto; /* Pushes button to the bottom */
+    padding: 0.6rem 1rem;
     border: none;
-    background-color: #2563eb;
-    color: #f9f9f9;
-    border-radius: 8px;
-    padding: 5px;
-}
-.dashboard-update-btn:hover{
-    background-color: #0056b3;
-}
-
-.status-information {
-    font-family: Inter;
-    margin-left: 40px;
-
+    background-color: #374151;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
 }
 
-.dashboard-footer{
+.dashboard-update-btn:hover {
+    background-color: #1F2937;
+}
+
+.dashboard-footer {
     text-align: center;
     padding: 2rem;
     margin-top: 2rem;
-    background-color: var(--color-light);
-    border-top: 1px solid var(--color-border);
+    background-color: #fff;
+    border-top: 1px solid #E5E7EB;
 }

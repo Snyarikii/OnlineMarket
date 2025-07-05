@@ -2,10 +2,12 @@ import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import './Dashboard.css';
+import logo from '../../assets/logo2.png'; // Import the logo
 
 const Dashboard = ({ setUser, setLoggingOut }) => {
     const [myProducts, setMyProducts] = useState([]);
     const [loading, setLoading ] = useState(true);
+    const [userName, setUserName] = useState(''); // State for the user's name
     const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -19,13 +21,25 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
     
     useEffect(() => {
         const token = localStorage.getItem('token');
-        const fetchMyProducts = async () => {
-            if(!token) {
-                alert("Please log in to view your products.")
-                navigate('/Login');
-                return;
+        if(!token) {
+            alert("Please log in to view your dashboard.")
+            navigate('/Login');
+            return;
+        }
+        
+        // Fetch user's name for the greeting
+        const fetchUserData = async () => {
+            try {
+                const res = await axios.get('http://localhost:3001/api/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUserName(res.data.name);
+            } catch (err) {
+                console.error("Failed to fetch user name", err);
             }
+        };
 
+        const fetchMyProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/products/myProducts', {
                     headers: { Authorization: `Bearer ${token}`}
@@ -34,19 +48,17 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             } catch (err) {
                 console.error("Error fetching products", err);
                 setMyProducts([]);
-                alert("Your token has expired please log in again to continue.");
+                alert("Your session may have expired. Please log in again.");
                 navigate('/Login');
             } finally {
                 setLoading(false);
             }
         };
         
-         const fetchCategories = async () => {
+        const fetchCategories = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/categories', {
-                    headers: {
-                        'Authorization' : `Bearer ${token}`
-                    }
+                    headers: { 'Authorization' : `Bearer ${token}` }
                 });
                 setCategories(response.data);
             } catch (err) {
@@ -54,16 +66,12 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             }
         };
 
+        fetchUserData();
         fetchMyProducts();
         fetchCategories();
-    }, [navigate], []);
+    }, [navigate]);
 
     useEffect(() => {
-        filterMyProducts();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange, selectedStatus]);
-
-    const filterMyProducts = () => {
         let filtered = [...myProducts];
         
         if(searchQuery.trim() !== '') {
@@ -97,29 +105,34 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
             );
         }
         setFilteredProducts(filtered);
-    };
+    }, [searchQuery, myProducts, selectedCategory, selectedCondition, selectedPriceRange, selectedStatus]);
 
     function LogOut() {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if(!confirmLogout) return;
 
-        setLoggingOut(true);
-        
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        navigate('/');
-
-        setTimeout(() => {
-            setLoggingOut(false);
-        }, 500);
+        if (setLoggingOut && setUser) {
+            setLoggingOut(true);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            navigate('/');
+            setTimeout(() => setLoggingOut(false), 500);
+        } else {
+            localStorage.clear();
+            navigate('/');
+        }
     };
 
     return(
-        <div className="dashboard-body">
-            <header className="dashboard-header">
-                <h1 className="dashboard-h1">Flea Market</h1>
-                <div className="dashboard-header-search-bar">
+        <div className="dashboard-page-body">
+            {/* Updated Header */}
+            <header className="marketplace-header">
+                <Link to="/Dashboard" className="header-logo-link">
+                    <img src={logo} alt="Flea Market Logo" className="header-logo-img" />
+                    <span className="header-logo-text">Flea Market</span>
+                </Link>
+                <div className="header-search-bar">
                     <input 
                         type="text" 
                         placeholder="Search my products..."
@@ -127,15 +140,16 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <nav className="dashboard-nav">
-                    <Link to='/add-product' className="dashboard-addProduct-link">Add product</Link>
-                    <Link to='/dashboard/orders' className="dashboard-orders-link">View Orders</Link>
-                    <Link to='/SellerSettings' className="dashboard-orders-link">My Account</Link>
-                    <a onClick={LogOut} className="dashboard-logout-link">Log Out</a>
+                <nav className="header-nav-links">
+                    {userName && <span className="user-greeting">Hi, {userName.split(' ')[0]}</span>}
+                    <Link to='/add-product'>Add Product</Link>
+                    <Link to='/dashboard/orders'>View Orders</Link>
+                    <Link to='/SellerSettings'>My Account</Link>
+                    <a onClick={LogOut} className="logout-link">Log Out</a>
                 </nav>
             </header>
-            <h1 className="dashboard-h1">My Products</h1>
-            <div className="dashboard-container">
+            
+            <main className="dashboard-main-content">
                 <aside className="dashboard-filters-sidebar">
                     <h3>Filters</h3>
                     <div className="dashboard-filter-group">
@@ -143,7 +157,8 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                         <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
                             <option value="">Any status</option>
                             <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>                            
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
                         </select>
                     </div>
                     
@@ -181,7 +196,7 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                 </aside>
                 
                 <div className="dashboard-grid-container">
-
+                    <h1 className="dashboard-main-title">My Products</h1>
                     {loading ? (
                         <p>Loading your products...</p>
                     ) : myProducts.length === 0 ? (
@@ -189,11 +204,11 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                     ) : filteredProducts.length === 0 ? (
                         <p>No products match your search.</p>
                     ) : (
-                        <div className="dashboard-items">
+                        <div className="dashboard-items-grid">
                             {filteredProducts.map(item => (
-                                <div key={item.id} className="dashboard-item">
+                                <div key={item.id} className="dashboard-item-card">
                                     <img
-                                        src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/100'}
+                                        src={item.image_url ? `http://localhost:3001/uploads/${item.image_url}` : 'https://via.placeholder.com/150'}
                                         alt={item.title}
                                         className="dashboard-item-image"
                                     />
@@ -201,19 +216,18 @@ const Dashboard = ({ setUser, setLoggingOut }) => {
                                         <h3>{item.title}</h3>
                                         <p>Price: Ksh {Number(item.price).toLocaleString()}</p>
                                         <p>Condition: {item.product_condition}</p>
-                                        <p>Status: {item.status}</p>
-                                        <p>Current Stock: {item.stock_quantity}</p>
-                                        <button className="dashboard-update-btn" onClick={() => navigate(`/updateProduct/${item.id}`)}>Update Product</button>
+                                        <p>Status: <span className={`status-pill status-${item.status}`}>{item.status}</span></p>
+                                        <p>Stock: {item.stock_quantity}</p>
+                                        <button className="dashboard-update-btn" onClick={() => navigate(`/UpdateProduct/${item.id}`)}>Update Product</button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-            </div>
-            <h4 className="status-information">Note: <p>Check your product status. If not approved, wait for admin approval. Approved products will be visible to buyers.</p></h4>
-             <footer className="dashboard-footer">
-                <p>&copy; 2025 FleaMarket. All Rights Reserved.</p>
+            </main>
+            <footer className="dashboard-footer">
+                <p>&copy; {new Date().getFullYear()} FleaMarket. All Rights Reserved.</p>
             </footer>
         </div>
     );
