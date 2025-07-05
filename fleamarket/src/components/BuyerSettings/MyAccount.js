@@ -3,8 +3,8 @@ import './MyAccount.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const DeactivateAccount = () => {
-    const [userInfo, setUserInfo] = useState({name: '', email: '' });
+const MyAccount = () => { // Renamed component for clarity
+    const [userInfo, setUserInfo] = useState({ name: '', email: '' });
     const [confirming, setConfirming] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
@@ -14,9 +14,13 @@ const DeactivateAccount = () => {
 
     useEffect(() => {
         const fetchUserDetails = async () => {
+            if (!token) {
+                navigate('/Login');
+                return;
+            }
             try {
                 const res = await axios.get('http://localhost:3001/api/user/me', {
-                    headers: {Authorization: `Bearer ${token}`}
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserInfo({
                     name: res.data.name,
@@ -28,7 +32,7 @@ const DeactivateAccount = () => {
             }
         };
         fetchUserDetails();
-    }, [token]);
+    }, [token, navigate]);
 
     const handleDeactivate = async () => {
         if (!token) {
@@ -39,7 +43,7 @@ const DeactivateAccount = () => {
 
         setLoading(true);
         try {
-            await axios.put(`http://localhost:3001/api/users/${user.id}/deactivate`, {
+            await axios.put(`http://localhost:3001/api/users/${user.id}/deactivate`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -57,33 +61,40 @@ const DeactivateAccount = () => {
     };
 
     return (
-        <div className='my-account-body'>
-            <div className='my-account-info'>
-                <h2>My account</h2>
-
+        <div className='my-account-page'>
+            <div className='my-account-section'>
+                <h2>My Account Information</h2>
                 <div className='my-info-card'>
-                    <p><strong>Name: </strong>{userInfo.name}</p>
-                    <p><strong>Email: </strong>{userInfo.email}</p>
+                    <div className='info-item'>
+                        <span className='info-label'>Name:</span>
+                        <span className='info-value'>{userInfo.name || 'Loading...'}</span>
+                    </div>
+                    <div className='info-item'>
+                        <span className='info-label'>Email:</span>
+                        <span className='info-value'>{userInfo.email || 'Loading...'}</span>
+                    </div>
                 </div>
+                {message && <p className="error-message">{message}</p>}
             </div>
-            <div className="deactivate-container">
+
+            <div className="deactivate-section">
                 <h2>Deactivate Account</h2>
                 <p className="warning-text">
-                    Deactivating your account will temporarily remove your profile and you will not be able to log in again unless you create a new account.
+                    Deactivating your account will temporarily remove your profile and you will not be able to log in again. The admin can reactivate it.
                 </p>
 
                 {!confirming ? (
-                    <button className="my-acc-deactivate-btn" onClick={() => setConfirming(true)}>
+                    <button className="deactivate-btn" onClick={() => setConfirming(true)}>
                         Deactivate My Account
                     </button>
                 ) : (
                     <div className="confirm-box">
                         <p>Are you sure you want to deactivate your account?</p>
                         <div className="confirm-buttons">
-                            <button className="confirm-btn" onClick={handleDeactivate} disabled={loading}>
+                            <button className="confirm-btn-yes" onClick={handleDeactivate} disabled={loading}>
                                 {loading ? 'Deactivating...' : 'Yes, Deactivate'}
                             </button>
-                            <button className="cancel-btn" onClick={() => setConfirming(false)}>
+                            <button className="confirm-btn-cancel" onClick={() => setConfirming(false)}>
                                 Cancel
                             </button>
                         </div>
@@ -94,4 +105,4 @@ const DeactivateAccount = () => {
     );
 };
 
-export default DeactivateAccount;
+export default MyAccount;
