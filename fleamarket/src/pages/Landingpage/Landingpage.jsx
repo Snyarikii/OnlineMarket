@@ -117,8 +117,8 @@ const LandingPage = () => {
 
       </main>
 
-      <footer className="footer">
-        <div className="footer-bottom">
+      <footer className="landing-page-footer">
+        <div className="landing-page-footer-bottom">
             <p>&copy; {new Date().getFullYear()} Flea Market. All Rights Reserved.</p>
         </div>
       </footer>

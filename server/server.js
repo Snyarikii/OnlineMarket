@@ -123,7 +123,7 @@ app.get('/api/user/me', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const [rows] = await con.promise().query('SELECT name, email FROM users WHERE id = ?', [userId]);
+        const [rows] = await con.promise().query('SELECT name, email, phone_number FROM users WHERE id = ?', [userId]);
         if(rows.length === 0) {
             return res.status(404).json({ error: "User not found"});
         }

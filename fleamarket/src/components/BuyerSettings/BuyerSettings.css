@@ -1,14 +1,9 @@
-/*
- * Buyer Settings Layout Stylesheet
-*/
-
 .settings-page-body {
     background-color: #F3F4F6;
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Using the consistent header styles */
 .marketplace-header {
     display: flex;
     justify-content: space-between;
@@ -33,6 +28,7 @@
 }
 
 .header-logo-text {
+    font-family: Epilogue;
     color: white;
     font-size: 1.75rem;
     font-weight: 700;
@@ -47,6 +43,7 @@
 }
 
 .user-greeting {
+    font-family: Inter;
     color: black;
     background-color: #ffffff;
     padding: 8px 12px;
@@ -96,6 +93,7 @@
 }
 
 .settings-layout-header h1 {
+    font-family: Epilogue;
     font-size: 1.75rem;
     color: #111827;
     margin: 0 0 1rem 0;
@@ -103,13 +101,13 @@
 
 .settings-layout-nav {
     display: flex;
-    gap: 1.5rem; /* Increased gap */
+    gap: 1.5rem; 
     border-bottom: 2px solid #E5E7EB;
 }
 
 .settings-layout-nav a {
     padding: 0.75rem 0.25rem;
-    margin-bottom: -2px; /* Pulls the link down to align with the border */
+    margin-bottom: -2px; 
     text-decoration: none;
     color: #6B7280;
     font-weight: 600;

@@ -53,12 +53,16 @@
 }
 .edit-product-form label {
     font-family: Inter;
+    font-weight: 600;
+    color: #374151;
 }
 .edit-product-form input, .edit-product-form textarea, .edit-product-form select {
     padding: 0.5rem;
     font-size: 1rem;
     border-radius: 4px;
-    border: 1px solid black;
+    border: 1px solid #D1D5DB;
+    font-family: Inter;
+    color: rgb(88, 88, 88);
 }
 
 .update-product-btn {

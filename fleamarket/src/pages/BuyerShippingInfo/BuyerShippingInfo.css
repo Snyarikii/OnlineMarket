@@ -7,9 +7,14 @@
     border-radius: 8px;
     box-shadow: 0 0 10px #ccc;
 }
+.shipping-info-container h2 {
+    font-family: Epilogue;
+}
 .shipping-info-form label {
     font-family: Inter;
-    font-size: 14px;
+    color: #374151;
+    font-weight: 600;
+    /* font-size: 14px; */
     margin-left: 3px;
     font-weight: bold;
 }
@@ -19,8 +24,10 @@
     width: 500px;
     margin: 10px 0;
     padding: 0.6rem;
-    border: 1px solid #aaa;
+    border: 1px solid #D1D5DB;
     border-radius: 5px;
+    font-family: Inter;
+    color: rgb(88, 88, 88);
 }
 
 .shipping-info-form button {
@@ -31,6 +38,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-family: Inter;
+    font-weight: 500;
+}
+.shipping-info-form button:hover {
+    background-color: #196db3;
 }
 
 .info-message {

@@ -5,6 +5,7 @@
 }
 
 .my-account-section h2 {
+    font-family: Epilogue;
     font-size: 1.5rem;
     color: #1F2937;
     margin: 0 0 1rem 0;
@@ -31,11 +32,13 @@
 }
 
 .info-label {
+    font-family: Inter;
     font-weight: 600;
     color: #374151;
 }
 
 .info-value {
+    font-family: Inter;
     color: #4B5563;
 }
 
@@ -47,12 +50,14 @@
 }
 
 .deactivate-section h2 {
+    font-family: Epilogue;
     color: #DC2626;
     font-size: 1.5rem;
     margin: 0 0 1rem 0;
 }
 
 .warning-text {
+    font-family: Inter;
     color: #991B1B;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
@@ -60,6 +65,7 @@
 }
 
 .deactivate-btn {
+    font-family: Inter;
     background-color: #DC2626;
     color: white;
     border: none;

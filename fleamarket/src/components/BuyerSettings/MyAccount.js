@@ -24,7 +24,8 @@ const MyAccount = () => {
                 });
                 setUserInfo({
                     name: res.data.name,
-                    email: res.data.email
+                    email: res.data.email,
+                    phone_number: res.data.phone_number
                 });
             } catch (error) {
                 console.error("Failed to fetch user info: ", error);
@@ -74,6 +75,10 @@ const MyAccount = () => {
                         <span className='info-label'>Email:</span>
                         <span className='info-value'>{userInfo.email || 'Loading...'}</span>
                     </div>
+                    <div className='info-item'>
+                        <span className='info-label'>Phone Number:</span>
+                        <span className='info-value'>{userInfo.phone_number || 'Loading...'}</span>
+                    </div>
                 </div>
                 {message && <p className="error-message">{message}</p>}
             </div>
@@ -81,7 +86,7 @@ const MyAccount = () => {
             <div className="deactivate-section">
                 <h2>Deactivate Account</h2>
                 <p className="warning-text">
-                    Deactivating your account will temporarily remove your profile and you will not be able to log in again. The admin can reactivate it.
+                    Deactivating your account will temporarily remove your profile and you will not be able to log in. You or the admin can reactivate it.
                 </p>
 
                 {!confirming ? (
