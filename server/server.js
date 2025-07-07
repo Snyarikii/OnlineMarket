@@ -35,7 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Stevey-boy12$",
+    password: "",
     database: "marketplace",
 });
 con.connect((err) =>{
@@ -216,7 +216,7 @@ app.post('/api/products', authenticateToken, upload.single('productImage'), asyn
 
         const [result] = await con.promise().query(
             `INSERT INTO products (seller_id, category_id, title, description, price, product_condition, status, image_url, stock_quantity)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?,? )`,
             [sellerId, category_id, title, description, price, condition, status, imageUrl, stock_quantity]
         );
 
